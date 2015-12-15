@@ -20,6 +20,7 @@
 package org.bozzo.ipplan.domain.model;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -32,33 +33,45 @@ import javax.persistence.Table;
  *
  */
 @Entity
-@Table(name="netrange")
-public class Range implements Serializable {
+@Table(name="base")
+public class Subnet implements Serializable {
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -1566720591130862498L;
+	private static final long serialVersionUID = 3938246853021759159L;
 
 	@Id
 	@GeneratedValue
-	@Column(name="rangeindex", nullable=false)
+	@Column(name="baseindex", nullable=false)
 	private Long id;
-	
-	@Column(name="rangeaddr", nullable=false)
+
+	@Column(name="customer", nullable=false)
+	private Integer infraId;
+
+	@Column(name="baseaddr", nullable=false)
 	private Long ip;
 	
-	@Column(name="rangesize", nullable=false)
+	@Column(name="subnetsize", nullable=false)
 	private Long size;
 
 	@Column(name="descrip", nullable=false)
 	private String description;
 
-	@Column(name="areaindex", nullable=false)
-	private Long zoneId;
+	@Column(name="admingrp", nullable=false)
+	private String group;
 
-	@Column(name="customer", nullable=false)
-	private Integer infraId;
+	@Column(name="lastmod", nullable=false)
+	private Date lastModifed;
+
+	@Column(name="userid", nullable=false)
+	private String userId;
+	
+	@Column(name="baseopt", nullable=false)
+	private Long optionId;
+
+	@Column(name="swipmod")
+	private Date swipMod;
 
 	/**
 	 * @return the id
@@ -72,6 +85,34 @@ public class Range implements Serializable {
 	 */
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	/**
+	 * @return the infraId
+	 */
+	public Integer getInfraId() {
+		return infraId;
+	}
+
+	/**
+	 * @param infraId the infraId to set
+	 */
+	public void setInfraId(Integer infraId) {
+		this.infraId = infraId;
+	}
+
+	/**
+	 * @return the ip
+	 */
+	public Long getIp() {
+		return ip;
+	}
+
+	/**
+	 * @param ip the ip to set
+	 */
+	public void setIp(Long ip) {
+		this.ip = ip;
 	}
 
 	/**
@@ -103,45 +144,73 @@ public class Range implements Serializable {
 	}
 
 	/**
-	 * @return the zoneId
+	 * @return the group
 	 */
-	public Long getZoneId() {
-		return zoneId;
+	public String getGroup() {
+		return group;
 	}
 
 	/**
-	 * @param zoneId the zoneId to set
+	 * @param group the group to set
 	 */
-	public void setZoneId(Long zoneId) {
-		this.zoneId = zoneId;
+	public void setGroup(String group) {
+		this.group = group;
 	}
 
 	/**
-	 * @return the infraId
+	 * @return the lastModifed
 	 */
-	public Integer getInfraId() {
-		return infraId;
+	public Date getLastModifed() {
+		return lastModifed;
 	}
 
 	/**
-	 * @param infraId the infraId to set
+	 * @param lastModifed the lastModifed to set
 	 */
-	public void setInfraId(Integer infraId) {
-		this.infraId = infraId;
+	public void setLastModifed(Date lastModifed) {
+		this.lastModifed = lastModifed;
 	}
 
 	/**
-	 * @return the ip
+	 * @return the userId
 	 */
-	public Long getIp() {
-		return ip;
+	public String getUserId() {
+		return userId;
 	}
 
 	/**
-	 * @param ip the ip to set
+	 * @param userId the userId to set
 	 */
-	public void setIp(Long ip) {
-		this.ip = ip;
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+
+	/**
+	 * @return the optionId
+	 */
+	public Long getOptionId() {
+		return optionId;
+	}
+
+	/**
+	 * @param optionId the optionId to set
+	 */
+	public void setOptionId(Long optionId) {
+		this.optionId = optionId;
+	}
+
+	/**
+	 * @return the swipMod
+	 */
+	public Date getSwipMod() {
+		return swipMod;
+	}
+
+	/**
+	 * @param swipMod the swipMod to set
+	 */
+	public void setSwipMod(Date swipMod) {
+		this.swipMod = swipMod;
 	}
 
 	/* (non-Javadoc)
@@ -150,9 +219,10 @@ public class Range implements Serializable {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("Range [id=").append(id).append(", ip=").append(ip).append(", size=").append(size)
-				.append(", description=").append(description).append(", zoneId=").append(zoneId).append(", infraId=")
-				.append(infraId).append("]");
+		builder.append("Subnet [id=").append(id).append(", infraId=").append(infraId).append(", ip=").append(ip)
+				.append(", size=").append(size).append(", description=").append(description).append(", group=")
+				.append(group).append(", lastModifed=").append(lastModifed).append(", userId=").append(userId)
+				.append(", optionId=").append(optionId).append(", swipMod=").append(swipMod).append("]");
 		return builder.toString();
 	}
 
@@ -166,7 +236,6 @@ public class Range implements Serializable {
 		result = prime * result + ((infraId == null) ? 0 : infraId.hashCode());
 		result = prime * result + ((ip == null) ? 0 : ip.hashCode());
 		result = prime * result + ((size == null) ? 0 : size.hashCode());
-		result = prime * result + ((zoneId == null) ? 0 : zoneId.hashCode());
 		return result;
 	}
 
@@ -179,9 +248,9 @@ public class Range implements Serializable {
 			return true;
 		if (obj == null)
 			return false;
-		if (!(obj instanceof Range))
+		if (!(obj instanceof Subnet))
 			return false;
-		Range other = (Range) obj;
+		Subnet other = (Subnet) obj;
 		if (infraId == null) {
 			if (other.infraId != null)
 				return false;
@@ -197,12 +266,6 @@ public class Range implements Serializable {
 				return false;
 		} else if (!size.equals(other.size))
 			return false;
-		if (zoneId == null) {
-			if (other.zoneId != null)
-				return false;
-		} else if (!zoneId.equals(other.zoneId))
-			return false;
 		return true;
 	}
-
 }

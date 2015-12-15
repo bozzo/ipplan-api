@@ -21,8 +21,8 @@ package org.bozzo.ipplan.web;
 
 import javax.validation.constraints.NotNull;
 
-import org.bozzo.ipplan.domain.dao.ZoneRepository;
-import org.bozzo.ipplan.domain.model.Zone;
+import org.bozzo.ipplan.domain.dao.SubnetRepository;
+import org.bozzo.ipplan.domain.model.Subnet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,41 +41,41 @@ import com.google.common.base.Preconditions;
  *
  */
 @RestController
-@RequestMapping("/api/infras/{infraId}/zones")
-public class ZoneController {
-	private static Logger LOGGER = LoggerFactory.getLogger(ZoneController.class);
+@RequestMapping("/api/infras/{infraId}/subnets")
+public class SubnetController {
+	private static Logger LOGGER = LoggerFactory.getLogger(SubnetController.class);
 	
 	@Autowired
-	private ZoneRepository repository;
+	private SubnetRepository repository;
 
 	@RequestMapping(value = "/", method=RequestMethod.GET)
-	public Iterable<Zone> getZones(@PathVariable @NotNull Integer infraId) {
+	public Iterable<Subnet> getSubnets(@PathVariable @NotNull Integer infraId) {
 		return repository.findByInfraId(infraId);
 	}
 
-	@RequestMapping(value = "/{zoneId}", method=RequestMethod.GET)
-	public Zone getZone(@PathVariable Integer infraId, @PathVariable Long zoneId) {
-		return repository.findByInfraIdAndId(infraId, zoneId);
+	@RequestMapping(value = "/{subnetId}", method=RequestMethod.GET)
+	public Subnet getSubnet(@PathVariable Integer infraId, @PathVariable Long subnetId) {
+		return repository.findByInfraIdAndId(infraId, subnetId);
 	}
 
 	@RequestMapping(value = "/", method=RequestMethod.POST)
-	public Zone addZone(@PathVariable Integer infraId, @RequestBody @NotNull Zone zone) {
-		Preconditions.checkArgument(infraId.equals(zone.getInfraId()));
-		LOGGER.info("add new zone: {}", zone);
-		return repository.save(zone);
+	public Subnet addSubnet(@PathVariable Integer infraId, @RequestBody @NotNull Subnet subnet) {
+		Preconditions.checkArgument(infraId.equals(subnet.getInfraId()));
+		LOGGER.info("add new subnet: {}", subnet);
+		return repository.save(subnet);
 	}
 
-	@RequestMapping(value = "/{zoneId}", method=RequestMethod.PUT)
-	public Zone updateZone(@PathVariable Integer infraId, @PathVariable Long zoneId, @RequestBody @NotNull Zone zone) {
-		Preconditions.checkArgument(infraId.equals(zone.getInfraId()));
-		Preconditions.checkArgument(zoneId.equals(zone.getId()));
-		LOGGER.info("update zone: {}", zone);
-		return repository.save(zone);
+	@RequestMapping(value = "/{subnetId}", method=RequestMethod.PUT)
+	public Subnet updateSubnet(@PathVariable Integer infraId, @PathVariable Long subnetId, @RequestBody @NotNull Subnet subnet) {
+		Preconditions.checkArgument(infraId.equals(subnet.getInfraId()));
+		Preconditions.checkArgument(subnetId.equals(subnet.getId()));
+		LOGGER.info("update subnet: {}", subnet);
+		return repository.save(subnet);
 	}
 
-	@RequestMapping(value = "/{zoneId}", method=RequestMethod.DELETE)
-	public @ResponseStatus(HttpStatus.NO_CONTENT) void deleteZone(@PathVariable Integer infraId, @PathVariable Long zoneId) {
-		LOGGER.info("delete zone with id: {} (infra id: {})", zoneId, infraId);
-		this.repository.deleteByInfraIdAndId(infraId, zoneId);
+	@RequestMapping(value = "/{subnetId}", method=RequestMethod.DELETE)
+	public @ResponseStatus(HttpStatus.NO_CONTENT) void deleteSubnet(@PathVariable Integer infraId, @PathVariable Long subnetId) {
+		LOGGER.info("delete subnet with id: {} (infra id: {})", subnetId, infraId);
+		this.repository.deleteByInfraIdAndId(infraId, subnetId);
 	}
 }

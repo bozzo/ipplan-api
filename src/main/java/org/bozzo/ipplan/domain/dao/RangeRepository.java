@@ -19,13 +19,26 @@
  */
 package org.bozzo.ipplan.domain.dao;
 
+import javax.transaction.Transactional;
+
 import org.bozzo.ipplan.domain.model.Range;
 import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.stereotype.Repository;
 
 /**
  * @author boris
  *
  */
+@Repository
+@Transactional
 public interface RangeRepository extends PagingAndSortingRepository<Range, Long> {
+
+	public Iterable<Range> findByInfraIdAndZoneId(Integer infraId, Long zoneId);
+
+	public Range findByInfraIdAndZoneIdAndId(Integer infraId, Long zoneId, Long id);
+
+	public Range findByInfraIdAndZoneIdAndIp(Integer infraId, Long zoneId, Long ip);
+
+	public void deleteByInfraIdAndZoneIdAndId(Integer infraId, Long zoneId, Long id);
 
 }

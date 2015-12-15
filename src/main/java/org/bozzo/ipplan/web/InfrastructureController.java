@@ -23,6 +23,8 @@ import javax.validation.constraints.NotNull;
 
 import org.bozzo.ipplan.domain.dao.InfrastructureRepository;
 import org.bozzo.ipplan.domain.model.Infrastructure;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,6 +43,7 @@ import com.google.common.base.Preconditions;
 @RestController
 @RequestMapping("/api/infras")
 public class InfrastructureController {
+	private static Logger LOGGER = LoggerFactory.getLogger(InfrastructureController.class);
 	
 	@Autowired
 	private InfrastructureRepository repository;
@@ -57,17 +60,20 @@ public class InfrastructureController {
 
 	@RequestMapping(value = "/", method=RequestMethod.POST)
 	public Infrastructure addInfrastructure(@RequestBody @NotNull Infrastructure infra) {
+		LOGGER.info("add new infrastruture: {}", infra);
 		return repository.save(infra);
 	}
 
 	@RequestMapping(value = "/{infraId}", method=RequestMethod.PUT)
 	public Infrastructure updateInfrastructure(@PathVariable Integer infraId, @RequestBody @NotNull Infrastructure infra) {
 		Preconditions.checkArgument(infraId.equals(infra.getId()));
+		LOGGER.info("update infrastruture: {}", infra);
 		return repository.save(infra);
 	}
 
 	@RequestMapping(value = "/{infraId}", method=RequestMethod.DELETE)
 	public @ResponseStatus(HttpStatus.NO_CONTENT) void deleteInfrastructure(@PathVariable Integer infraId) {
+		LOGGER.info("delete infrastruture with id: {}", infraId);
 		repository.delete(infraId);
 	}
 }

@@ -19,16 +19,22 @@
  */
 package org.bozzo.ipplan.web;
 
-import java.util.Collections;
-import java.util.List;
+import javax.validation.constraints.NotNull;
 
-import org.bozzo.ipplan.domain.exception.NotYetImplementedException;
+import org.bozzo.ipplan.domain.dao.RangeRepository;
+import org.bozzo.ipplan.domain.model.Range;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.google.common.base.Preconditions;
 
 /**
  * @author boris
@@ -37,29 +43,41 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/infras/{infraId}/zones/{zoneId}/ranges")
 public class RangeController {
+	private static Logger LOGGER = LoggerFactory.getLogger(RangeController.class);
+	
+	@Autowired
+	private RangeRepository repository;
 
 	@RequestMapping(value = "/", method=RequestMethod.GET)
-	public List<String> getRanges(@PathVariable Integer infraId, @PathVariable Integer zoneId) {
-		return Collections.singletonList("Pri");
+	public Iterable<Range> getRanges(@PathVariable Integer infraId, @PathVariable Long zoneId) {
+		return this.repository.findByInfraIdAndZoneId(infraId, zoneId);
 	}
 
 	@RequestMapping(value = "/{rangeId}", method=RequestMethod.GET)
-	public List<String> getRange(@PathVariable Integer infraId, @PathVariable Integer zoneId, @PathVariable String rangeId) {
-		return Collections.singletonList("Pri");
+	public Range getRange(@PathVariable Integer infraId, @PathVariable Long zoneId, @PathVariable Long rangeId) {
+		return this.repository.findByInfraIdAndZoneIdAndId(infraId, zoneId, rangeId);
 	}
 
 	@RequestMapping(value = "/", method=RequestMethod.POST)
-	public List<String> addRange(@PathVariable Integer infraId, @PathVariable Integer zoneId) {
-		throw new NotYetImplementedException();
+	public Range addRange(@PathVariable Integer infraId, @PathVariable Long zoneId, @RequestBody @NotNull Range range) {
+		Preconditions.checkArgument(infraId.equals(range.getInfraId()));
+		Preconditions.checkArgument(zoneId.equals(range.getZoneId()));
+		LOGGER.info("add new range: {}", range);
+		return this.repository.save(range);
 	}
 
 	@RequestMapping(value = "/{rangeId}", method=RequestMethod.PUT)
-	public List<String> updateRange(@PathVariable Integer infraId, @PathVariable Integer zoneId, @PathVariable String rangeId) {
-		throw new NotYetImplementedException();
+	public Range updateRange(@PathVariable Integer infraId, @PathVariable Long zoneId, @PathVariable Long rangeId, @RequestBody @NotNull Range range) {
+		Preconditions.checkArgument(infraId.equals(range.getInfraId()));
+		Preconditions.checkArgument(zoneId.equals(range.getZoneId()));
+		Preconditions.checkArgument(rangeId.equals(range.getId()));
+		LOGGER.info("update range: {}", range);
+		return this.repository.save(range);
 	}
 
 	@RequestMapping(value = "/{rangeId}", method=RequestMethod.DELETE)
-	public @ResponseStatus(HttpStatus.NO_CONTENT) void deleteRange(@PathVariable Integer infraId, @PathVariable Integer zoneId, @PathVariable String rangeId) {
-		throw new NotYetImplementedException();
+	public @ResponseStatus(HttpStatus.NO_CONTENT) void deleteRange(@PathVariable Integer infraId, @PathVariable Long zoneId, @PathVariable Long rangeId) {
+		LOGGER.info("delete range with id: {} (infra id: {}, zone id: {})", rangeId, infraId, zoneId);
+		this.repository.deleteByInfraIdAndZoneIdAndId(infraId, zoneId, rangeId);
 	}
 }

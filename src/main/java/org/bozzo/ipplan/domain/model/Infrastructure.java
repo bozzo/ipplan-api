@@ -20,20 +20,19 @@
 package org.bozzo.ipplan.domain.model;
 
 import java.io.Serializable;
-import java.util.Map;
-import java.util.TreeMap;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.Transient;
-
-import org.bozzo.ipplan.config.IpplanConfig;
+import javax.persistence.Table;
 
 /**
  * @author boris
  *
  */
 @Entity
+@Table(name="customer")
 public class Infrastructure implements Serializable {
 
 	/**
@@ -42,14 +41,18 @@ public class Infrastructure implements Serializable {
 	private static final long serialVersionUID = -2811423466705978863L;
 
 	@Id
+	@GeneratedValue
+	@Column(name="customer", nullable=false)
 	private Integer id;
 
+	@Column(name="custdescrip", nullable=false)
 	private String description;
 
-	private String groupName;
+	@Column(name="crm")
+	private String crm;
 
-	@Transient
-	private Map<String, String> links;
+	@Column(name="admingrp", nullable=false)
+	private String group;
 
 	/**
 	 * @return the id
@@ -84,36 +87,30 @@ public class Infrastructure implements Serializable {
 	/**
 	 * @return the group
 	 */
-	public String getGroupName() {
-		return groupName;
+	public String getGroup() {
+		return group;
 	}
 
 	/**
 	 * @param group
 	 *            the group to set
 	 */
-	public void setGroupName(String group) {
-		this.groupName = group;
+	public void setGroup(String group) {
+		this.group = group;
 	}
 
 	/**
-	 * @return the links
+	 * @return the crm
 	 */
-	public Map<String, String> getLinks() {
-		if (links == null) {
-			links = new TreeMap<>();
-			links.put("infra", IpplanConfig.getInfraLink(id));
-			links.put("zones", IpplanConfig.getZonesLink(id));
-		}
-		return links;
+	public String getCrm() {
+		return crm;
 	}
 
 	/**
-	 * @param links
-	 *            the links to set
+	 * @param crm the crm to set
 	 */
-	public void setLinks(Map<String, String> links) {
-		this.links = links;
+	public void setCrm(String crm) {
+		this.crm = crm;
 	}
 
 	/*
@@ -125,7 +122,7 @@ public class Infrastructure implements Serializable {
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("Infrastructure [id=").append(id).append(", description=").append(description).append(", group=")
-				.append(groupName).append("]");
+				.append(group).append(", crm=").append(crm).append("]");
 		return builder.toString();
 	}
 

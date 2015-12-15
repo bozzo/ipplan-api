@@ -21,7 +21,7 @@ package org.bozzo.ipplan.domain.dao;
 
 import javax.transaction.Transactional;
 
-import org.bozzo.ipplan.domain.model.Zone;
+import org.bozzo.ipplan.domain.model.Subnet;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
@@ -31,13 +31,13 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 @Transactional
-public interface ZoneRepository extends PagingAndSortingRepository<Zone, Long> {
+public interface SubnetRepository extends PagingAndSortingRepository<Subnet, Long> {
 
-	public Iterable<Zone> findByInfraId(Integer infraId);
+	public Iterable<Subnet> findByInfraId(Integer infraId);
 
-	public Zone findByInfraIdAndId(Integer infraId, Long id);
+	public Subnet findByInfraIdAndId(Integer infraId, Long id);
 
-	public Zone findByInfraIdAndIp(Integer infraId, Long ip);
+	public Subnet findByInfraIdAndIp(Integer infraId, Long ip);
 
 	public void deleteByInfraIdAndId(Integer infraId, Long id);
 }

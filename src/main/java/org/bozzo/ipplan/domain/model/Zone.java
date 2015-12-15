@@ -20,20 +20,19 @@
 package org.bozzo.ipplan.domain.model;
 
 import java.io.Serializable;
-import java.util.Map;
-import java.util.TreeMap;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.Transient;
-
-import org.bozzo.ipplan.config.IpplanConfig;
+import javax.persistence.Table;
 
 /**
  * @author boris
  *
  */
 @Entity
+@Table(name="area")
 public class Zone implements Serializable {
 
 	/**
@@ -42,21 +41,23 @@ public class Zone implements Serializable {
 	private static final long serialVersionUID = 868164004579979904L;
 
 	@Id
-	private Integer id;
-	
+	@GeneratedValue
+	@Column(name="areaindex", nullable=false)
+	private Long id;
+
+	@Column(name="customer", nullable=false)
 	private Integer infraId;
 
+	@Column(name="areaaddr", nullable=false)
 	private Long ip;
 
+	@Column(name="descrip", nullable=false)
 	private String description;
-
-	@Transient
-	private Map<String,String> links;
 
 	/**
 	 * @return the id
 	 */
-	public Integer getId() {
+	public Long getId() {
 		return id;
 	}
 
@@ -64,7 +65,7 @@ public class Zone implements Serializable {
 	 * @param id
 	 *            the id to set
 	 */
-	public void setId(Integer id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -112,26 +113,6 @@ public class Zone implements Serializable {
 		this.description = description;
 	}
 
-	/**
-	 * @return the links
-	 */
-	public Map<String, String> getLinks() {
-		if (links == null) {
-			links = new TreeMap<>();
-			links.put("infra", IpplanConfig.getInfraLink(infraId));
-			links.put("zone", IpplanConfig.getZoneLink(infraId, id));
-			links.put("ranges", IpplanConfig.getRangesLink(infraId, id));
-		}
-		return links;
-	}
-
-	/**
-	 * @param links the links to set
-	 */
-	public void setLinks(Map<String,String> links) {
-		this.links = links;
-	}
-
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
@@ -150,8 +131,8 @@ public class Zone implements Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + ((infraId == null) ? 0 : infraId.hashCode());
+		result = prime * result + ((ip == null) ? 0 : ip.hashCode());
 		return result;
 	}
 
@@ -167,15 +148,15 @@ public class Zone implements Serializable {
 		if (!(obj instanceof Zone))
 			return false;
 		Zone other = (Zone) obj;
-		if (id == null) {
-			if (other.id != null)
-				return false;
-		} else if (!id.equals(other.id))
-			return false;
 		if (infraId == null) {
 			if (other.infraId != null)
 				return false;
 		} else if (!infraId.equals(other.infraId))
+			return false;
+		if (ip == null) {
+			if (other.ip != null)
+				return false;
+		} else if (!ip.equals(other.ip))
 			return false;
 		return true;
 	}

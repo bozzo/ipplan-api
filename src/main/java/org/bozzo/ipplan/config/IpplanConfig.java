@@ -44,15 +44,15 @@ public final class IpplanConfig {
 		return getInfraLink(infraId) + ZONES_PATH;
 	}
 	
-	public static String getZoneLink(Integer infraId, Integer zoneId) {
+	public static String getZoneLink(Integer infraId, Long zoneId) {
 		return getZonesLink(infraId) + "/" + zoneId;
 	}
 	
-	public static String getRangesLink(Integer infraId, Integer zoneId) {
+	public static String getRangesLink(Integer infraId, Long zoneId) {
 		return getZoneLink(infraId, zoneId) + RANGES_PATH;
 	}
 	
-	public static String getRangeLink(Integer infraId, Integer zoneId, Long rangeIp) {
+	public static String getRangeLink(Integer infraId, Long zoneId, Long rangeIp) {
 		return getRangesLink(infraId, zoneId) + "/" + rangeIp;
 	}
 
