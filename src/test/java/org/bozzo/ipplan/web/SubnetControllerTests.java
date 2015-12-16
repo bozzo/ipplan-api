@@ -48,14 +48,14 @@ public class SubnetControllerTests {
 
 	@Test
 	public void b_get_all_should_return_an_infra_array_with_one_elem() {
-		List<Infrastructure> infras = IterableUtils.toList(this.infrastructureController.getInfrastructures());
+		List<Infrastructure> infras = IterableUtils.toList(this.infrastructureController.getInfrastructures(0, 255));
 		Assert.assertNotNull(infras);
 		Assert.assertEquals(1, infras.size());
 	}
 
 	@Test
 	public void c_get_all_should_return_empty_array() {
-		List<Subnet> subnets = IterableUtils.toList(this.controller.getSubnets(infraId));
+		List<Subnet> subnets = IterableUtils.toList(this.controller.getSubnets(infraId, 0, 255));
 		Assert.assertNotNull(subnets);
 		Assert.assertTrue(subnets.isEmpty());
 	}
@@ -90,7 +90,7 @@ public class SubnetControllerTests {
 
 	@Test
 	public void e_get_all_should_return_an_array_with_one_elem() {
-		List<Subnet> subnets = IterableUtils.toList(this.controller.getSubnets(infraId));
+		List<Subnet> subnets = IterableUtils.toList(this.controller.getSubnets(infraId, 0, 255));
 		Assert.assertNotNull(subnets);
 		Assert.assertEquals(1, subnets.size());
 	}
@@ -125,7 +125,7 @@ public class SubnetControllerTests {
 
 	@Test
 	public void g_get_all_should_return_an_array_with_one_elem() {
-		List<Subnet> zones = IterableUtils.toList(this.controller.getSubnets(infraId));
+		List<Subnet> zones = IterableUtils.toList(this.controller.getSubnets(infraId, 0, 255));
 		Assert.assertNotNull(zones);
 		Assert.assertEquals(1, zones.size());
 	}
@@ -160,13 +160,27 @@ public class SubnetControllerTests {
 
 	@Test
 	public void i_get_all_should_return_an_array_with_two_elem() {
-		List<Subnet> subnets = IterableUtils.toList(this.controller.getSubnets(infraId));
+		List<Subnet> subnets = IterableUtils.toList(this.controller.getSubnets(infraId, 0, 255));
 		Assert.assertNotNull(subnets);
 		Assert.assertEquals(2, subnets.size());
 	}
 
 	@Test
-	public void j_get_subnet_should_return_second_subnet() {
+	public void j_get_all_should_return_an_array_with_two_elem_with_page() {
+		List<Subnet> subnets = IterableUtils.toList(this.controller.getSubnets(infraId, 0, 1));
+		Assert.assertNotNull(subnets);
+		Assert.assertEquals(1, subnets.size());
+	}
+
+	@Test
+	public void k_get_all_should_return_an_array_with_two_elem_with_null_page() {
+		List<Subnet> subnets = IterableUtils.toList(this.controller.getSubnets(infraId, null, null));
+		Assert.assertNotNull(subnets);
+		Assert.assertEquals(2, subnets.size());
+	}
+
+	@Test
+	public void l_get_subnet_should_return_second_subnet() {
 		Subnet subnet = this.controller.getSubnet(infraId, id2);
 		Assert.assertNotNull(subnet);
 		Assert.assertEquals("Test description 3", subnet.getDescription());
@@ -174,36 +188,36 @@ public class SubnetControllerTests {
 	}
 
 	@Test
-	public void k_delete_subnet_should_work() {
+	public void m_delete_subnet_should_work() {
 		this.controller.deleteSubnet(infraId, id2);
 	}
 
 	@Test
-	public void l_get_subnet_shouldnt_return_subnet() {
+	public void n_get_subnet_shouldnt_return_subnet() {
 		Subnet zone = this.controller.getSubnet(infraId, id2);
 		Assert.assertNull(zone);
 	}
 
 	@Test
-	public void m_delete_subnet_should_work() {
+	public void o_delete_subnet_should_work() {
 		this.controller.deleteSubnet(infraId, id);
 	}
 
 	@Test
-	public void n_get_all_should_return_an_array_with_no_elem() {
-		List<Subnet> zones = IterableUtils.toList(this.controller.getSubnets(infraId));
+	public void p_get_all_should_return_an_array_with_no_elem() {
+		List<Subnet> zones = IterableUtils.toList(this.controller.getSubnets(infraId, 0, 255));
 		Assert.assertNotNull(zones);
 		Assert.assertEquals(0, zones.size());
 	}
 
 	@Test
-	public void o_delete_infra_should_work() {
+	public void q_delete_infra_should_work() {
 		this.infrastructureController.deleteInfrastructure(infraId);
 	}
 
 	@Test
-	public void p_get_all_should_return_an_array_with_two_elem() {
-		List<Infrastructure> infras = IterableUtils.toList(this.infrastructureController.getInfrastructures());
+	public void r_get_all_should_return_an_array_with_two_elem() {
+		List<Infrastructure> infras = IterableUtils.toList(this.infrastructureController.getInfrastructures(0, 255));
 		Assert.assertNotNull(infras);
 		Assert.assertEquals(0, infras.size());
 	}

@@ -25,35 +25,6 @@ package org.bozzo.ipplan.config;
  */
 public final class IpplanConfig {
 
-	public static final String API_PATH = "/api";
-	public static final String INFRAS_PATH = "/infras";
-	public static final String ZONES_PATH = "/zones";
-	public static final String RANGES_PATH = "/ranges";
-	/**
-	 * 
-	 */
-	private IpplanConfig() {
-		// TODO Auto-generated constructor stub
-	}
-	
-	public static String getInfraLink(Integer infraId) {
-		return API_PATH + INFRAS_PATH + "/" + infraId;
-	}
-	
-	public static String getZonesLink(Integer infraId) {
-		return getInfraLink(infraId) + ZONES_PATH;
-	}
-	
-	public static String getZoneLink(Integer infraId, Long zoneId) {
-		return getZonesLink(infraId) + "/" + zoneId;
-	}
-	
-	public static String getRangesLink(Integer infraId, Long zoneId) {
-		return getZoneLink(infraId, zoneId) + RANGES_PATH;
-	}
-	
-	public static String getRangeLink(Integer infraId, Long zoneId, Long rangeIp) {
-		return getRangesLink(infraId, zoneId) + "/" + rangeIp;
-	}
+	public static final Integer DEFAULT_MAX_API_RESULT = 1024;
 
 }

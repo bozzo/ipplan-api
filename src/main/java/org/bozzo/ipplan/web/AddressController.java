@@ -21,16 +21,20 @@ package org.bozzo.ipplan.web;
 
 import javax.validation.constraints.NotNull;
 
+import org.bozzo.ipplan.config.IpplanConfig;
 import org.bozzo.ipplan.domain.dao.AddressRepository;
 import org.bozzo.ipplan.domain.model.Address;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -49,8 +53,10 @@ public class AddressController {
 	private AddressRepository repository;
 
 	@RequestMapping(value = "/", method=RequestMethod.GET)
-	public Iterable<Address> getAddresses(@PathVariable Integer infraId, @PathVariable Long subnetId) {
-		return this.repository.findBySubnetId(subnetId);
+	public Page<Address> getAddresses(@PathVariable Integer infraId, @PathVariable Long subnetId, @RequestParam(required=false) Integer number, @RequestParam(required=false) Integer size) {
+		if (number == null) number=0;
+		if (size == null) size=IpplanConfig.DEFAULT_MAX_API_RESULT;
+		return this.repository.findBySubnetId(subnetId, new PageRequest(number, size));
 	}
 
 	@RequestMapping(value = "/{ip}", method=RequestMethod.GET)

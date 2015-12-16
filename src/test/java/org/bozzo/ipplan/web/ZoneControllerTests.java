@@ -47,14 +47,14 @@ public class ZoneControllerTests {
 
 	@Test
 	public void b_get_all_should_return_an_infra_array_with_one_elem() {
-		List<Infrastructure> infras = IterableUtils.toList(this.infrastructureController.getInfrastructures());
+		List<Infrastructure> infras = IterableUtils.toList(this.infrastructureController.getInfrastructures(0, 255));
 		Assert.assertNotNull(infras);
 		Assert.assertEquals(1, infras.size());
 	}
 
 	@Test
 	public void c_get_all_should_return_empty_array() {
-		List<Zone> zones = IterableUtils.toList(this.controller.getZones(infraId));
+		List<Zone> zones = IterableUtils.toList(this.controller.getZones(infraId, 0, 255));
 		Assert.assertNotNull(zones);
 		Assert.assertTrue(zones.isEmpty());
 	}
@@ -77,7 +77,7 @@ public class ZoneControllerTests {
 
 	@Test
 	public void e_get_all_should_return_an_array_with_one_elem() {
-		List<Zone> zones = IterableUtils.toList(this.controller.getZones(infraId));
+		List<Zone> zones = IterableUtils.toList(this.controller.getZones(infraId, 0, 255));
 		Assert.assertNotNull(zones);
 		Assert.assertEquals(1, zones.size());
 	}
@@ -100,7 +100,7 @@ public class ZoneControllerTests {
 
 	@Test
 	public void g_get_all_should_return_an_array_with_one_elem() {
-		List<Zone> zones = IterableUtils.toList(this.controller.getZones(infraId));
+		List<Zone> zones = IterableUtils.toList(this.controller.getZones(infraId, 0, 255));
 		Assert.assertNotNull(zones);
 		Assert.assertEquals(1, zones.size());
 	}
@@ -123,13 +123,27 @@ public class ZoneControllerTests {
 
 	@Test
 	public void i_get_all_should_return_an_array_with_two_elem() {
-		List<Zone> zones = IterableUtils.toList(this.controller.getZones(infraId));
+		List<Zone> zones = IterableUtils.toList(this.controller.getZones(infraId, 0, 255));
 		Assert.assertNotNull(zones);
 		Assert.assertEquals(2, zones.size());
 	}
 
 	@Test
-	public void j_get_zone_should_return_second_zone() {
+	public void j_get_all_should_return_an_array_with_two_elem_with_page() {
+		List<Zone> zones = IterableUtils.toList(this.controller.getZones(infraId, 0, 1));
+		Assert.assertNotNull(zones);
+		Assert.assertEquals(1, zones.size());
+	}
+
+	@Test
+	public void k_get_all_should_return_an_array_with_two_elem_with_null_page() {
+		List<Zone> zones = IterableUtils.toList(this.controller.getZones(infraId, null, null));
+		Assert.assertNotNull(zones);
+		Assert.assertEquals(2, zones.size());
+	}
+
+	@Test
+	public void l_get_zone_should_return_second_zone() {
 		Zone zone = this.controller.getZone(infraId, id2);
 		Assert.assertNotNull(zone);
 		Assert.assertEquals("Test description 3", zone.getDescription());
@@ -137,36 +151,36 @@ public class ZoneControllerTests {
 	}
 
 	@Test
-	public void k_delete_zone_should_work() {
+	public void m_delete_zone_should_work() {
 		this.controller.deleteZone(infraId, id2);
 	}
 
 	@Test
-	public void l_get_zone_shouldnt_return_zone() {
+	public void n_get_zone_shouldnt_return_zone() {
 		Zone zone = this.controller.getZone(infraId, id2);
 		Assert.assertNull(zone);
 	}
 
 	@Test
-	public void m_delete_zone_should_work() {
+	public void o_delete_zone_should_work() {
 		this.controller.deleteZone(infraId, id);
 	}
 
 	@Test
-	public void n_get_all_should_return_an_array_with_no_elem() {
-		List<Zone> zones = IterableUtils.toList(this.controller.getZones(infraId));
+	public void p_get_all_should_return_an_array_with_no_elem() {
+		List<Zone> zones = IterableUtils.toList(this.controller.getZones(infraId, 0, 255));
 		Assert.assertNotNull(zones);
 		Assert.assertEquals(0, zones.size());
 	}
 
 	@Test
-	public void o_delete_infra_should_work() {
+	public void q_delete_infra_should_work() {
 		this.infrastructureController.deleteInfrastructure(infraId);
 	}
 
 	@Test
-	public void p_get_all_should_return_an_array_with_two_elem() {
-		List<Infrastructure> infras = IterableUtils.toList(this.infrastructureController.getInfrastructures());
+	public void r_get_all_should_return_an_array_with_two_elem() {
+		List<Infrastructure> infras = IterableUtils.toList(this.infrastructureController.getInfrastructures(0, 255));
 		Assert.assertNotNull(infras);
 		Assert.assertEquals(0, infras.size());
 	}

@@ -52,7 +52,7 @@ public class RangeControllerTests {
 
 	@Test
 	public void b_get_all_should_return_an_infra_array_with_one_elem() {
-		List<Infrastructure> infras = IterableUtils.toList(this.infrastructureController.getInfrastructures());
+		List<Infrastructure> infras = IterableUtils.toList(this.infrastructureController.getInfrastructures(0, 255));
 		Assert.assertNotNull(infras);
 		Assert.assertEquals(1, infras.size());
 	}
@@ -74,14 +74,14 @@ public class RangeControllerTests {
 
 	@Test
 	public void d_get_all_should_return_an_array_with_one_elem() {
-		List<Zone> zones = IterableUtils.toList(this.zoneController.getZones(infraId));
+		List<Zone> zones = IterableUtils.toList(this.zoneController.getZones(infraId, 0, 255));
 		Assert.assertNotNull(zones);
 		Assert.assertEquals(1, zones.size());
 	}
 
 	@Test
 	public void e_get_all_should_return_empty_array() {
-		List<Range> ranges = IterableUtils.toList(this.controller.getRanges(infraId, zoneId));
+		List<Range> ranges = IterableUtils.toList(this.controller.getRanges(infraId, zoneId, 0, 255));
 		Assert.assertNotNull(ranges);
 		Assert.assertTrue(ranges.isEmpty());
 	}
@@ -108,7 +108,7 @@ public class RangeControllerTests {
 
 	@Test
 	public void g_get_all_should_return_an_array_with_one_elem() {
-		List<Range> ranges = IterableUtils.toList(this.controller.getRanges(infraId, zoneId));
+		List<Range> ranges = IterableUtils.toList(this.controller.getRanges(infraId, zoneId, 0, 255));
 		Assert.assertNotNull(ranges);
 		Assert.assertEquals(1, ranges.size());
 	}
@@ -135,7 +135,7 @@ public class RangeControllerTests {
 
 	@Test
 	public void i_get_all_should_return_an_array_with_one_elem() {
-		List<Range> ranges = IterableUtils.toList(this.controller.getRanges(infraId, zoneId));
+		List<Range> ranges = IterableUtils.toList(this.controller.getRanges(infraId, zoneId, 0, 255));
 		Assert.assertNotNull(ranges);
 		Assert.assertEquals(1, ranges.size());
 	}
@@ -162,13 +162,27 @@ public class RangeControllerTests {
 
 	@Test
 	public void k_get_all_should_return_an_array_with_two_elem() {
-		List<Range> ranges = IterableUtils.toList(this.controller.getRanges(infraId, zoneId));
+		List<Range> ranges = IterableUtils.toList(this.controller.getRanges(infraId, zoneId, 0, 255));
 		Assert.assertNotNull(ranges);
 		Assert.assertEquals(2, ranges.size());
 	}
 
 	@Test
-	public void l_get_range_should_return_second_range() {
+	public void l_get_all_should_return_an_array_with_two_elem_with_page() {
+		List<Range> ranges = IterableUtils.toList(this.controller.getRanges(infraId, zoneId, 0, 1));
+		Assert.assertNotNull(ranges);
+		Assert.assertEquals(1, ranges.size());
+	}
+
+	@Test
+	public void m_get_all_should_return_an_array_with_two_elem_with_null_page() {
+		List<Range> ranges = IterableUtils.toList(this.controller.getRanges(infraId, zoneId, null, null));
+		Assert.assertNotNull(ranges);
+		Assert.assertEquals(2, ranges.size());
+	}
+
+	@Test
+	public void n_get_range_should_return_second_range() {
 		Range range = this.controller.getRange(infraId, zoneId, id2);
 		Assert.assertNotNull(range);
 		Assert.assertEquals("Test description 3", range.getDescription());
@@ -176,48 +190,48 @@ public class RangeControllerTests {
 	}
 
 	@Test
-	public void m_delete_range_should_work() {
+	public void o_delete_range_should_work() {
 		this.controller.deleteRange(infraId, zoneId, id2);
 	}
 
 	@Test
-	public void n_get_range_shouldnt_return_range() {
+	public void p_get_range_shouldnt_return_range() {
 		Range range = this.controller.getRange(infraId, zoneId, id2);
 		Assert.assertNull(range);
 	}
 
 	@Test
-	public void o_delete_range_should_work() {
+	public void q_delete_range_should_work() {
 		this.controller.deleteRange(infraId, zoneId, id);
 	}
 
 	@Test
-	public void p_get_all_should_return_an_array_with_no_elem() {
-		List<Range> ranges = IterableUtils.toList(this.controller.getRanges(infraId, zoneId));
+	public void r_get_all_should_return_an_array_with_no_elem() {
+		List<Range> ranges = IterableUtils.toList(this.controller.getRanges(infraId, zoneId, 0, 255));
 		Assert.assertNotNull(ranges);
 		Assert.assertEquals(0, ranges.size());
 	}
 
 	@Test
-	public void q_delete_zone_should_work() {
+	public void s_delete_zone_should_work() {
 		this.zoneController.deleteZone(infraId, zoneId);
 	}
 
 	@Test
-	public void r_get_all_should_return_an_array_with_no_elem() {
-		List<Zone> zones = IterableUtils.toList(this.zoneController.getZones(infraId));
+	public void t_get_all_should_return_an_array_with_no_elem() {
+		List<Zone> zones = IterableUtils.toList(this.zoneController.getZones(infraId, 0, 255));
 		Assert.assertNotNull(zones);
 		Assert.assertEquals(0, zones.size());
 	}
 
 	@Test
-	public void s_delete_infra_should_work() {
+	public void u_delete_infra_should_work() {
 		this.infrastructureController.deleteInfrastructure(infraId);
 	}
 
 	@Test
-	public void t_get_all_should_return_an_array_with_two_elem() {
-		List<Infrastructure> infras = IterableUtils.toList(this.infrastructureController.getInfrastructures());
+	public void v_get_all_should_return_an_array_with_two_elem() {
+		List<Infrastructure> infras = IterableUtils.toList(this.infrastructureController.getInfrastructures(0, 255));
 		Assert.assertNotNull(infras);
 		Assert.assertEquals(0, infras.size());
 	}

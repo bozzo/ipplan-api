@@ -3,3 +3,4 @@ target/
 .mvn/
 .classpath
 .settings/
+.README.md.html

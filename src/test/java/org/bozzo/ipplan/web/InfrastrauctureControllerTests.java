@@ -28,7 +28,7 @@ public class InfrastrauctureControllerTests {
 
 	@Test
 	public void a_get_all_should_return_empty_array() {
-		List<Infrastructure> infras = IterableUtils.toList(this.controller.getInfrastructures());
+		List<Infrastructure> infras = IterableUtils.toList(this.controller.getInfrastructures(0, 255));
 		Assert.assertNotNull(infras);
 		Assert.assertTrue(infras.isEmpty());
 	}
@@ -50,7 +50,7 @@ public class InfrastrauctureControllerTests {
 
 	@Test
 	public void c_get_all_should_return_an_array_with_one_elem() {
-		List<Infrastructure> infras = IterableUtils.toList(this.controller.getInfrastructures());
+		List<Infrastructure> infras = IterableUtils.toList(this.controller.getInfrastructures(0, 255));
 		Assert.assertNotNull(infras);
 		Assert.assertEquals(1, infras.size());
 	}
@@ -72,7 +72,7 @@ public class InfrastrauctureControllerTests {
 
 	@Test
 	public void e_get_all_should_return_an_array_with_one_elem() {
-		List<Infrastructure> infras = IterableUtils.toList(this.controller.getInfrastructures());
+		List<Infrastructure> infras = IterableUtils.toList(this.controller.getInfrastructures(0, 255));
 		Assert.assertNotNull(infras);
 		Assert.assertEquals(1, infras.size());
 	}
@@ -94,37 +94,51 @@ public class InfrastrauctureControllerTests {
 
 	@Test
 	public void g_get_all_should_return_an_array_with_two_elem() {
-		List<Infrastructure> infras = IterableUtils.toList(this.controller.getInfrastructures());
+		List<Infrastructure> infras = IterableUtils.toList(this.controller.getInfrastructures(0, 255));
 		Assert.assertNotNull(infras);
 		Assert.assertEquals(2, infras.size());
 	}
 
 	@Test
-	public void h_get_infra_should_return_second_infra() {
+	public void h_get_all_should_return_an_array_with_one_elem_with_page() {
+		List<Infrastructure> infras = IterableUtils.toList(this.controller.getInfrastructures(0, 1));
+		Assert.assertNotNull(infras);
+		Assert.assertEquals(1, infras.size());
+	}
+
+	@Test
+	public void i_get_all_should_return_an_array_with_two_elem_with_null_page() {
+		List<Infrastructure> infras = IterableUtils.toList(this.controller.getInfrastructures(null, null));
+		Assert.assertNotNull(infras);
+		Assert.assertEquals(2, infras.size());
+	}
+
+	@Test
+	public void j_get_infra_should_return_second_infra() {
 		Infrastructure infra = this.controller.getInfrastructure(id2);
 		Assert.assertNotNull(infra);
 		Assert.assertEquals("Test description 3", infra.getDescription());
 	}
 
 	@Test
-	public void i_delete_infra_should_work() {
+	public void k_delete_infra_should_work() {
 		this.controller.deleteInfrastructure(id2);
 	}
 
 	@Test
-	public void j_get_infra_shouldnt_return_infra() {
+	public void l_get_infra_shouldnt_return_infra() {
 		Infrastructure infra = this.controller.getInfrastructure(id2);
 		Assert.assertNull(infra);
 	}
 
 	@Test
-	public void k_delete_infra_should_work() {
+	public void m_delete_infra_should_work() {
 		this.controller.deleteInfrastructure(id);
 	}
 
 	@Test
-	public void l_get_all_should_return_an_array_with_two_elem() {
-		List<Infrastructure> infras = IterableUtils.toList(this.controller.getInfrastructures());
+	public void n_get_all_should_return_an_array_with_two_elem() {
+		List<Infrastructure> infras = IterableUtils.toList(this.controller.getInfrastructures(0, 255));
 		Assert.assertNotNull(infras);
 		Assert.assertEquals(0, infras.size());
 	}

@@ -22,6 +22,8 @@ package org.bozzo.ipplan.domain.dao;
 import javax.transaction.Transactional;
 
 import org.bozzo.ipplan.domain.model.Zone;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
@@ -33,7 +35,7 @@ import org.springframework.stereotype.Repository;
 @Transactional
 public interface ZoneRepository extends PagingAndSortingRepository<Zone, Long> {
 
-	public Iterable<Zone> findByInfraId(Integer infraId);
+	public Page<Zone> findByInfraId(Integer infraId, Pageable pageable);
 
 	public Zone findByInfraIdAndId(Integer infraId, Long id);
 

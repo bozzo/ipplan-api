@@ -22,6 +22,8 @@ package org.bozzo.ipplan.domain.dao;
 import javax.transaction.Transactional;
 
 import org.bozzo.ipplan.domain.model.Address;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
@@ -33,7 +35,7 @@ import org.springframework.stereotype.Repository;
 @Transactional
 public interface AddressRepository extends PagingAndSortingRepository<Address, Long> {
 
-	public Iterable<Address> findBySubnetId(Long subnetId);
+	public Page<Address> findBySubnetId(Long subnetId, Pageable pageable);
 
 	public Address findBySubnetIdAndIp(Long zoneId, Long ip);
 

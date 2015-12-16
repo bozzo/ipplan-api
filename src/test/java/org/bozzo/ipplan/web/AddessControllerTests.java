@@ -53,7 +53,7 @@ public class AddessControllerTests {
 
 	@Test
 	public void b_get_all_should_return_an_infra_array_with_one_elem() {
-		List<Infrastructure> infras = IterableUtils.toList(this.infrastructureController.getInfrastructures());
+		List<Infrastructure> infras = IterableUtils.toList(this.infrastructureController.getInfrastructures(0, 255));
 		Assert.assertNotNull(infras);
 		Assert.assertEquals(1, infras.size());
 	}
@@ -88,14 +88,14 @@ public class AddessControllerTests {
 
 	@Test
 	public void d_get_all_should_return_an_array_with_one_elem() {
-		List<Subnet> subnets = IterableUtils.toList(this.subnetController.getSubnets(infraId));
+		List<Subnet> subnets = IterableUtils.toList(this.subnetController.getSubnets(infraId, 0, 255));
 		Assert.assertNotNull(subnets);
 		Assert.assertEquals(1, subnets.size());
 	}
 
 	@Test
 	public void e_get_all_should_return_empty_array() {
-		List<Address> addresses = IterableUtils.toList(this.controller.getAddresses(infraId, subnetId));
+		List<Address> addresses = IterableUtils.toList(this.controller.getAddresses(infraId, subnetId, 0, 255));
 		Assert.assertNotNull(addresses);
 		Assert.assertTrue(addresses.isEmpty());
 	}
@@ -134,7 +134,7 @@ public class AddessControllerTests {
 
 	@Test
 	public void g_get_all_should_return_an_array_with_one_elem() {
-		List<Address> addresses = IterableUtils.toList(this.controller.getAddresses(infraId, subnetId));
+		List<Address> addresses = IterableUtils.toList(this.controller.getAddresses(infraId, subnetId, 0, 255));
 		Assert.assertNotNull(addresses);
 		Assert.assertEquals(1, addresses.size());
 	}
@@ -172,7 +172,7 @@ public class AddessControllerTests {
 
 	@Test
 	public void i_get_all_should_return_an_array_with_one_elem() {
-		List<Address> addresses = IterableUtils.toList(this.controller.getAddresses(infraId, subnetId));
+		List<Address> addresses = IterableUtils.toList(this.controller.getAddresses(infraId, subnetId, 0, 255));
 		Assert.assertNotNull(addresses);
 		Assert.assertEquals(1, addresses.size());
 	}
@@ -211,13 +211,27 @@ public class AddessControllerTests {
 
 	@Test
 	public void k_get_all_should_return_an_array_with_two_elem() {
-		List<Address> addresses = IterableUtils.toList(this.controller.getAddresses(infraId, subnetId));
+		List<Address> addresses = IterableUtils.toList(this.controller.getAddresses(infraId, subnetId, 0, 255));
 		Assert.assertNotNull(addresses);
 		Assert.assertEquals(2, addresses.size());
 	}
 
 	@Test
-	public void l_get_address_should_return_second_address() {
+	public void l_get_all_should_return_an_array_with_two_elem_with_page() {
+		List<Address> addresses = IterableUtils.toList(this.controller.getAddresses(infraId, subnetId, 0, 1));
+		Assert.assertNotNull(addresses);
+		Assert.assertEquals(1, addresses.size());
+	}
+
+	@Test
+	public void m_get_all_should_return_an_array_with_two_elem_with_null_page() {
+		List<Address> addresses = IterableUtils.toList(this.controller.getAddresses(infraId, subnetId, null, null));
+		Assert.assertNotNull(addresses);
+		Assert.assertEquals(2, addresses.size());
+	}
+
+	@Test
+	public void n_get_address_should_return_second_address() {
 		Address address = this.controller.getAddress(infraId, subnetId, id2);
 		Assert.assertNotNull(address);
 		Assert.assertEquals("Test description 3", address.getDescription());
@@ -225,48 +239,48 @@ public class AddessControllerTests {
 	}
 
 	@Test
-	public void m_delete_address_should_work() {
+	public void o_delete_address_should_work() {
 		this.controller.deleteAddress(infraId, subnetId, id2);
 	}
 
 	@Test
-	public void n_get_address_shouldnt_return_address() {
+	public void p_get_address_shouldnt_return_address() {
 		Address address = this.controller.getAddress(infraId, subnetId, id2);
 		Assert.assertNull(address);
 	}
 
 	@Test
-	public void o_delete_address_should_work() {
+	public void q_delete_address_should_work() {
 		this.controller.deleteAddress(infraId, subnetId, id);
 	}
 
 	@Test
-	public void p_get_all_should_return_an_array_with_no_elem() {
-		List<Address> addresses = IterableUtils.toList(this.controller.getAddresses(infraId, subnetId));
+	public void r_get_all_should_return_an_array_with_no_elem() {
+		List<Address> addresses = IterableUtils.toList(this.controller.getAddresses(infraId, subnetId, 0, 255));
 		Assert.assertNotNull(addresses);
 		Assert.assertEquals(0, addresses.size());
 	}
 
 	@Test
-	public void m_delete_subnet_should_work() {
+	public void s_delete_subnet_should_work() {
 		this.subnetController.deleteSubnet(infraId, subnetId);
 	}
 
 	@Test
-	public void n_get_all_should_return_an_array_with_no_elem() {
-		List<Subnet> zones = IterableUtils.toList(this.subnetController.getSubnets(infraId));
+	public void t_get_all_should_return_an_array_with_no_elem() {
+		List<Subnet> zones = IterableUtils.toList(this.subnetController.getSubnets(infraId, 0, 255));
 		Assert.assertNotNull(zones);
 		Assert.assertEquals(0, zones.size());
 	}
 
 	@Test
-	public void s_delete_infra_should_work() {
+	public void u_delete_infra_should_work() {
 		this.infrastructureController.deleteInfrastructure(infraId);
 	}
 
 	@Test
-	public void t_get_all_should_return_an_array_with_two_elem() {
-		List<Infrastructure> infras = IterableUtils.toList(this.infrastructureController.getInfrastructures());
+	public void v_get_all_should_return_an_array_with_two_elem() {
+		List<Infrastructure> infras = IterableUtils.toList(this.infrastructureController.getInfrastructures(0, 255));
 		Assert.assertNotNull(infras);
 		Assert.assertEquals(0, infras.size());
 	}
