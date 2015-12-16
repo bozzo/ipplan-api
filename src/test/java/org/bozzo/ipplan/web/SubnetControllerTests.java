@@ -136,7 +136,7 @@ public class SubnetControllerTests {
 		subnet.setDescription("Test description 3");
 		subnet.setInfraId(infraId);
 		subnet.setGroup("group");
-		subnet.setIp(0xC1A8000L);
+		subnet.setIp(0xC1A80000L);
 		subnet.setSize(65535L);
 		subnet.setLastModifed(new Date());
 		subnet.setOptionId(1L);
