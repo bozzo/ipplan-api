@@ -21,20 +21,25 @@ package org.bozzo.ipplan.web;
 
 import javax.validation.constraints.NotNull;
 
-import org.bozzo.ipplan.config.IpplanConfig;
 import org.bozzo.ipplan.domain.dao.AddressRepository;
 import org.bozzo.ipplan.domain.model.Address;
+import org.bozzo.ipplan.domain.model.ui.AddressResource;
+import org.bozzo.ipplan.web.assembler.AddressResourceAssembler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.PagedResources;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -51,32 +56,53 @@ public class AddressController {
 	
 	@Autowired
 	private AddressRepository repository;
+	
+	@Autowired
+	private AddressResourceAssembler assembler;
 
-	@RequestMapping(value = "/", method=RequestMethod.GET)
-	public Page<Address> getAddresses(@PathVariable Integer infraId, @PathVariable Long subnetId, @RequestParam(required=false) Integer number, @RequestParam(required=false) Integer size) {
-		if (number == null) number=0;
-		if (size == null) size=IpplanConfig.DEFAULT_MAX_API_RESULT;
-		return this.repository.findBySubnetId(subnetId, new PageRequest(number, size));
+	@RequestMapping(value = "/", method=RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
+	public PagedResources<AddressResource> getAddresses(@PathVariable Integer infraId, @PathVariable Long subnetId, Pageable pageable, PagedResourcesAssembler<Address> pagedAssembler) {
+		Page<Address> addresses = this.repository.findBySubnetId(subnetId, pageable);
+		for (Address address : addresses) {
+			address.setInfraId(infraId);
+		}
+		return pagedAssembler.toResource(addresses, assembler);
 	}
 
 	@RequestMapping(value = "/{ip}", method=RequestMethod.GET)
-	public Address getAddress(@PathVariable Integer infraId, @PathVariable Long subnetId, @PathVariable Long ip) {
-		return this.repository.findBySubnetIdAndIp(subnetId, ip);
+	public HttpEntity<AddressResource> getAddress(@PathVariable Integer infraId, @PathVariable Long subnetId, @PathVariable Long ip) {
+		Address address = this.repository.findBySubnetIdAndIp(subnetId, ip);
+		if (address == null) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		address.setInfraId(infraId);
+		return new ResponseEntity<>(assembler.toResource(address), HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/", method=RequestMethod.POST)
-	public Address addAddress(@PathVariable Integer infraId, @PathVariable Long subnetId, @RequestBody @NotNull Address address) {
+	public HttpEntity<AddressResource> addAddress(@PathVariable Integer infraId, @PathVariable Long subnetId, @RequestBody @NotNull Address address) {
+		Preconditions.checkArgument(infraId.equals(address.getInfraId()));
 		Preconditions.checkArgument(subnetId.equals(address.getSubnetId()));
 		LOGGER.info("add new address: {}", address);
-		return this.repository.save(address);
+		Address ip = repository.save(address);
+		if (ip == null) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		ip.setInfraId(infraId);
+		return new ResponseEntity<>(assembler.toResource(ip), HttpStatus.CREATED);
 	}
 
 	@RequestMapping(value = "/{ip}", method=RequestMethod.PUT)
-	public Address updateAddress(@PathVariable Integer infraId, @PathVariable Long subnetId, @PathVariable Long ip, @RequestBody @NotNull Address address) {
+	public HttpEntity<AddressResource> updateAddress(@PathVariable Integer infraId, @PathVariable Long subnetId, @PathVariable Long ip, @RequestBody @NotNull Address address) {
 		Preconditions.checkArgument(subnetId.equals(address.getSubnetId()));
 		Preconditions.checkArgument(ip.equals(address.getIp()));
 		LOGGER.info("update address: {}", address);
-		return this.repository.save(address);
+		Address addr = repository.save(address);
+		if (addr == null) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		addr.setInfraId(infraId);
+		return new ResponseEntity<>(assembler.toResource(addr), HttpStatus.CREATED);
 	}
 
 	@RequestMapping(value = "/{addressId}", method=RequestMethod.DELETE)

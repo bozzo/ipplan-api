@@ -27,13 +27,15 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.springframework.hateoas.Identifiable;
+
 /**
  * @author boris
  *
  */
 @Entity
 @Table(name="customer")
-public class Infrastructure implements Serializable {
+public class Infrastructure implements Serializable, Identifiable<Integer> {
 
 	/**
 	 * 

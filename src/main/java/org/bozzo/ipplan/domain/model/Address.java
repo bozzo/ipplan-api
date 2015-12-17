@@ -26,6 +26,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  * @author boris
@@ -43,6 +44,9 @@ public class Address implements Serializable {
 	@Id
 	@Column(name="ipaddr", nullable=false)
 	private Long ip;
+	
+	@Transient
+	private Integer infraId;
 
 	@Column(name="baseindex", nullable=false)
 	private Long subnetId;
@@ -86,6 +90,20 @@ public class Address implements Serializable {
 	 */
 	public void setIp(Long ip) {
 		this.ip = ip;
+	}
+
+	/**
+	 * @return the infraId
+	 */
+	public Integer getInfraId() {
+		return infraId;
+	}
+
+	/**
+	 * @param infraId the infraId to set
+	 */
+	public void setInfraId(Integer infraId) {
+		this.infraId = infraId;
 	}
 
 	/**

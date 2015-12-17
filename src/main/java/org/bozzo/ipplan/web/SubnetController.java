@@ -21,20 +21,25 @@ package org.bozzo.ipplan.web;
 
 import javax.validation.constraints.NotNull;
 
-import org.bozzo.ipplan.config.IpplanConfig;
 import org.bozzo.ipplan.domain.dao.SubnetRepository;
 import org.bozzo.ipplan.domain.model.Subnet;
+import org.bozzo.ipplan.domain.model.ui.SubnetResource;
+import org.bozzo.ipplan.web.assembler.SubnetResourceAssembler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.PagedResources;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -51,32 +56,46 @@ public class SubnetController {
 	
 	@Autowired
 	private SubnetRepository repository;
+	
+	@Autowired
+	private SubnetResourceAssembler assembler;
 
-	@RequestMapping(value = "/", method=RequestMethod.GET)
-	public Page<Subnet> getSubnets(@PathVariable @NotNull Integer infraId, @RequestParam(required=false) Integer number, @RequestParam(required=false) Integer size) {
-		if (number == null) number=0;
-		if (size == null) size=IpplanConfig.DEFAULT_MAX_API_RESULT;
-		return repository.findByInfraId(infraId, new PageRequest(number, size));
+	@RequestMapping(value = "/", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
+	public PagedResources<SubnetResource> getSubnets(@PathVariable @NotNull Integer infraId, Pageable pageable, PagedResourcesAssembler<Subnet> pagedAssembler) {
+		Page<Subnet> subnets = this.repository.findByInfraId(infraId, pageable);
+		return pagedAssembler.toResource(subnets, assembler);
 	}
 
-	@RequestMapping(value = "/{subnetId}", method=RequestMethod.GET)
-	public Subnet getSubnet(@PathVariable Integer infraId, @PathVariable Long subnetId) {
-		return repository.findByInfraIdAndId(infraId, subnetId);
+	@RequestMapping(value = "/{subnetId}", method = RequestMethod.GET)
+	public HttpEntity<SubnetResource> getSubnet(@PathVariable @NotNull Integer infraId, @PathVariable Long subnetId) {
+		Subnet subnet = repository.findByInfraIdAndId(infraId, subnetId);
+		if (subnet == null) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<>(assembler.toResource(subnet), HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "/", method=RequestMethod.POST)
-	public Subnet addSubnet(@PathVariable Integer infraId, @RequestBody @NotNull Subnet subnet) {
+	@RequestMapping(value = "/", method = RequestMethod.POST)
+	public HttpEntity<SubnetResource> addSubnet(@PathVariable @NotNull Integer infraId, @RequestBody @NotNull Subnet subnet) {
 		Preconditions.checkArgument(infraId.equals(subnet.getInfraId()));
 		LOGGER.info("add new subnet: {}", subnet);
-		return repository.save(subnet);
+		Subnet sub = repository.save(subnet);
+		if (sub == null) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<>(assembler.toResource(sub), HttpStatus.CREATED);
 	}
 
-	@RequestMapping(value = "/{subnetId}", method=RequestMethod.PUT)
-	public Subnet updateSubnet(@PathVariable Integer infraId, @PathVariable Long subnetId, @RequestBody @NotNull Subnet subnet) {
+	@RequestMapping(value = "/{subnetId}", method = RequestMethod.PUT)
+	public HttpEntity<SubnetResource> updateSubnet(@PathVariable Integer infraId, @PathVariable Long subnetId, @RequestBody @NotNull Subnet subnet) {
 		Preconditions.checkArgument(infraId.equals(subnet.getInfraId()));
 		Preconditions.checkArgument(subnetId.equals(subnet.getId()));
 		LOGGER.info("update subnet: {}", subnet);
-		return repository.save(subnet);
+		Subnet sub = repository.save(subnet);
+		if (sub == null) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<>(assembler.toResource(sub), HttpStatus.CREATED);
 	}
 
 	@RequestMapping(value = "/{subnetId}", method=RequestMethod.DELETE)

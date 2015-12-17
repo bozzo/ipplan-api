@@ -7,6 +7,9 @@ import org.bozzo.ipplan.IpplanApiApplication;
 import org.bozzo.ipplan.domain.model.Infrastructure;
 import org.bozzo.ipplan.domain.model.Range;
 import org.bozzo.ipplan.domain.model.Zone;
+import org.bozzo.ipplan.domain.model.ui.InfrastructureResource;
+import org.bozzo.ipplan.domain.model.ui.RangeResource;
+import org.bozzo.ipplan.domain.model.ui.ZoneResource;
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -14,6 +17,10 @@ import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.web.HateoasPageableHandlerMethodArgumentResolver;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.http.HttpEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
@@ -26,6 +33,8 @@ public class RangeControllerTests {
 	private static long id, id2;
 	private static int infraId;
 	private static long zoneId;
+	
+	HateoasPageableHandlerMethodArgumentResolver resolver = new HateoasPageableHandlerMethodArgumentResolver();
 	
 	@Autowired
 	private InfrastructureController infrastructureController;
@@ -41,18 +50,21 @@ public class RangeControllerTests {
 		Infrastructure infra = new Infrastructure();
 		infra.setDescription("Test description");
 		infra.setGroup("group");
-		Infrastructure infraReturned = this.infrastructureController.addInfrastructure(infra);
+		HttpEntity<InfrastructureResource> resp = this.infrastructureController.addInfrastructure(infra);
+		Assert.assertNotNull(resp);
+		Assert.assertNotNull(resp.getBody());
+		InfrastructureResource infraReturned = resp.getBody();
 		Assert.assertNotNull(infraReturned);
 		Assert.assertNotNull(infraReturned.getId());
 		Assert.assertEquals(infra.getDescription(), infraReturned.getDescription());
 		Assert.assertEquals(infra.getCrm(), infraReturned.getCrm());
 		Assert.assertEquals(infra.getGroup(), infraReturned.getGroup());
-		infraId = infraReturned.getId();
+		infraId = infraReturned.getInfraId();
 	}
 
 	@Test
 	public void b_get_all_should_return_an_infra_array_with_one_elem() {
-		List<Infrastructure> infras = IterableUtils.toList(this.infrastructureController.getInfrastructures(0, 255));
+		List<InfrastructureResource> infras = IterableUtils.toList(this.infrastructureController.getInfrastructures(null, new PagedResourcesAssembler<Infrastructure>(resolver, null)));
 		Assert.assertNotNull(infras);
 		Assert.assertEquals(1, infras.size());
 	}
@@ -63,25 +75,28 @@ public class RangeControllerTests {
 		zone.setDescription("Test description");
 		zone.setInfraId(infraId);
 		zone.setIp(0xC0A80001L);
-		Zone zoneReturned = this.zoneController.addZone(infraId, zone);
+		HttpEntity<ZoneResource> resp = this.zoneController.addZone(infraId, zone);
+		Assert.assertNotNull(resp);
+		Assert.assertNotNull(resp.getBody());
+		ZoneResource zoneReturned = resp.getBody();
 		Assert.assertNotNull(zoneReturned);
 		Assert.assertNotNull(zoneReturned.getId());
 		Assert.assertEquals(zone.getDescription(), zoneReturned.getDescription());
 		Assert.assertEquals(zone.getInfraId(), zoneReturned.getInfraId());
 		Assert.assertEquals(zone.getIp(), zoneReturned.getIp());
-		zoneId = zoneReturned.getId();
+		zoneId = zoneReturned.getZoneId();
 	}
 
 	@Test
 	public void d_get_all_should_return_an_array_with_one_elem() {
-		List<Zone> zones = IterableUtils.toList(this.zoneController.getZones(infraId, 0, 255));
+		List<ZoneResource> zones = IterableUtils.toList(this.zoneController.getZones(infraId, null, new PagedResourcesAssembler<Zone>(resolver, null)));
 		Assert.assertNotNull(zones);
 		Assert.assertEquals(1, zones.size());
 	}
 
 	@Test
 	public void e_get_all_should_return_empty_array() {
-		List<Range> ranges = IterableUtils.toList(this.controller.getRanges(infraId, zoneId, 0, 255));
+		List<RangeResource> ranges = IterableUtils.toList(this.controller.getRanges(infraId, zoneId, null, new PagedResourcesAssembler<Range>(resolver, null)));
 		Assert.assertNotNull(ranges);
 		Assert.assertTrue(ranges.isEmpty());
 	}
@@ -94,7 +109,10 @@ public class RangeControllerTests {
 		range.setZoneId(zoneId);
 		range.setSize(65535L);
 		range.setIp(0xC0A80001L);
-		Range rangeReturned = this.controller.addRange(infraId, zoneId, range);
+		HttpEntity<RangeResource> resp = this.controller.addRange(infraId, zoneId, range);
+		Assert.assertNotNull(resp);
+		Assert.assertNotNull(resp.getBody());
+		RangeResource rangeReturned = resp.getBody();
 		Assert.assertNotNull(rangeReturned);
 		Assert.assertNotNull(rangeReturned.getId());
 		Assert.assertEquals(range.getDescription(), rangeReturned.getDescription());
@@ -102,13 +120,13 @@ public class RangeControllerTests {
 		Assert.assertEquals(range.getZoneId(), rangeReturned.getZoneId());
 		Assert.assertEquals(range.getIp(), rangeReturned.getIp());
 		Assert.assertEquals(range.getSize(), rangeReturned.getSize());
-		Assert.assertEquals(range, rangeReturned);
-		id = rangeReturned.getId();
+		Assert.assertEquals(3, rangeReturned.getLinks().size());
+		id = rangeReturned.getRangeId();
 	}
 
 	@Test
 	public void g_get_all_should_return_an_array_with_one_elem() {
-		List<Range> ranges = IterableUtils.toList(this.controller.getRanges(infraId, zoneId, 0, 255));
+		List<RangeResource> ranges = IterableUtils.toList(this.controller.getRanges(infraId, zoneId, null, new PagedResourcesAssembler<Range>(resolver, null)));
 		Assert.assertNotNull(ranges);
 		Assert.assertEquals(1, ranges.size());
 	}
@@ -122,7 +140,10 @@ public class RangeControllerTests {
 		range.setId(id);
 		range.setSize(65535L);
 		range.setIp(0xC0A80001L);
-		Range rangeReturned = this.controller.updateRange(infraId, zoneId, id, range);
+		HttpEntity<RangeResource> resp = this.controller.updateRange(infraId, zoneId, id, range);
+		Assert.assertNotNull(resp);
+		Assert.assertNotNull(resp.getBody());
+		RangeResource rangeReturned = resp.getBody();
 		Assert.assertNotNull(rangeReturned);
 		Assert.assertNotNull(rangeReturned.getId());
 		Assert.assertEquals(range.getDescription(), rangeReturned.getDescription());
@@ -130,12 +151,12 @@ public class RangeControllerTests {
 		Assert.assertEquals(range.getZoneId(), rangeReturned.getZoneId());
 		Assert.assertEquals(range.getIp(), rangeReturned.getIp());
 		Assert.assertEquals(range.getSize(), rangeReturned.getSize());
-		Assert.assertEquals(range, rangeReturned);
+		Assert.assertEquals(3, rangeReturned.getLinks().size());
 	}
 
 	@Test
 	public void i_get_all_should_return_an_array_with_one_elem() {
-		List<Range> ranges = IterableUtils.toList(this.controller.getRanges(infraId, zoneId, 0, 255));
+		List<RangeResource> ranges = IterableUtils.toList(this.controller.getRanges(infraId, zoneId, null, new PagedResourcesAssembler<Range>(resolver, null)));
 		Assert.assertNotNull(ranges);
 		Assert.assertEquals(1, ranges.size());
 	}
@@ -148,7 +169,10 @@ public class RangeControllerTests {
 		range.setZoneId(zoneId);
 		range.setSize(65535L);
 		range.setIp(0xC0A80002L);
-		Range rangeReturned = this.controller.addRange(infraId, zoneId, range);
+		HttpEntity<RangeResource> resp = this.controller.addRange(infraId, zoneId, range);
+		Assert.assertNotNull(resp);
+		Assert.assertNotNull(resp.getBody());
+		RangeResource rangeReturned = resp.getBody();
 		Assert.assertNotNull(rangeReturned);
 		Assert.assertNotNull(rangeReturned.getId());
 		Assert.assertEquals(range.getDescription(), rangeReturned.getDescription());
@@ -156,37 +180,40 @@ public class RangeControllerTests {
 		Assert.assertEquals(range.getZoneId(), rangeReturned.getZoneId());
 		Assert.assertEquals(range.getIp(), rangeReturned.getIp());
 		Assert.assertEquals(range.getSize(), rangeReturned.getSize());
-		Assert.assertEquals(range, rangeReturned);
-		id2 = rangeReturned.getId();
+		Assert.assertEquals(3, rangeReturned.getLinks().size());
+		id2 = rangeReturned.getRangeId();
 	}
 
 	@Test
 	public void k_get_all_should_return_an_array_with_two_elem() {
-		List<Range> ranges = IterableUtils.toList(this.controller.getRanges(infraId, zoneId, 0, 255));
+		List<RangeResource> ranges = IterableUtils.toList(this.controller.getRanges(infraId, zoneId, null, new PagedResourcesAssembler<Range>(resolver, null)));
 		Assert.assertNotNull(ranges);
 		Assert.assertEquals(2, ranges.size());
 	}
 
 	@Test
 	public void l_get_all_should_return_an_array_with_two_elem_with_page() {
-		List<Range> ranges = IterableUtils.toList(this.controller.getRanges(infraId, zoneId, 0, 1));
+		List<RangeResource> ranges = IterableUtils.toList(this.controller.getRanges(infraId, zoneId, new PageRequest(0, 1), new PagedResourcesAssembler<Range>(resolver, null)));
 		Assert.assertNotNull(ranges);
 		Assert.assertEquals(1, ranges.size());
 	}
 
 	@Test
 	public void m_get_all_should_return_an_array_with_two_elem_with_null_page() {
-		List<Range> ranges = IterableUtils.toList(this.controller.getRanges(infraId, zoneId, null, null));
+		List<RangeResource> ranges = IterableUtils.toList(this.controller.getRanges(infraId, zoneId, null, new PagedResourcesAssembler<Range>(resolver, null)));
 		Assert.assertNotNull(ranges);
 		Assert.assertEquals(2, ranges.size());
 	}
 
 	@Test
 	public void n_get_range_should_return_second_range() {
-		Range range = this.controller.getRange(infraId, zoneId, id2);
-		Assert.assertNotNull(range);
+		HttpEntity<RangeResource> resp = this.controller.getRange(infraId, zoneId, id2);
+		Assert.assertNotNull(resp);
+		Assert.assertNotNull(resp.getBody());
+		RangeResource range = resp.getBody();
 		Assert.assertEquals("Test description 3", range.getDescription());
 		Assert.assertEquals(0xC0A80002L, (long) range.getIp());
+		Assert.assertEquals(3, range.getLinks().size());
 	}
 
 	@Test
@@ -196,7 +223,10 @@ public class RangeControllerTests {
 
 	@Test
 	public void p_get_range_shouldnt_return_range() {
-		Range range = this.controller.getRange(infraId, zoneId, id2);
+		HttpEntity<RangeResource> resp = this.controller.getRange(infraId, zoneId, id2);
+		Assert.assertNotNull(resp);
+		Assert.assertNull(resp.getBody());
+		RangeResource range = resp.getBody();
 		Assert.assertNull(range);
 	}
 
@@ -207,7 +237,7 @@ public class RangeControllerTests {
 
 	@Test
 	public void r_get_all_should_return_an_array_with_no_elem() {
-		List<Range> ranges = IterableUtils.toList(this.controller.getRanges(infraId, zoneId, 0, 255));
+		List<RangeResource> ranges = IterableUtils.toList(this.controller.getRanges(infraId, zoneId, null, new PagedResourcesAssembler<Range>(resolver, null)));
 		Assert.assertNotNull(ranges);
 		Assert.assertEquals(0, ranges.size());
 	}
@@ -219,7 +249,7 @@ public class RangeControllerTests {
 
 	@Test
 	public void t_get_all_should_return_an_array_with_no_elem() {
-		List<Zone> zones = IterableUtils.toList(this.zoneController.getZones(infraId, 0, 255));
+		List<ZoneResource> zones = IterableUtils.toList(this.zoneController.getZones(infraId, null, new PagedResourcesAssembler<Zone>(resolver, null)));
 		Assert.assertNotNull(zones);
 		Assert.assertEquals(0, zones.size());
 	}
@@ -231,7 +261,7 @@ public class RangeControllerTests {
 
 	@Test
 	public void v_get_all_should_return_an_array_with_two_elem() {
-		List<Infrastructure> infras = IterableUtils.toList(this.infrastructureController.getInfrastructures(0, 255));
+		List<InfrastructureResource> infras = IterableUtils.toList(this.infrastructureController.getInfrastructures(null, new PagedResourcesAssembler<Infrastructure>(resolver, null)));
 		Assert.assertNotNull(infras);
 		Assert.assertEquals(0, infras.size());
 	}

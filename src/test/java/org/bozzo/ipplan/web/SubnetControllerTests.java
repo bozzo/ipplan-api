@@ -7,6 +7,8 @@ import org.apache.commons.collections4.IterableUtils;
 import org.bozzo.ipplan.IpplanApiApplication;
 import org.bozzo.ipplan.domain.model.Infrastructure;
 import org.bozzo.ipplan.domain.model.Subnet;
+import org.bozzo.ipplan.domain.model.ui.InfrastructureResource;
+import org.bozzo.ipplan.domain.model.ui.SubnetResource;
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -14,6 +16,10 @@ import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.web.HateoasPageableHandlerMethodArgumentResolver;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.http.HttpEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
@@ -26,6 +32,8 @@ public class SubnetControllerTests {
 	private static long id, id2;
 	private static int infraId;
 	
+	HateoasPageableHandlerMethodArgumentResolver resolver = new HateoasPageableHandlerMethodArgumentResolver();
+	
 	@Autowired
 	private InfrastructureController infrastructureController;
 	
@@ -37,25 +45,28 @@ public class SubnetControllerTests {
 		Infrastructure infra = new Infrastructure();
 		infra.setDescription("Test description");
 		infra.setGroup("group");
-		Infrastructure infraReturned = this.infrastructureController.addInfrastructure(infra);
+		HttpEntity<InfrastructureResource> resp = this.infrastructureController.addInfrastructure(infra);
+		Assert.assertNotNull(resp);
+		Assert.assertNotNull(resp.getBody());
+		InfrastructureResource infraReturned = resp.getBody();
 		Assert.assertNotNull(infraReturned);
 		Assert.assertNotNull(infraReturned.getId());
 		Assert.assertEquals(infra.getDescription(), infraReturned.getDescription());
 		Assert.assertEquals(infra.getCrm(), infraReturned.getCrm());
 		Assert.assertEquals(infra.getGroup(), infraReturned.getGroup());
-		infraId = infraReturned.getId();
+		infraId = infraReturned.getInfraId();
 	}
 
 	@Test
 	public void b_get_all_should_return_an_infra_array_with_one_elem() {
-		List<Infrastructure> infras = IterableUtils.toList(this.infrastructureController.getInfrastructures(0, 255));
+		List<InfrastructureResource> infras = IterableUtils.toList(this.infrastructureController.getInfrastructures(null, new PagedResourcesAssembler<Infrastructure>(resolver, null)));
 		Assert.assertNotNull(infras);
 		Assert.assertEquals(1, infras.size());
 	}
 
 	@Test
 	public void c_get_all_should_return_empty_array() {
-		List<Subnet> subnets = IterableUtils.toList(this.controller.getSubnets(infraId, 0, 255));
+		List<SubnetResource> subnets = IterableUtils.toList(this.controller.getSubnets(infraId, null, new PagedResourcesAssembler<Subnet>(resolver, null)));
 		Assert.assertNotNull(subnets);
 		Assert.assertTrue(subnets.isEmpty());
 	}
@@ -72,7 +83,10 @@ public class SubnetControllerTests {
 		subnet.setOptionId(1L);
 		subnet.setSwipMod(new Date());
 		subnet.setUserId("user");
-		Subnet subnetReturned = this.controller.addSubnet(infraId, subnet);
+		HttpEntity<SubnetResource> resp = this.controller.addSubnet(infraId, subnet);
+		Assert.assertNotNull(resp);
+		Assert.assertNotNull(resp.getBody());
+		SubnetResource subnetReturned = resp.getBody();
 		Assert.assertNotNull(subnetReturned);
 		Assert.assertNotNull(subnetReturned.getId());
 		Assert.assertEquals(subnet.getDescription(), subnetReturned.getDescription());
@@ -84,13 +98,13 @@ public class SubnetControllerTests {
 		Assert.assertEquals(subnet.getOptionId(), subnetReturned.getOptionId());
 		Assert.assertEquals(subnet.getSwipMod(), subnetReturned.getSwipMod());
 		Assert.assertEquals(subnet.getUserId(), subnetReturned.getUserId());
-		Assert.assertEquals(subnet, subnetReturned);
-		id = subnetReturned.getId();
+		Assert.assertEquals(3, subnetReturned.getLinks().size());
+		id = subnetReturned.getSubnetId();
 	}
 
 	@Test
 	public void e_get_all_should_return_an_array_with_one_elem() {
-		List<Subnet> subnets = IterableUtils.toList(this.controller.getSubnets(infraId, 0, 255));
+		List<SubnetResource> subnets = IterableUtils.toList(this.controller.getSubnets(infraId, null, new PagedResourcesAssembler<Subnet>(resolver, null)));
 		Assert.assertNotNull(subnets);
 		Assert.assertEquals(1, subnets.size());
 	}
@@ -108,7 +122,10 @@ public class SubnetControllerTests {
 		subnet.setSwipMod(new Date());
 		subnet.setUserId("user");
 		subnet.setId(id);
-		Subnet subnetReturned = this.controller.updateSubnet(infraId, id, subnet);
+		HttpEntity<SubnetResource> resp = this.controller.updateSubnet(infraId, id, subnet);
+		Assert.assertNotNull(resp);
+		Assert.assertNotNull(resp.getBody());
+		SubnetResource subnetReturned = resp.getBody();
 		Assert.assertNotNull(subnetReturned);
 		Assert.assertNotNull(subnetReturned.getId());
 		Assert.assertEquals(subnet.getDescription(), subnetReturned.getDescription());
@@ -120,14 +137,14 @@ public class SubnetControllerTests {
 		Assert.assertEquals(subnet.getOptionId(), subnetReturned.getOptionId());
 		Assert.assertEquals(subnet.getSwipMod(), subnetReturned.getSwipMod());
 		Assert.assertEquals(subnet.getUserId(), subnetReturned.getUserId());
-		Assert.assertEquals(subnet, subnetReturned);
+		Assert.assertEquals(3, subnetReturned.getLinks().size());
 	}
 
 	@Test
 	public void g_get_all_should_return_an_array_with_one_elem() {
-		List<Subnet> zones = IterableUtils.toList(this.controller.getSubnets(infraId, 0, 255));
-		Assert.assertNotNull(zones);
-		Assert.assertEquals(1, zones.size());
+		List<SubnetResource> subnets = IterableUtils.toList(this.controller.getSubnets(infraId, null, new PagedResourcesAssembler<Subnet>(resolver, null)));
+		Assert.assertNotNull(subnets);
+		Assert.assertEquals(1, subnets.size());
 	}
 
 	@Test
@@ -142,7 +159,10 @@ public class SubnetControllerTests {
 		subnet.setOptionId(1L);
 		subnet.setSwipMod(new Date());
 		subnet.setUserId("user");
-		Subnet subnetReturned = this.controller.addSubnet(infraId, subnet);
+		HttpEntity<SubnetResource> resp = this.controller.addSubnet(infraId, subnet);
+		Assert.assertNotNull(resp);
+		Assert.assertNotNull(resp.getBody());
+		SubnetResource subnetReturned = resp.getBody();
 		Assert.assertNotNull(subnetReturned);
 		Assert.assertNotNull(subnetReturned.getId());
 		Assert.assertEquals(subnet.getDescription(), subnetReturned.getDescription());
@@ -154,37 +174,41 @@ public class SubnetControllerTests {
 		Assert.assertEquals(subnet.getOptionId(), subnetReturned.getOptionId());
 		Assert.assertEquals(subnet.getSwipMod(), subnetReturned.getSwipMod());
 		Assert.assertEquals(subnet.getUserId(), subnetReturned.getUserId());
-		Assert.assertEquals(subnet, subnetReturned);
-		id2 = subnetReturned.getId();
+		Assert.assertEquals(3, subnetReturned.getLinks().size());
+		id2 = subnetReturned.getSubnetId();
 	}
 
 	@Test
 	public void i_get_all_should_return_an_array_with_two_elem() {
-		List<Subnet> subnets = IterableUtils.toList(this.controller.getSubnets(infraId, 0, 255));
+		List<SubnetResource> subnets = IterableUtils.toList(this.controller.getSubnets(infraId, null, new PagedResourcesAssembler<Subnet>(resolver, null)));
 		Assert.assertNotNull(subnets);
 		Assert.assertEquals(2, subnets.size());
 	}
 
 	@Test
 	public void j_get_all_should_return_an_array_with_two_elem_with_page() {
-		List<Subnet> subnets = IterableUtils.toList(this.controller.getSubnets(infraId, 0, 1));
+		List<SubnetResource> subnets = IterableUtils.toList(this.controller.getSubnets(infraId, new PageRequest(0, 1), new PagedResourcesAssembler<Subnet>(resolver, null)));
 		Assert.assertNotNull(subnets);
 		Assert.assertEquals(1, subnets.size());
 	}
 
 	@Test
 	public void k_get_all_should_return_an_array_with_two_elem_with_null_page() {
-		List<Subnet> subnets = IterableUtils.toList(this.controller.getSubnets(infraId, null, null));
+		List<SubnetResource> subnets = IterableUtils.toList(this.controller.getSubnets(infraId, null, new PagedResourcesAssembler<Subnet>(resolver, null)));
 		Assert.assertNotNull(subnets);
 		Assert.assertEquals(2, subnets.size());
 	}
 
 	@Test
 	public void l_get_subnet_should_return_second_subnet() {
-		Subnet subnet = this.controller.getSubnet(infraId, id2);
+		HttpEntity<SubnetResource> resp = this.controller.getSubnet(infraId, id2);
+		Assert.assertNotNull(resp);
+		Assert.assertNotNull(resp.getBody());
+		SubnetResource subnet = resp.getBody();
 		Assert.assertNotNull(subnet);
 		Assert.assertEquals("Test description 3", subnet.getDescription());
 		Assert.assertEquals(0xC1A80000L, (long) subnet.getIp());
+		Assert.assertEquals(3, subnet.getLinks().size());
 	}
 
 	@Test
@@ -194,8 +218,11 @@ public class SubnetControllerTests {
 
 	@Test
 	public void n_get_subnet_shouldnt_return_subnet() {
-		Subnet zone = this.controller.getSubnet(infraId, id2);
-		Assert.assertNull(zone);
+		HttpEntity<SubnetResource> resp = this.controller.getSubnet(infraId, id2);
+		Assert.assertNotNull(resp);
+		Assert.assertNull(resp.getBody());
+		SubnetResource subnet = resp.getBody();
+		Assert.assertNull(subnet);
 	}
 
 	@Test
@@ -205,7 +232,7 @@ public class SubnetControllerTests {
 
 	@Test
 	public void p_get_all_should_return_an_array_with_no_elem() {
-		List<Subnet> zones = IterableUtils.toList(this.controller.getSubnets(infraId, 0, 255));
+		List<SubnetResource> zones = IterableUtils.toList(this.controller.getSubnets(infraId, null, new PagedResourcesAssembler<Subnet>(resolver, null)));
 		Assert.assertNotNull(zones);
 		Assert.assertEquals(0, zones.size());
 	}
@@ -217,7 +244,7 @@ public class SubnetControllerTests {
 
 	@Test
 	public void r_get_all_should_return_an_array_with_two_elem() {
-		List<Infrastructure> infras = IterableUtils.toList(this.infrastructureController.getInfrastructures(0, 255));
+		List<InfrastructureResource> infras = IterableUtils.toList(this.infrastructureController.getInfrastructures(null, new PagedResourcesAssembler<Infrastructure>(resolver, null)));
 		Assert.assertNotNull(infras);
 		Assert.assertEquals(0, infras.size());
 	}
