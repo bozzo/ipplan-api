@@ -20,7 +20,11 @@
 package org.bozzo.ipplan.domain.dao;
 
 import org.bozzo.ipplan.domain.model.Infrastructure;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -29,5 +33,7 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface InfrastructureRepository extends PagingAndSortingRepository<Infrastructure, Integer> {
-
+	
+	@Query("SELECT i FROM Infrastructure i WHERE i.group=:group")
+	Page<Infrastructure> findAllByGroup(@Param("group") String group, Pageable pageable);
 }

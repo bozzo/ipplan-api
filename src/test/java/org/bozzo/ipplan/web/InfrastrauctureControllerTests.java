@@ -35,7 +35,7 @@ public class InfrastrauctureControllerTests {
 
 	@Test
 	public void a_get_all_should_return_empty_array() {
-		List<InfrastructureResource> infras = IterableUtils.toList(this.controller.getInfrastructures(null, new PagedResourcesAssembler<Infrastructure>(resolver, null)));
+		List<InfrastructureResource> infras = IterableUtils.toList(this.controller.getInfrastructures(null, null, new PagedResourcesAssembler<Infrastructure>(resolver, null)));
 		Assert.assertNotNull(infras);
 		Assert.assertTrue(infras.isEmpty());
 	}
@@ -60,7 +60,7 @@ public class InfrastrauctureControllerTests {
 
 	@Test
 	public void c_get_all_should_return_an_array_with_one_elem() {
-		List<InfrastructureResource> infras = IterableUtils.toList(this.controller.getInfrastructures(null, new PagedResourcesAssembler<Infrastructure>(resolver, null)));
+		List<InfrastructureResource> infras = IterableUtils.toList(this.controller.getInfrastructures(null, null, new PagedResourcesAssembler<Infrastructure>(resolver, null)));
 		Assert.assertNotNull(infras);
 		Assert.assertEquals(1, infras.size());
 	}
@@ -85,7 +85,7 @@ public class InfrastrauctureControllerTests {
 
 	@Test
 	public void e_get_all_should_return_an_array_with_one_elem() {
-		List<InfrastructureResource> infras = IterableUtils.toList(this.controller.getInfrastructures(null, new PagedResourcesAssembler<Infrastructure>(resolver, null)));
+		List<InfrastructureResource> infras = IterableUtils.toList(this.controller.getInfrastructures(null, null, new PagedResourcesAssembler<Infrastructure>(resolver, null)));
 		Assert.assertNotNull(infras);
 		Assert.assertEquals(1, infras.size());
 	}
@@ -94,7 +94,7 @@ public class InfrastrauctureControllerTests {
 	public void f_add_infra_shouldnt_create_a_new_infra() {
 		Infrastructure infra = new Infrastructure();
 		infra.setDescription("Test description 3");
-		infra.setGroup("group");
+		infra.setGroup("group2");
 		HttpEntity<InfrastructureResource> response = this.controller.addInfrastructure(infra);
 		Assert.assertNotNull(response);
 		Assert.assertNotNull(response.getBody());
@@ -110,21 +110,21 @@ public class InfrastrauctureControllerTests {
 
 	@Test
 	public void g_get_all_should_return_an_array_with_two_elem() {
-		List<InfrastructureResource> infras = IterableUtils.toList(this.controller.getInfrastructures(null, new PagedResourcesAssembler<Infrastructure>(resolver, null)));
+		List<InfrastructureResource> infras = IterableUtils.toList(this.controller.getInfrastructures(null, null, new PagedResourcesAssembler<Infrastructure>(resolver, null)));
 		Assert.assertNotNull(infras);
 		Assert.assertEquals(2, infras.size());
 	}
 
 	@Test
 	public void h_get_all_should_return_an_array_with_one_elem_with_page() {
-		List<InfrastructureResource> infras = IterableUtils.toList(this.controller.getInfrastructures(new PageRequest(0, 1), new PagedResourcesAssembler<Infrastructure>(resolver, null)));
+		List<InfrastructureResource> infras = IterableUtils.toList(this.controller.getInfrastructures(null, new PageRequest(0, 1), new PagedResourcesAssembler<Infrastructure>(resolver, null)));
 		Assert.assertNotNull(infras);
 		Assert.assertEquals(1, infras.size());
 	}
 
 	@Test
 	public void i_get_all_should_return_an_array_with_two_elem_with_null_page() {
-		List<InfrastructureResource> infras = IterableUtils.toList(this.controller.getInfrastructures(null, new PagedResourcesAssembler<Infrastructure>(resolver, null)));
+		List<InfrastructureResource> infras = IterableUtils.toList(this.controller.getInfrastructures(null, null, new PagedResourcesAssembler<Infrastructure>(resolver, null)));
 		Assert.assertNotNull(infras);
 		Assert.assertEquals(2, infras.size());
 	}
@@ -141,25 +141,36 @@ public class InfrastrauctureControllerTests {
 	}
 
 	@Test
-	public void k_delete_infra_should_work() {
+	public void k_get_infras_with_search_should_return_first_infra() {
+		List<InfrastructureResource> infras = IterableUtils.toList(this.controller.getInfrastructures("group", new PageRequest(0, 1), new PagedResourcesAssembler<Infrastructure>(resolver, null)));
+		Assert.assertNotNull(infras);
+		Assert.assertEquals(1, infras.size());
+		InfrastructureResource infra = infras.get(0);
+		Assert.assertNotNull(infra);
+		Assert.assertEquals("Test description 2", infra.getDescription());
+		Assert.assertEquals(3, infra.getLinks().size());
+	}
+
+	@Test
+	public void l_delete_infra_should_work() {
 		this.controller.deleteInfrastructure(id2);
 	}
 
 	@Test
-	public void l_get_infra_shouldnt_return_infra() {
+	public void m_get_infra_shouldnt_return_infra() {
 		HttpEntity<InfrastructureResource> response = this.controller.getInfrastructure(id2);
 		Assert.assertNotNull(response);
 		Assert.assertNull(response.getBody());
 	}
 
 	@Test
-	public void m_delete_infra_should_work() {
+	public void n_delete_infra_should_work() {
 		this.controller.deleteInfrastructure(id);
 	}
 
 	@Test
-	public void n_get_all_should_return_an_array_with_two_elem() {
-		List<InfrastructureResource> infras = IterableUtils.toList(this.controller.getInfrastructures(null, new PagedResourcesAssembler<Infrastructure>(resolver, null)));
+	public void o_get_all_should_return_an_array_with_two_elem() {
+		List<InfrastructureResource> infras = IterableUtils.toList(this.controller.getInfrastructures(null, null, new PagedResourcesAssembler<Infrastructure>(resolver, null)));
 		Assert.assertNotNull(infras);
 		Assert.assertEquals(0, infras.size());
 	}

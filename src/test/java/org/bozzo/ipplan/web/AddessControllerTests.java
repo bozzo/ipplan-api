@@ -65,7 +65,7 @@ public class AddessControllerTests {
 
 	@Test
 	public void b_get_all_should_return_an_infra_array_with_one_elem() {
-		List<InfrastructureResource> infras = IterableUtils.toList(this.infrastructureController.getInfrastructures(null, new PagedResourcesAssembler<Infrastructure>(resolver, null)));
+		List<InfrastructureResource> infras = IterableUtils.toList(this.infrastructureController.getInfrastructures(null, null, new PagedResourcesAssembler<Infrastructure>(resolver, null)));
 		Assert.assertNotNull(infras);
 		Assert.assertEquals(1, infras.size());
 	}
@@ -313,7 +313,7 @@ public class AddessControllerTests {
 
 	@Test
 	public void v_get_all_should_return_an_array_with_two_elem() {
-		List<InfrastructureResource> infras = IterableUtils.toList(this.infrastructureController.getInfrastructures(null, new PagedResourcesAssembler<Infrastructure>(resolver, null)));
+		List<InfrastructureResource> infras = IterableUtils.toList(this.infrastructureController.getInfrastructures(null, null, new PagedResourcesAssembler<Infrastructure>(resolver, null)));
 		Assert.assertNotNull(infras);
 		Assert.assertEquals(0, infras.size());
 	}

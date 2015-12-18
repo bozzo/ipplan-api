@@ -40,6 +40,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -61,8 +62,13 @@ public class InfrastructureController {
 	private InfrastructureResourceAssembler assembler;
 
 	@RequestMapping(value = "/", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-	public PagedResources<InfrastructureResource> getInfrastructures(Pageable pageable, PagedResourcesAssembler<Infrastructure> pagedAssembler) {
-		Page<Infrastructure> infras = repository.findAll(pageable);
+	public PagedResources<InfrastructureResource> getInfrastructures(@RequestParam(required=false) String group, Pageable pageable, PagedResourcesAssembler<Infrastructure> pagedAssembler) {
+		Page<Infrastructure> infras = null;
+		if (group != null) {
+			infras = repository.findAllByGroup(group, pageable);
+		} else {
+			infras = repository.findAll(pageable);
+		}
 		return pagedAssembler.toResource(infras, assembler);
 	}
 
