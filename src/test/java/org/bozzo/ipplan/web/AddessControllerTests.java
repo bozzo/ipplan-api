@@ -21,6 +21,7 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.web.HateoasPageableHandlerMethodArgumentResolver;
 import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.PagedResources;
 import org.springframework.http.HttpEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -102,7 +103,10 @@ public class AddessControllerTests {
 
 	@Test
 	public void d_get_all_should_return_an_array_with_one_elem() {
-		List<SubnetResource> subnets = IterableUtils.toList(this.subnetController.getSubnets(infraId, null, new PagedResourcesAssembler<Subnet>(resolver, null)));
+		HttpEntity<PagedResources<SubnetResource>> resp = this.subnetController.getSubnets(null, null, infraId, null, new PagedResourcesAssembler<Subnet>(resolver, null));
+		Assert.assertNotNull(resp);
+		Assert.assertNotNull(resp.getBody());
+		List<SubnetResource> subnets = IterableUtils.toList(resp.getBody());
 		Assert.assertNotNull(subnets);
 		Assert.assertEquals(1, subnets.size());
 	}
@@ -301,7 +305,10 @@ public class AddessControllerTests {
 
 	@Test
 	public void t_get_all_should_return_an_array_with_no_elem() {
-		List<SubnetResource> subnets = IterableUtils.toList(this.subnetController.getSubnets(infraId, null, new PagedResourcesAssembler<Subnet>(resolver, null)));
+		HttpEntity<PagedResources<SubnetResource>> resp = this.subnetController.getSubnets(null, null, infraId, null, new PagedResourcesAssembler<Subnet>(resolver, null));
+		Assert.assertNotNull(resp);
+		Assert.assertNotNull(resp.getBody());
+		List<SubnetResource> subnets = IterableUtils.toList(resp.getBody());
 		Assert.assertNotNull(subnets);
 		Assert.assertEquals(0, subnets.size());
 	}

@@ -17,23 +17,38 @@
  * You should have received a copy of the GNU General Public License
  * along with ipplan-api.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.bozzo.ipplan.domain.dao;
-
-import org.bozzo.ipplan.domain.model.Infrastructure;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.PagingAndSortingRepository;
-import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
+package org.bozzo.ipplan.domain.model;
 
 /**
  * @author boris
  *
  */
-@Repository
-public interface InfrastructureRepository extends PagingAndSortingRepository<Infrastructure, Integer> {
+public class ApiError {
+
+	private final Integer code;
+	private final String message;
 	
-	@Query("SELECT i FROM Infrastructure i WHERE i.group=:group")
-	public Page<Infrastructure> findAllByGroup(@Param("group") String group, Pageable pageable);
+	/**
+	 * @param code
+	 * @param message
+	 */
+	public ApiError(Integer code, String message) {
+		super();
+		this.code = code;
+		this.message = message;
+	}
+
+	/**
+	 * @return the code
+	 */
+	public Integer getCode() {
+		return code;
+	}
+
+	/**
+	 * @return the message
+	 */
+	public String getMessage() {
+		return message;
+	}
 }

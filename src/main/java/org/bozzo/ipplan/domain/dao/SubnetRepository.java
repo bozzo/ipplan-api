@@ -24,7 +24,9 @@ import javax.transaction.Transactional;
 import org.bozzo.ipplan.domain.model.Subnet;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -35,11 +37,14 @@ import org.springframework.stereotype.Repository;
 @Transactional
 public interface SubnetRepository extends PagingAndSortingRepository<Subnet, Long> {
 
-	public Page<Subnet> findByInfraId(Integer infraId, Pageable pageable);
+	public Page<Subnet> findAllByInfraId(Integer infraId, Pageable pageable);
 
 	public Subnet findByInfraIdAndId(Integer infraId, Long id);
 
 	public Subnet findByInfraIdAndIp(Integer infraId, Long ip);
 
 	public void deleteByInfraIdAndId(Integer infraId, Long id);
+	
+	@Query("SELECT s FROM Subnet s WHERE s.infraId = :infraId AND s.ip >= :ip AND (s.ip + s.size) < (:ip + :size)")
+	public Page<Subnet> findAllByInfraIdAndIpAndSize(@Param("infraId") Integer infraId, @Param("ip") Long ip, @Param("size") Long size, Pageable pageable);
 }

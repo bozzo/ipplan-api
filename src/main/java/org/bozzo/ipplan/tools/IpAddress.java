@@ -17,23 +17,23 @@
  * You should have received a copy of the GNU General Public License
  * along with ipplan-api.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.bozzo.ipplan.domain.dao;
-
-import org.bozzo.ipplan.domain.model.Infrastructure;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.PagingAndSortingRepository;
-import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
+package org.bozzo.ipplan.tools;
 
 /**
  * @author boris
  *
  */
-@Repository
-public interface InfrastructureRepository extends PagingAndSortingRepository<Infrastructure, Integer> {
-	
-	@Query("SELECT i FROM Infrastructure i WHERE i.group=:group")
-	public Page<Infrastructure> findAllByGroup(@Param("group") String group, Pageable pageable);
+public class IpAddress {
+
+	public static Long toLong(String ip) {
+
+		long address = 0;
+
+		String[] ipDigits = ip.split("\\.");
+
+		for (int index = 3; index >= 0; index--) {
+			address |= Long.parseUnsignedLong(ipDigits[3 - index]) << (index * 8);
+		}
+		return new Long(address);
+	}
 }

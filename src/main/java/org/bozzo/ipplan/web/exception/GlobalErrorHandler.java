@@ -17,23 +17,25 @@
  * You should have received a copy of the GNU General Public License
  * along with ipplan-api.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.bozzo.ipplan.domain.dao;
+package org.bozzo.ipplan.web.exception;
 
-import org.bozzo.ipplan.domain.model.Infrastructure;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.PagingAndSortingRepository;
-import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
+import org.bozzo.ipplan.domain.model.ApiError;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
  * @author boris
  *
  */
-@Repository
-public interface InfrastructureRepository extends PagingAndSortingRepository<Infrastructure, Integer> {
-	
-	@Query("SELECT i FROM Infrastructure i WHERE i.group=:group")
-	public Page<Infrastructure> findAllByGroup(@Param("group") String group, Pageable pageable);
+@ControllerAdvice
+public class GlobalErrorHandler {
+
+	@ResponseStatus(HttpStatus.CONFLICT)  // 409
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ApiError handleConflict(Exception exception) {
+		return new ApiError(409, "Conflict: " + exception.getMessage());
+    }
 }

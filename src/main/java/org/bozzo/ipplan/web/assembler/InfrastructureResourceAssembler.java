@@ -54,7 +54,7 @@ public class InfrastructureResourceAssembler extends ResourceAssemblerSupport<In
 		InfrastructureResource infra = new InfrastructureResource(entity);
 		infra.add(linkTo(methodOn(InfrastructureController.class).getInfrastructure(infra.getInfraId())).withSelfRel());
 		infra.add(linkTo(methodOn(ZoneController.class).getZones(infra.getInfraId(), null, null)).withRel("zones"));
-		infra.add(linkTo(methodOn(SubnetController.class).getSubnets(infra.getInfraId(), null, null)).withRel("subnets"));
+		infra.add(linkTo(methodOn(SubnetController.class).getSubnets(null, null, infra.getInfraId(), null, null)).withRel("subnets"));
 		return infra;
 	}
 

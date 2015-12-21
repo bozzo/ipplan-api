@@ -19,6 +19,7 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.web.HateoasPageableHandlerMethodArgumentResolver;
 import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.PagedResources;
 import org.springframework.http.HttpEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -66,7 +67,10 @@ public class SubnetControllerTests {
 
 	@Test
 	public void c_get_all_should_return_empty_array() {
-		List<SubnetResource> subnets = IterableUtils.toList(this.controller.getSubnets(infraId, null, new PagedResourcesAssembler<Subnet>(resolver, null)));
+		HttpEntity<PagedResources<SubnetResource>> resp = this.controller.getSubnets(null, null, infraId, null, new PagedResourcesAssembler<Subnet>(resolver, null));
+		Assert.assertNotNull(resp);
+		Assert.assertNotNull(resp.getBody());
+		List<SubnetResource> subnets = IterableUtils.toList(resp.getBody());
 		Assert.assertNotNull(subnets);
 		Assert.assertTrue(subnets.isEmpty());
 	}
@@ -104,7 +108,10 @@ public class SubnetControllerTests {
 
 	@Test
 	public void e_get_all_should_return_an_array_with_one_elem() {
-		List<SubnetResource> subnets = IterableUtils.toList(this.controller.getSubnets(infraId, null, new PagedResourcesAssembler<Subnet>(resolver, null)));
+		HttpEntity<PagedResources<SubnetResource>> resp = this.controller.getSubnets(null, null, infraId, null, new PagedResourcesAssembler<Subnet>(resolver, null));
+		Assert.assertNotNull(resp);
+		Assert.assertNotNull(resp.getBody());
+		List<SubnetResource> subnets = IterableUtils.toList(resp.getBody());
 		Assert.assertNotNull(subnets);
 		Assert.assertEquals(1, subnets.size());
 	}
@@ -115,8 +122,8 @@ public class SubnetControllerTests {
 		subnet.setDescription("Test description 2");
 		subnet.setInfraId(infraId);
 		subnet.setGroup("group");
-		subnet.setIp(0xC0A80101L);
-		subnet.setSize(65535L);
+		subnet.setIp(0xC0A80100L);
+		subnet.setSize(32L);
 		subnet.setLastModifed(new Date());
 		subnet.setOptionId(1L);
 		subnet.setSwipMod(new Date());
@@ -142,7 +149,10 @@ public class SubnetControllerTests {
 
 	@Test
 	public void g_get_all_should_return_an_array_with_one_elem() {
-		List<SubnetResource> subnets = IterableUtils.toList(this.controller.getSubnets(infraId, null, new PagedResourcesAssembler<Subnet>(resolver, null)));
+		HttpEntity<PagedResources<SubnetResource>> resp = this.controller.getSubnets(null, null, infraId, null, new PagedResourcesAssembler<Subnet>(resolver, null));
+		Assert.assertNotNull(resp);
+		Assert.assertNotNull(resp.getBody());
+		List<SubnetResource> subnets = IterableUtils.toList(resp.getBody());
 		Assert.assertNotNull(subnets);
 		Assert.assertEquals(1, subnets.size());
 	}
@@ -180,21 +190,57 @@ public class SubnetControllerTests {
 
 	@Test
 	public void i_get_all_should_return_an_array_with_two_elem() {
-		List<SubnetResource> subnets = IterableUtils.toList(this.controller.getSubnets(infraId, null, new PagedResourcesAssembler<Subnet>(resolver, null)));
+		HttpEntity<PagedResources<SubnetResource>> resp = this.controller.getSubnets(null, null, infraId, null, new PagedResourcesAssembler<Subnet>(resolver, null));
+		Assert.assertNotNull(resp);
+		Assert.assertNotNull(resp.getBody());
+		List<SubnetResource> subnets = IterableUtils.toList(resp.getBody());
 		Assert.assertNotNull(subnets);
 		Assert.assertEquals(2, subnets.size());
 	}
 
 	@Test
 	public void j_get_all_should_return_an_array_with_two_elem_with_page() {
-		List<SubnetResource> subnets = IterableUtils.toList(this.controller.getSubnets(infraId, new PageRequest(0, 1), new PagedResourcesAssembler<Subnet>(resolver, null)));
+		HttpEntity<PagedResources<SubnetResource>> resp = this.controller.getSubnets(null, null, infraId, new PageRequest(0, 1), new PagedResourcesAssembler<Subnet>(resolver, null));
+		Assert.assertNotNull(resp);
+		Assert.assertNotNull(resp.getBody());
+		List<SubnetResource> subnets = IterableUtils.toList(resp.getBody());
 		Assert.assertNotNull(subnets);
 		Assert.assertEquals(1, subnets.size());
 	}
 
 	@Test
+	public void j_get_all_with_search_ip_should_return_an_array_with_one_elem_with_page() {
+		HttpEntity<PagedResources<SubnetResource>> resp = this.controller.getSubnets("192.168.1.0", 255L, infraId, null, new PagedResourcesAssembler<Subnet>(resolver, null));
+		Assert.assertNotNull(resp);
+		Assert.assertNotNull(resp.getBody());
+		List<SubnetResource> subnets = IterableUtils.toList(resp.getBody());
+		Assert.assertNotNull(subnets);
+		Assert.assertEquals(1, subnets.size());
+	}
+
+	@Test
+	public void j_get_all_with_search_ip_and_short_size_should_return_an_empty_array() {
+		HttpEntity<PagedResources<SubnetResource>> resp = this.controller.getSubnets("192.168.1.0", 16L, infraId, null, new PagedResourcesAssembler<Subnet>(resolver, null));
+		Assert.assertNotNull(resp);
+		Assert.assertNotNull(resp.getBody());
+		List<SubnetResource> subnets = IterableUtils.toList(resp.getBody());
+		Assert.assertNotNull(subnets);
+		Assert.assertEquals(0, subnets.size());
+	}
+
+	@Test
+	public void j_get_all_with_search_ip_and_null_size_should_return_an_empty_array() {
+		HttpEntity<PagedResources<SubnetResource>> resp = this.controller.getSubnets("192.168.1.0", null, infraId, null, new PagedResourcesAssembler<Subnet>(resolver, null));
+		Assert.assertNotNull(resp);
+		Assert.assertFalse(resp.hasBody());
+	}
+
+	@Test
 	public void k_get_all_should_return_an_array_with_two_elem_with_null_page() {
-		List<SubnetResource> subnets = IterableUtils.toList(this.controller.getSubnets(infraId, null, new PagedResourcesAssembler<Subnet>(resolver, null)));
+		HttpEntity<PagedResources<SubnetResource>> resp = this.controller.getSubnets(null, null, infraId, null, new PagedResourcesAssembler<Subnet>(resolver, null));
+		Assert.assertNotNull(resp);
+		Assert.assertNotNull(resp.getBody());
+		List<SubnetResource> subnets = IterableUtils.toList(resp.getBody());
 		Assert.assertNotNull(subnets);
 		Assert.assertEquals(2, subnets.size());
 	}
@@ -232,9 +278,12 @@ public class SubnetControllerTests {
 
 	@Test
 	public void p_get_all_should_return_an_array_with_no_elem() {
-		List<SubnetResource> zones = IterableUtils.toList(this.controller.getSubnets(infraId, null, new PagedResourcesAssembler<Subnet>(resolver, null)));
-		Assert.assertNotNull(zones);
-		Assert.assertEquals(0, zones.size());
+		HttpEntity<PagedResources<SubnetResource>> resp = this.controller.getSubnets(null, null, infraId, null, new PagedResourcesAssembler<Subnet>(resolver, null));
+		Assert.assertNotNull(resp);
+		Assert.assertNotNull(resp.getBody());
+		List<SubnetResource> subnets = IterableUtils.toList(resp.getBody());
+		Assert.assertNotNull(subnets);
+		Assert.assertEquals(0, subnets.size());
 	}
 
 	@Test
