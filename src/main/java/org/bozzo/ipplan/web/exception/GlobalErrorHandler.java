@@ -33,9 +33,21 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ControllerAdvice
 public class GlobalErrorHandler {
 
+	@ResponseStatus(HttpStatus.BAD_REQUEST)  // 400
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ApiError handleBadRequest(Exception exception) {
+		return new ApiError(400, "Bad request: " + exception.getMessage());
+    }
+
 	@ResponseStatus(HttpStatus.CONFLICT)  // 409
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ApiError handleConflict(Exception exception) {
 		return new ApiError(409, "Conflict: " + exception.getMessage());
+    }
+
+	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)  // 500
+    @ExceptionHandler(Exception.class)
+    public ApiError handleException(Exception exception) {
+		return new ApiError(500, "Internal error: " + exception.getMessage());
     }
 }

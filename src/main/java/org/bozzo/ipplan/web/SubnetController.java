@@ -68,11 +68,12 @@ public class SubnetController {
 			PagedResourcesAssembler<Subnet> pagedAssembler) {
 		Page<Subnet> subnets = null;
 		if (ip != null) {
-			if (size == null) {
-				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-			}
 			long ip4 = IpAddress.toLong(ip);
-			subnets = this.repository.findAllByInfraIdAndIpAndSize(infraId, ip4, size, pageable);
+			if (size == null) {
+				subnets = this.repository.findAllByInfraIdAndIp(infraId, ip4, pageable);
+			} else {
+				subnets = this.repository.findAllByInfraIdAndIpAndSize(infraId, ip4, size, pageable);
+			}
 		} else {
 			subnets = this.repository.findAllByInfraId(infraId, pageable);
 		}

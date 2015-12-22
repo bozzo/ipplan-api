@@ -209,7 +209,7 @@ public class SubnetControllerTests {
 	}
 
 	@Test
-	public void j_get_all_with_search_ip_should_return_an_array_with_one_elem_with_page() {
+	public void j_get_all_with_search_ip_and_size_should_return_an_array_with_one_elem_with_page() {
 		HttpEntity<PagedResources<SubnetResource>> resp = this.controller.getSubnets("192.168.1.0", 255L, infraId, null, new PagedResourcesAssembler<Subnet>(resolver, null));
 		Assert.assertNotNull(resp);
 		Assert.assertNotNull(resp.getBody());
@@ -229,10 +229,13 @@ public class SubnetControllerTests {
 	}
 
 	@Test
-	public void j_get_all_with_search_ip_and_null_size_should_return_an_empty_array() {
+	public void j_get_all_with_search_ip_should_return_an_array_with_one_elem_with_page() {
 		HttpEntity<PagedResources<SubnetResource>> resp = this.controller.getSubnets("192.168.1.0", null, infraId, null, new PagedResourcesAssembler<Subnet>(resolver, null));
 		Assert.assertNotNull(resp);
-		Assert.assertFalse(resp.hasBody());
+		Assert.assertNotNull(resp.getBody());
+		List<SubnetResource> subnets = IterableUtils.toList(resp.getBody());
+		Assert.assertNotNull(subnets);
+		Assert.assertEquals(1, subnets.size());
 	}
 
 	@Test
