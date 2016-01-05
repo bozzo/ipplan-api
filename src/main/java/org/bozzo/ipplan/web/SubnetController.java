@@ -44,6 +44,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.google.common.base.Preconditions;
 
@@ -62,7 +63,17 @@ public class SubnetController {
 	@Autowired
 	private SubnetResourceAssembler assembler;
 
-	@RequestMapping(value = "/", method = RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_VALUE })
+	@RequestMapping(method = RequestMethod.GET, produces = {MediaType.TEXT_HTML_VALUE})
+	public ModelAndView getSubnetsView(@RequestParam(required = false) String ip,
+			@RequestParam(required = false) Long size, @PathVariable @NotNull Integer infraId, Pageable pageable,
+			PagedResourcesAssembler<Subnet> pagedAssembler) {
+		HttpEntity<PagedResources<SubnetResource>> subnets = this.getSubnets(ip, size, infraId, pageable, pagedAssembler);
+		ModelAndView view = new ModelAndView("subnets");
+		view.addObject("pages", subnets.getBody());
+		return view;
+	}
+
+	@RequestMapping(method = RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_VALUE })
 	public HttpEntity<PagedResources<SubnetResource>> getSubnets(@RequestParam(required = false) String ip,
 			@RequestParam(required = false) Long size, @PathVariable @NotNull Integer infraId, Pageable pageable,
 			PagedResourcesAssembler<Subnet> pagedAssembler) {
@@ -89,7 +100,7 @@ public class SubnetController {
 		return new ResponseEntity<>(assembler.toResource(subnet), HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "/", method = RequestMethod.POST)
+	@RequestMapping(method = RequestMethod.POST)
 	public HttpEntity<SubnetResource> addSubnet(@PathVariable @NotNull Integer infraId,
 			@RequestBody @NotNull Subnet subnet) {
 		Preconditions.checkArgument(infraId.equals(subnet.getInfraId()));
