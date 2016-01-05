@@ -43,6 +43,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.google.common.base.Preconditions;
 
@@ -61,7 +62,15 @@ public class InfrastructureController {
 	@Autowired
 	private InfrastructureResourceAssembler assembler;
 
-	@RequestMapping(value = "/", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
+	@RequestMapping(method = RequestMethod.GET, produces = {MediaType.TEXT_HTML_VALUE})
+	public ModelAndView getInfrastructuresView(@RequestParam(required=false) String group, Pageable pageable, PagedResourcesAssembler<Infrastructure> pagedAssembler) {
+		PagedResources<InfrastructureResource> infras = this.getInfrastructures(group, pageable, pagedAssembler);
+		ModelAndView view = new ModelAndView("infras");
+		view.addObject("pages", infras);
+		return view;
+	}
+
+	@RequestMapping(method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
 	public PagedResources<InfrastructureResource> getInfrastructures(@RequestParam(required=false) String group, Pageable pageable, PagedResourcesAssembler<Infrastructure> pagedAssembler) {
 		Page<Infrastructure> infras = null;
 		if (group != null) {
@@ -81,7 +90,7 @@ public class InfrastructureController {
 		return new ResponseEntity<>(assembler.toResource(infra), HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "/", method = RequestMethod.POST)
+	@RequestMapping(method = RequestMethod.POST)
 	public HttpEntity<InfrastructureResource> addInfrastructure(@RequestBody @NotNull Infrastructure infra) {
 		LOGGER.info("add new infrastruture: {}", infra);
 		Infrastructure infrastructure = repository.save(infra);
