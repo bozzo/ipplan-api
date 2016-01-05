@@ -42,6 +42,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.google.common.base.Preconditions;
 
@@ -60,7 +61,15 @@ public class AddressController {
 	@Autowired
 	private AddressResourceAssembler assembler;
 
-	@RequestMapping(value = "/", method=RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
+	@RequestMapping(method = RequestMethod.GET, produces = {MediaType.TEXT_HTML_VALUE})
+	public ModelAndView getAddressesView(@PathVariable Integer infraId, @PathVariable Long subnetId, Pageable pageable, PagedResourcesAssembler<Address> pagedAssembler) {
+		PagedResources<AddressResource> addresses = this.getAddresses(infraId, subnetId, pageable, pagedAssembler);
+		ModelAndView view = new ModelAndView("addresses");
+		view.addObject("pages", addresses);
+		return view;
+	}
+
+	@RequestMapping(method=RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
 	public PagedResources<AddressResource> getAddresses(@PathVariable Integer infraId, @PathVariable Long subnetId, Pageable pageable, PagedResourcesAssembler<Address> pagedAssembler) {
 		Page<Address> addresses = this.repository.findBySubnetId(subnetId, pageable);
 		for (Address address : addresses) {
@@ -79,7 +88,7 @@ public class AddressController {
 		return new ResponseEntity<>(assembler.toResource(address), HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "/", method=RequestMethod.POST)
+	@RequestMapping(method=RequestMethod.POST)
 	public HttpEntity<AddressResource> addAddress(@PathVariable Integer infraId, @PathVariable Long subnetId, @RequestBody @NotNull Address address) {
 		Preconditions.checkArgument(infraId.equals(address.getInfraId()));
 		Preconditions.checkArgument(subnetId.equals(address.getSubnetId()));
