@@ -24,6 +24,7 @@ import javax.validation.constraints.NotNull;
 import org.bozzo.ipplan.domain.dao.ZoneRepository;
 import org.bozzo.ipplan.domain.model.Zone;
 import org.bozzo.ipplan.domain.model.ui.ZoneResource;
+import org.bozzo.ipplan.web.assembler.InfrastructureResourceAssembler;
 import org.bozzo.ipplan.web.assembler.ZoneResourceAssembler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +35,7 @@ import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -41,6 +43,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.google.common.base.Preconditions;
 
@@ -59,13 +62,22 @@ public class ZoneController {
 	@Autowired
 	private ZoneResourceAssembler assembler;
 
-	@RequestMapping(value = "/", method=RequestMethod.GET)
+	@RequestMapping(method = RequestMethod.GET, produces = {MediaType.TEXT_HTML_VALUE})
+	public ModelAndView getZonesView(@PathVariable @NotNull Integer infraId, Pageable pageable, PagedResourcesAssembler<Zone> pagedAssembler) {
+		PagedResources<ZoneResource> subnets = this.getZones(infraId, pageable, pagedAssembler);
+		ModelAndView view = new ModelAndView("zones");
+		view.addObject("link", InfrastructureResourceAssembler.link(infraId));
+		view.addObject("pages", subnets);
+		return view;
+	}
+
+	@RequestMapping(method=RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
 	public PagedResources<ZoneResource> getZones(@PathVariable @NotNull Integer infraId, Pageable pageable, PagedResourcesAssembler<Zone> pagedAssembler) {
 		Page<Zone> zones = this.repository.findByInfraId(infraId, pageable);
 		return pagedAssembler.toResource(zones, assembler);
 	}
 
-	@RequestMapping(value = "/{zoneId}", method=RequestMethod.GET)
+	@RequestMapping(value = "/{zoneId}", method=RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
 	public HttpEntity<ZoneResource> getZone(@PathVariable Integer infraId, @PathVariable Long zoneId) {
 		Zone zone = repository.findByInfraIdAndId(infraId, zoneId);
 		if (zone == null) {
@@ -74,7 +86,7 @@ public class ZoneController {
 		return new ResponseEntity<>(assembler.toResource(zone), HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "/", method=RequestMethod.POST)
+	@RequestMapping(method=RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_VALUE})
 	public HttpEntity<ZoneResource> addZone(@PathVariable Integer infraId, @RequestBody @NotNull Zone zone) {
 		Preconditions.checkArgument(infraId.equals(zone.getInfraId()));
 		LOGGER.info("add new zone: {}", zone);
@@ -85,7 +97,7 @@ public class ZoneController {
 		return new ResponseEntity<>(assembler.toResource(zon), HttpStatus.CREATED);
 	}
 
-	@RequestMapping(value = "/{zoneId}", method=RequestMethod.PUT)
+	@RequestMapping(value = "/{zoneId}", method=RequestMethod.PUT, produces = {MediaType.APPLICATION_JSON_VALUE})
 	public HttpEntity<ZoneResource> updateZone(@PathVariable Integer infraId, @PathVariable Long zoneId, @RequestBody @NotNull Zone zone) {
 		Preconditions.checkArgument(infraId.equals(zone.getInfraId()));
 		Preconditions.checkArgument(zoneId.equals(zone.getId()));

@@ -34,6 +34,7 @@ import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -59,13 +60,13 @@ public class RangeController {
 	@Autowired
 	private RangeResourceAssembler assembler;
 
-	@RequestMapping(value = "/", method=RequestMethod.GET)
+	@RequestMapping(method=RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
 	public PagedResources<RangeResource> getRanges(@PathVariable Integer infraId, @PathVariable Long zoneId, Pageable pageable, PagedResourcesAssembler<Range> pagedAssembler) {
 		Page<Range> ranges = this.repository.findByInfraIdAndZoneId(infraId, zoneId, pageable);
 		return pagedAssembler.toResource(ranges, assembler);
 	}
 
-	@RequestMapping(value = "/{rangeId}", method=RequestMethod.GET)
+	@RequestMapping(value = "/{rangeId}", method=RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
 	public HttpEntity<RangeResource> getRange(@PathVariable Integer infraId, @PathVariable Long zoneId, @PathVariable Long rangeId) {
 		Range range = this.repository.findByInfraIdAndZoneIdAndId(infraId, zoneId, rangeId);
 		if (range == null) {
@@ -74,7 +75,7 @@ public class RangeController {
 		return new ResponseEntity<>(assembler.toResource(range), HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "/", method=RequestMethod.POST)
+	@RequestMapping(method=RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_VALUE})
 	public HttpEntity<RangeResource> addRange(@PathVariable Integer infraId, @PathVariable Long zoneId, @RequestBody @NotNull Range range) {
 		Preconditions.checkArgument(infraId.equals(range.getInfraId()));
 		Preconditions.checkArgument(zoneId.equals(range.getZoneId()));
@@ -86,7 +87,7 @@ public class RangeController {
 		return new ResponseEntity<>(assembler.toResource(rang), HttpStatus.CREATED);
 	}
 
-	@RequestMapping(value = "/{rangeId}", method=RequestMethod.PUT)
+	@RequestMapping(value = "/{rangeId}", method=RequestMethod.PUT, produces = {MediaType.APPLICATION_JSON_VALUE})
 	public HttpEntity<RangeResource> updateRange(@PathVariable Integer infraId, @PathVariable Long zoneId, @PathVariable Long rangeId, @RequestBody @NotNull Range range) {
 		Preconditions.checkArgument(infraId.equals(range.getInfraId()));
 		Preconditions.checkArgument(zoneId.equals(range.getZoneId()));

@@ -5,29 +5,31 @@
 	<div th:replace="frames :: navbar">Navigation Bar</div>
 	
 	<div class="container">
-		<h1>IP Addresses</h1>
+		<h1>Zones</h1>
 	
+		<a class="btn btn-default" th:href="${link.href}">&laquo; Back to infrastructure</a>
 		
 		<div class="alert alert-info" th:if="${#lists.isEmpty(pages.content)}">
-			No IP address found for this subnet.
+			No zones found for this infrastructure.
 		</div>
 		<div class="panel-group" th:unless="${#lists.isEmpty(pages.content)}">
 			<table class="table table-striped">
 				<thead>
 					<tr>
+						<th>#</th>
 						<th>IP</th>
-						<th>Name</th>
 						<th>Description</th>
 						<th></th>
 					</tr>
 				</thead>
 				<tbody>
 					<tr th:each="page : ${pages.content}">
+						<td th:text="${page.subnetId}"></td>
 						<td th:text="${T(org.bozzo.ipplan.tools.IpAddress).toString(page.ip)}"></td>
-						<td th:text="${page.name}"></td>
 						<td th:text="${page.description}"></td>
 						<td>
 							<a th:href="${page.id.href}" class="btn btn-sm btn-primary">Details</a>
+							<a th:href="${page.getLink('ranges').href}" class="btn btn-sm btn-default">Ranges</a>
 						</td>
 					</tr>
 				</tbody>
@@ -47,7 +49,7 @@
 						      </ul>
 						    </div>
 			           	</th>
-						<th class="text-right" colspan="3">Total elements: <span th:text="${pages.metadata.totalElements}"></span></th>
+						<th class="text-right" colspan="4">Total elements: <span th:text="${pages.metadata.totalElements}"></span></th>
 					</tr>
 				</tfoot>
 			</table>

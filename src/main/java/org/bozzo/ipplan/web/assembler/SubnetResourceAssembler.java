@@ -30,6 +30,7 @@ import org.bozzo.ipplan.domain.model.ui.SubnetResource;
 import org.bozzo.ipplan.web.AddressController;
 import org.bozzo.ipplan.web.InfrastructureController;
 import org.bozzo.ipplan.web.SubnetController;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
 import org.springframework.stereotype.Component;
 
@@ -68,6 +69,10 @@ public class SubnetResourceAssembler extends ResourceAssemblerSupport<Subnet, Su
             resources.add(this.toResource(subnet));
         }
         return resources;
+	}
+
+	public static Link link(Integer infraId, Long subnetId) {
+		return linkTo(methodOn(SubnetController.class).getSubnet(infraId, subnetId)).withRel("subnet");
 	}
 	
 }

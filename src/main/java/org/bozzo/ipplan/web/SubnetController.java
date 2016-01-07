@@ -25,6 +25,7 @@ import org.bozzo.ipplan.domain.dao.SubnetRepository;
 import org.bozzo.ipplan.domain.model.Subnet;
 import org.bozzo.ipplan.domain.model.ui.SubnetResource;
 import org.bozzo.ipplan.tools.IpAddress;
+import org.bozzo.ipplan.web.assembler.InfrastructureResourceAssembler;
 import org.bozzo.ipplan.web.assembler.SubnetResourceAssembler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,6 +70,7 @@ public class SubnetController {
 			PagedResourcesAssembler<Subnet> pagedAssembler) {
 		HttpEntity<PagedResources<SubnetResource>> subnets = this.getSubnets(ip, size, infraId, pageable, pagedAssembler);
 		ModelAndView view = new ModelAndView("subnets");
+		view.addObject("link", InfrastructureResourceAssembler.link(infraId));
 		view.addObject("pages", subnets.getBody());
 		return view;
 	}
@@ -91,7 +93,7 @@ public class SubnetController {
 		return new ResponseEntity<>(pagedAssembler.toResource(subnets, assembler), HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "/{subnetId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/{subnetId}", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
 	public HttpEntity<SubnetResource> getSubnet(@PathVariable @NotNull Integer infraId, @PathVariable Long subnetId) {
 		Subnet subnet = repository.findByInfraIdAndId(infraId, subnetId);
 		if (subnet == null) {
@@ -109,7 +111,7 @@ public class SubnetController {
 		return new ResponseEntity<>(assembler.toResource(sub), HttpStatus.CREATED);
 	}
 
-	@RequestMapping(value = "/{subnetId}", method = RequestMethod.PUT)
+	@RequestMapping(value = "/{subnetId}", method = RequestMethod.PUT, produces = {MediaType.APPLICATION_JSON_VALUE})
 	public HttpEntity<SubnetResource> updateSubnet(@PathVariable Integer infraId, @PathVariable Long subnetId,
 			@RequestBody @NotNull Subnet subnet) {
 		Preconditions.checkArgument(infraId.equals(subnet.getInfraId()));

@@ -1,124 +1,97 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-	<meta charset="utf-8" />
-	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-	<title>Infras</title>
-	
-	<!-- Bootstrap -->
-	<!-- Latest compiled and minified CSS -->
-	<link rel="stylesheet"
-		href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
-		integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
-		crossorigin="anonymous" />
-	
-	<!-- Optional theme -->
-	<link rel="stylesheet"
-		href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css"
-		integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r"
-		crossorigin="anonymous" />
-	
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-	<!-- Latest compiled and minified JavaScript -->
-	<script
-		src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
-		integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
-		crossorigin="anonymous"></script>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0"></meta>
-
-	<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-	<!--[if lt IE 9]>
-	      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-	      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-	    <![endif]-->
-</head>
+<head th:replace="frames :: header" />
 <body>
+	<div th:replace="frames :: navbar">Navigation Bar</div>
+	
 	<div class="container">
 		<h1>Infrastructures</h1>
+		
+		<div class="alert alert-info" th:if="${#lists.isEmpty(pages.content)}">
+			No infrastructures found.
+		</div>
+		<div class="panel-group" th:unless="${#lists.isEmpty(pages.content)}">
+			<table class="table table-striped">
+				<thead>
+					<tr>
+						<th>#</th>
+						<th>Description</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="page : ${pages.content}">
+						<td th:text="${page.infraId}"></td>
+						<td th:text="${page.description}"></td>
+						<td>
+							<a th:href="${page.id.href}" class="btn btn-sm btn-primary">Details</a>
+							<a th:href="${page.getLink('subnets').href}" class="btn btn-sm btn-default">Subnets</a>
+							<a th:href="${page.getLink('zones').href}" class="btn btn-sm btn-default">Zones</a>
+						</td>
+					</tr>
+				</tbody>
+				<tfoot>
+					<tr>
+						<th>
+							<div class="dropdown btn-group">
+							  <button class="btn btn-primary" th:text="${pages.metadata.size}"></button>
+							  <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+							    <span class="caret"></span>
+							  </button>
+						      <ul class="dropdown-menu">
+				                  <li><a th:href="${pages.id.href + '?size=10'}">10</a></li>
+				                  <li><a th:href="${pages.id.href + '?size=20'}">20</a></li>
+				                  <li><a th:href="${pages.id.href + '?size=50'}">50</a></li>
+				                  <li><a th:href="${pages.id.href + '?size=100'}">100</a></li>
+						      </ul>
+						    </div>
+			           	</th>
+						<th class="text-right" colspan="2">Total elements: <span th:text="${pages.metadata.totalElements}"></span></th>
+					</tr>
+				</tfoot>
+			</table>
+			<div>
+				<ul class="pagination">
+					<li th:unless="${pages.getLink('first')}"><a class="disabled">&laquo;</a></li>
+					<li th:if="${pages.getLink('first')}"><a
+						th:href="${pages.getLink('first').href}">&laquo;</a></li>
+					<li th:unless="${pages.getLink('prev')}"><a class="disabled">&lt;</a></li>
+					<li th:if="${pages.getLink('prev')}"><a
+						th:href="${pages.getLink('prev').href}">&lt;</a></li>
 	
-		<table class="table table-striped">
-			<thead>
-				<tr>
-					<th>#</th>
-					<th>Description</th>
-					<th></th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr th:each="page : ${pages.content}">
-					<td th:text="${page.infraId}"></td>
-					<td th:text="${page.description}"></td>
-					<td>
-						<a th:href="${page.id.href}" class="btn btn-sm btn-primary">Details</a>
-						<a th:href="${page.getLink('subnets').href}" class="btn btn-sm btn-default">Subnets</a>
-						<a th:href="${page.getLink('zones').href}" class="btn btn-sm btn-default">Zones</a>
-					</td>
-				</tr>
-			</tbody>
-			<tfoot>
-				<tr>
-					<th>
-						<div class="dropdown btn-group">
-						  <button class="btn btn-primary" th:text="${pages.metadata.size}"></button>
-						  <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-						    <span class="caret"></span>
-						  </button>
-					      <ul class="dropdown-menu">
-			                  <li><a th:href="${pages.id.href + '?size=10'}">10</a></li>
-			                  <li><a th:href="${pages.id.href + '?size=20'}">20</a></li>
-			                  <li><a th:href="${pages.id.href + '?size=50'}">50</a></li>
-			                  <li><a th:href="${pages.id.href + '?size=100'}">100</a></li>
-					      </ul>
-					    </div>
-		           	</th>
-					<th class="text-right" colspan="2">Total elements: <span th:text="${pages.metadata.totalElements}"></span></th>
-				</tr>
-			</tfoot>
-		</table>
-		<div>
-			<ul class="pagination">
-				<li th:unless="${pages.getLink('first')}"><a class="disabled">&laquo;</a></li>
-				<li th:if="${pages.getLink('first')}"><a
-					th:href="${pages.getLink('first').href}">&laquo;</a></li>
-				<li th:unless="${pages.getLink('prev')}"><a class="disabled">&lt;</a></li>
-				<li th:if="${pages.getLink('prev')}"><a
-					th:href="${pages.getLink('prev').href}">&lt;</a></li>
-
-				<li th:if="${pages.getLink('first') ne null and pages.metadata.number gt 0}">
-					<a th:href="${pages.getLink('first').href}">1</a>
-				</li>
-
-				<li th:if="${pages.metadata.number gt 2}"><a class="disabled">...</a></li>
-				<li th:if="${pages.metadata.number gt 1}"><a
-					th:href="${pages.getLink('prev').href}"
-					th:text="${pages.metadata.number}"></a></li>
-				<li th:if="${pages.metadata.totalPages ge 1}">
-					<a class="disabled">
-						<strong	th:text="${pages.metadata.number + 1}"></strong>
-					</a>
-				</li>
-				<li
-					th:if="${pages.metadata.number lt pages.metadata.totalPages - 2}"><a
-					th:href="${pages.getLink('next').href}"
-					th:text="${pages.metadata.number + 2}"></a></li>
-				<li
-					th:if="${pages.metadata.number lt pages.metadata.totalPages - 3}"><a
-					class="disabled">...</a></li>
-
-				<li th:if="${pages.metadata.totalPages ge 2 and pages.metadata.number ne pages.metadata.totalPages - 1}"><a
-					th:href="${pages.getLink('last').href}"
-					th:text="${pages.metadata.totalPages}"></a></li>
-
-				<li th:unless="${pages.getLink('next')}"><a class="disabled">&gt;</a></li>
-				<li th:if="${pages.getLink('next')}"><a
-					th:href="${pages.getLink('next').href}">&gt;</a></li>
-				<li th:unless="${pages.getLink('last')}"><a class="disabled">&raquo;</a></li>
-				<li th:if="${pages.getLink('last')}"><a
-					th:href="${pages.getLink('last').href}">&raquo;</a></li>
-			</ul>
+					<li th:if="${pages.getLink('first') ne null and pages.metadata.number gt 0}">
+						<a th:href="${pages.getLink('first').href}">1</a>
+					</li>
+	
+					<li th:if="${pages.metadata.number gt 2}"><a class="disabled">...</a></li>
+					<li th:if="${pages.metadata.number gt 1}"><a
+						th:href="${pages.getLink('prev').href}"
+						th:text="${pages.metadata.number}"></a></li>
+					<li th:if="${pages.metadata.totalPages ge 1}">
+						<a class="disabled">
+							<strong	th:text="${pages.metadata.number + 1}"></strong>
+						</a>
+					</li>
+					<li
+						th:if="${pages.metadata.number lt pages.metadata.totalPages - 2}"><a
+						th:href="${pages.getLink('next').href}"
+						th:text="${pages.metadata.number + 2}"></a></li>
+					<li
+						th:if="${pages.metadata.number lt pages.metadata.totalPages - 3}"><a
+						class="disabled">...</a></li>
+	
+					<li th:if="${pages.metadata.totalPages ge 2 and pages.metadata.number ne pages.metadata.totalPages - 1}"><a
+						th:href="${pages.getLink('last').href}"
+						th:text="${pages.metadata.totalPages}"></a></li>
+	
+					<li th:unless="${pages.getLink('next')}"><a class="disabled">&gt;</a></li>
+					<li th:if="${pages.getLink('next')}"><a
+						th:href="${pages.getLink('next').href}">&gt;</a></li>
+					<li th:unless="${pages.getLink('last')}"><a class="disabled">&raquo;</a></li>
+					<li th:if="${pages.getLink('last')}"><a
+						th:href="${pages.getLink('last').href}">&raquo;</a></li>
+				</ul>
+			</div>
 		</div>
 	</div>
 	<script>

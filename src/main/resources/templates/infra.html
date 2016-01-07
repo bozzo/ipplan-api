@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="frames :: header" />
+<body>
+	<div th:replace="frames :: navbar">Navigation Bar</div>
+	
+	<div class="container">
+		<h1>Infrastructure</h1>
+		
+		<div class="alert alert-info" th:unless="${object}">
+			No infrastructure found with id #<span th:text="${id}"></span>.
+		</div>
+		<div class="panel-group" th:if="${object}">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">Infrastructure #<span th:text="${object.infraId}"></span></h3>
+				</div>
+				<div class="panel-body">
+					<div class="form-group">
+						<label class="col-sm-3"><strong>ID:</strong></label>
+						<p class="col-sm-9" 
+							th:text="${object.infraId}">ID</p>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-3"><strong>Description:</strong></label>
+						<p class="col-sm-9" 
+							th:text="${object.description}">Description</p>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-3"><strong>Group:</strong></label>
+						<p class="col-sm-9" 
+							th:text="${object.group}">Group</p>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-3"><strong>Crm:</strong></label>
+						<p class="col-sm-9" 
+							th:text="${object.crm}">Crm</p>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="panel-group" th:if="${object}">
+			<a th:href="${object.getLink('subnets').href}" class="btn btn-sm btn-primary">Subnets</a>
+			<a th:href="${object.getLink('zones').href}" class="btn btn-sm btn-primary">Zones</a>
+		</div>
+	</div>
+</body>
+</html>

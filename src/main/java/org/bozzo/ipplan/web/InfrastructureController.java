@@ -81,7 +81,16 @@ public class InfrastructureController {
 		return pagedAssembler.toResource(infras, assembler);
 	}
 
-	@RequestMapping(value = "/{infraId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/{infraId}", method = RequestMethod.GET, produces = {MediaType.TEXT_HTML_VALUE})
+	public ModelAndView getInfrastructureView(@PathVariable Integer infraId) {
+		HttpEntity<InfrastructureResource> infra = this.getInfrastructure(infraId);
+		ModelAndView view = new ModelAndView("infra");
+		view.addObject("id", infraId);
+		view.addObject("object", infra.getBody());
+		return view;
+	}
+
+	@RequestMapping(value = "/{infraId}", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
 	public HttpEntity<InfrastructureResource> getInfrastructure(@PathVariable Integer infraId) {
 		Infrastructure infra = repository.findOne(infraId);
 		if (infra == null) {
@@ -90,7 +99,7 @@ public class InfrastructureController {
 		return new ResponseEntity<>(assembler.toResource(infra), HttpStatus.OK);
 	}
 
-	@RequestMapping(method = RequestMethod.POST)
+	@RequestMapping(method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_VALUE})
 	public HttpEntity<InfrastructureResource> addInfrastructure(@RequestBody @NotNull Infrastructure infra) {
 		LOGGER.info("add new infrastruture: {}", infra);
 		Infrastructure infrastructure = repository.save(infra);
@@ -100,7 +109,7 @@ public class InfrastructureController {
 		return new ResponseEntity<>(assembler.toResource(infra), HttpStatus.CREATED);
 	}
 
-	@RequestMapping(value = "/{infraId}", method = RequestMethod.PUT)
+	@RequestMapping(value = "/{infraId}", method = RequestMethod.PUT, produces = {MediaType.APPLICATION_JSON_VALUE})
 	public HttpEntity<InfrastructureResource> updateInfrastructure(@PathVariable Integer infraId,
 			@RequestBody @NotNull Infrastructure infra) {
 		Preconditions.checkArgument(infraId.equals(infra.getId()));

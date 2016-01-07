@@ -30,6 +30,7 @@ import org.bozzo.ipplan.domain.model.ui.InfrastructureResource;
 import org.bozzo.ipplan.web.InfrastructureController;
 import org.bozzo.ipplan.web.SubnetController;
 import org.bozzo.ipplan.web.ZoneController;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
 import org.springframework.stereotype.Component;
 
@@ -68,6 +69,10 @@ public class InfrastructureResourceAssembler extends ResourceAssemblerSupport<In
             resources.add(this.toResource(infra));
         }
         return resources;
+	}
+
+	public static Link link(Integer infraId) {
+		return linkTo(methodOn(InfrastructureController.class).getInfrastructure(infraId)).withRel("infra");
 	}
 	
 }

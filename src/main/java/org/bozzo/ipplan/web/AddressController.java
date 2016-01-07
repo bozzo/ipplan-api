@@ -78,7 +78,7 @@ public class AddressController {
 		return pagedAssembler.toResource(addresses, assembler);
 	}
 
-	@RequestMapping(value = "/{ip}", method=RequestMethod.GET)
+	@RequestMapping(value = "/{ip}", method=RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
 	public HttpEntity<AddressResource> getAddress(@PathVariable Integer infraId, @PathVariable Long subnetId, @PathVariable Long ip) {
 		Address address = this.repository.findBySubnetIdAndIp(subnetId, ip);
 		if (address == null) {
@@ -88,7 +88,7 @@ public class AddressController {
 		return new ResponseEntity<>(assembler.toResource(address), HttpStatus.OK);
 	}
 
-	@RequestMapping(method=RequestMethod.POST)
+	@RequestMapping(method=RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_VALUE})
 	public HttpEntity<AddressResource> addAddress(@PathVariable Integer infraId, @PathVariable Long subnetId, @RequestBody @NotNull Address address) {
 		Preconditions.checkArgument(infraId.equals(address.getInfraId()));
 		Preconditions.checkArgument(subnetId.equals(address.getSubnetId()));
@@ -101,7 +101,7 @@ public class AddressController {
 		return new ResponseEntity<>(assembler.toResource(ip), HttpStatus.CREATED);
 	}
 
-	@RequestMapping(value = "/{ip}", method=RequestMethod.PUT)
+	@RequestMapping(value = "/{ip}", method=RequestMethod.PUT, produces = {MediaType.APPLICATION_JSON_VALUE})
 	public HttpEntity<AddressResource> updateAddress(@PathVariable Integer infraId, @PathVariable Long subnetId, @PathVariable Long ip, @RequestBody @NotNull Address address) {
 		Preconditions.checkArgument(subnetId.equals(address.getSubnetId()));
 		Preconditions.checkArgument(ip.equals(address.getIp()));
