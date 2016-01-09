@@ -25,6 +25,11 @@ package org.bozzo.ipplan.tools;
  */
 public class IpAddress {
 
+	/**
+	 * Return the long value of an IP address
+	 * @param ip the IP address in {@link String} format x.x.x.x
+	 * @return the long value
+	 */
 	public static Long toLong(String ip) {
 
 		long address = 0;
@@ -37,6 +42,11 @@ public class IpAddress {
 		return new Long(address);
 	}
 
+	/**
+	 * Return the format format of an IP address
+	 * @param ip the IP address as {@link Long} value
+	 * @return the IP address in format x.x.x.x
+	 */
 	public static String toString(Long ip) {
 		if (ip == null)
 			return null;

@@ -18,7 +18,7 @@
 					<tr>
 						<th>#</th>
 						<th>IP</th>
-						<th>Size</th>
+						<th>Netmask</th>
 						<th>Description</th>
 						<th></th>
 					</tr>
@@ -27,7 +27,7 @@
 					<tr th:each="page : ${pages.content}">
 						<td th:text="${page.subnetId}"></td>
 						<td th:text="${T(org.bozzo.ipplan.tools.IpAddress).toString(page.ip)}"></td>
-						<td th:text="${page.size}"></td>
+						<td th:text="${page.netmask}"></td>
 						<td th:text="${page.description}"></td>
 						<td>
 							<a th:href="${page.id.href}" class="btn btn-sm btn-primary">Details</a>

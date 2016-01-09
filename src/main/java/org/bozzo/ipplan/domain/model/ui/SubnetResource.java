@@ -22,6 +22,7 @@ package org.bozzo.ipplan.domain.model.ui;
 import java.util.Date;
 
 import org.bozzo.ipplan.domain.model.Subnet;
+import org.bozzo.ipplan.tools.Netmask;
 import org.springframework.hateoas.ResourceSupport;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -37,6 +38,7 @@ public class SubnetResource extends ResourceSupport {
 	private final Integer infraId;
 	private final Long ip;
 	private final Long size;
+	private final Integer netmask;
 	private final String description;
 	private final String group;
 	private final Date lastModifed;
@@ -57,12 +59,13 @@ public class SubnetResource extends ResourceSupport {
 	 * @param swipMod
 	 */
 	@JsonCreator
-	public SubnetResource( @JsonProperty("id") Long id, @JsonProperty Integer infraId, @JsonProperty Long ip, @JsonProperty Long size, @JsonProperty String description, @JsonProperty String group,
+	public SubnetResource( @JsonProperty("id") Long id, @JsonProperty Integer infraId, @JsonProperty Long ip, @JsonProperty Integer netmask, @JsonProperty Long size, @JsonProperty String description, @JsonProperty String group,
 			@JsonProperty Date lastModifed, @JsonProperty String userId, @JsonProperty Long optionId, @JsonProperty Date swipMod) {
 		this.id = id;
 		this.infraId = infraId;
 		this.ip = ip;
 		this.size = size;
+		this.netmask = netmask;
 		this.description = description;
 		this.group = group;
 		this.lastModifed = lastModifed;
@@ -76,6 +79,7 @@ public class SubnetResource extends ResourceSupport {
 		this.infraId = subnet.getInfraId();
 		this.ip = subnet.getIp();
 		this.size = subnet.getSize();
+		this.netmask = Netmask.fromNumberHosts(subnet.getSize().intValue());
 		this.description = subnet.getDescription();
 		this.group = subnet.getGroup();
 		this.lastModifed = subnet.getLastModifed();
@@ -111,6 +115,13 @@ public class SubnetResource extends ResourceSupport {
 	 */
 	public Long getSize() {
 		return size;
+	}
+
+	/**
+	 * @return the netmask
+	 */
+	public Integer getNetmask() {
+		return netmask;
 	}
 
 	/**

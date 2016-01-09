@@ -93,6 +93,15 @@ public class SubnetController {
 		return new ResponseEntity<>(pagedAssembler.toResource(subnets, assembler), HttpStatus.OK);
 	}
 
+	@RequestMapping(value = "/{subnetId}", method = RequestMethod.GET, produces = {MediaType.TEXT_HTML_VALUE})
+	public ModelAndView getSubnetView(@PathVariable @NotNull Integer infraId, @PathVariable Long subnetId) {
+		HttpEntity<SubnetResource> subnet = this.getSubnet(infraId, subnetId);
+		ModelAndView view = new ModelAndView("subnet");
+		view.addObject("id", subnetId);
+		view.addObject("object", subnet.getBody());
+		return view;
+	}
+
 	@RequestMapping(value = "/{subnetId}", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
 	public HttpEntity<SubnetResource> getSubnet(@PathVariable @NotNull Integer infraId, @PathVariable Long subnetId) {
 		Subnet subnet = repository.findByInfraIdAndId(infraId, subnetId);
