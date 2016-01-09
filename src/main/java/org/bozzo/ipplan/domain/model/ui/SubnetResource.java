@@ -79,7 +79,7 @@ public class SubnetResource extends ResourceSupport {
 		this.infraId = subnet.getInfraId();
 		this.ip = subnet.getIp();
 		this.size = subnet.getSize();
-		this.netmask = Netmask.fromNumberHosts(subnet.getSize().intValue());
+		this.netmask = Netmask.fromNumberHosts(subnet.getSize());
 		this.description = subnet.getDescription();
 		this.group = subnet.getGroup();
 		this.lastModifed = subnet.getLastModifed();

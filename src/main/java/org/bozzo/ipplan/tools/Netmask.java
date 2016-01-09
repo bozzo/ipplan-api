@@ -32,10 +32,15 @@ public class Netmask {
 	 * @param number the number of hosts
 	 * @return the netmask
 	 */
-	public static Integer fromNumberHosts(Integer number) {
+	public static Integer fromNumberHosts(Long number) {
 		Preconditions.checkArgument(number != null, "Hosts number shouldn't be null");
 		Preconditions.checkArgument(number > 0, "Hosts number should be a positive integer");
-		return 1 + Integer.numberOfLeadingZeros(number);
+		if (number >= (1L << 32)) {
+			return 0;
+		} else if (number >= (1L << 31)) {
+			return 1;
+		}
+		return 1 + Integer.numberOfLeadingZeros(number.intValue());
 	}
 	
 	/**
