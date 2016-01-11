@@ -19,6 +19,7 @@ import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.http.HttpEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.web.servlet.ModelAndView;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = IpplanApiApplication.class)
@@ -173,6 +174,20 @@ public class InfrastrauctureControllerTests {
 		List<InfrastructureResource> infras = IterableUtils.toList(this.controller.getInfrastructures(null, null, new PagedResourcesAssembler<Infrastructure>(resolver, null)));
 		Assert.assertNotNull(infras);
 		Assert.assertEquals(0, infras.size());
+	}
+
+	@Test
+	public void view_get_view_all_should_return_an_array_with_two_elem() {
+		ModelAndView view = this.controller.getInfrastructuresView(null, null, new PagedResourcesAssembler<Infrastructure>(resolver, null));
+		Assert.assertNotNull(view);
+		Assert.assertEquals("infras", view.getViewName());
+	}
+
+	@Test
+	public void view_get_view_by_id_should_return_a_model_view() {
+		ModelAndView view = this.controller.getInfrastructureView(id2);
+		Assert.assertNotNull(view);
+		Assert.assertEquals("infra", view.getViewName());
 	}
 
 }

@@ -23,6 +23,7 @@ import org.springframework.hateoas.PagedResources;
 import org.springframework.http.HttpEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.web.servlet.ModelAndView;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = IpplanApiApplication.class)
@@ -299,6 +300,13 @@ public class SubnetControllerTests {
 		List<InfrastructureResource> infras = IterableUtils.toList(this.infrastructureController.getInfrastructures(null, null, new PagedResourcesAssembler<Infrastructure>(resolver, null)));
 		Assert.assertNotNull(infras);
 		Assert.assertEquals(0, infras.size());
+	}
+
+	@Test
+	public void view_get_view_all_should_return_a_model_view() {
+		ModelAndView view = this.controller.getSubnetsView(null, null, infraId, null, new PagedResourcesAssembler<Subnet>(resolver, null));
+		Assert.assertNotNull(view);
+		Assert.assertEquals("subnets", view.getViewName());
 	}
 
 }
