@@ -20,6 +20,7 @@
 package org.bozzo.ipplan.domain.model.ui;
 
 import org.bozzo.ipplan.domain.model.Range;
+import org.bozzo.ipplan.tools.Netmask;
 import org.springframework.hateoas.ResourceSupport;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -37,6 +38,7 @@ public class RangeResource extends ResourceSupport {
 	private final String description;
 	private final Long zoneId;
 	private final Integer infraId;
+	private final Integer netmask;
 	
 	/**
 	 * @param id
@@ -47,11 +49,12 @@ public class RangeResource extends ResourceSupport {
 	 * @param infraId
 	 */
 	@JsonCreator
-	public RangeResource(@JsonProperty("id") Long id, @JsonProperty Long ip, @JsonProperty Long size, @JsonProperty String description, @JsonProperty Long zoneId, @JsonProperty Integer infraId) {
+	public RangeResource(@JsonProperty("id") Long id, @JsonProperty Long ip, @JsonProperty Long size, @JsonProperty Integer netmask, @JsonProperty String description, @JsonProperty Long zoneId, @JsonProperty Integer infraId) {
 		super();
 		this.id = id;
 		this.ip = ip;
 		this.size = size;
+		this.netmask = netmask;
 		this.description = description;
 		this.zoneId = zoneId;
 		this.infraId = infraId;
@@ -62,6 +65,7 @@ public class RangeResource extends ResourceSupport {
 		this.id = range.getId();
 		this.ip = range.getIp();
 		this.size = range.getSize();
+		this.netmask = Netmask.fromNumberHosts(range.getSize());
 		this.description = range.getDescription();
 		this.zoneId = range.getZoneId();
 		this.infraId = range.getInfraId();
@@ -108,6 +112,13 @@ public class RangeResource extends ResourceSupport {
 	 */
 	public Integer getInfraId() {
 		return infraId;
+	}
+
+	/**
+	 * @return the netmask
+	 */
+	public Integer getNetmask() {
+		return netmask;
 	}
 	
 }

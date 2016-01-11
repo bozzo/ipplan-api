@@ -103,10 +103,7 @@ public class InfrastructureController {
 	public HttpEntity<InfrastructureResource> addInfrastructure(@RequestBody @NotNull Infrastructure infra) {
 		LOGGER.info("add new infrastruture: {}", infra);
 		Infrastructure infrastructure = repository.save(infra);
-		if (infrastructure == null) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-		return new ResponseEntity<>(assembler.toResource(infra), HttpStatus.CREATED);
+		return new ResponseEntity<>(assembler.toResource(infrastructure), HttpStatus.CREATED);
 	}
 
 	@RequestMapping(value = "/{infraId}", method = RequestMethod.PUT, produces = {MediaType.APPLICATION_JSON_VALUE})

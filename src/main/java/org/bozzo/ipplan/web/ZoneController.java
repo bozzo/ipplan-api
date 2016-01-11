@@ -77,6 +77,15 @@ public class ZoneController {
 		return pagedAssembler.toResource(zones, assembler);
 	}
 
+	@RequestMapping(value = "/{zoneId}", method = RequestMethod.GET, produces = {MediaType.TEXT_HTML_VALUE})
+	public ModelAndView getZoneView(@PathVariable @NotNull Integer infraId, @PathVariable Long zoneId) {
+		HttpEntity<ZoneResource> zone = this.getZone(infraId, zoneId);
+		ModelAndView view = new ModelAndView("zone");
+		view.addObject("id", zoneId);
+		view.addObject("object", zone.getBody());
+		return view;
+	}
+
 	@RequestMapping(value = "/{zoneId}", method=RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
 	public HttpEntity<ZoneResource> getZone(@PathVariable Integer infraId, @PathVariable Long zoneId) {
 		Zone zone = repository.findByInfraIdAndId(infraId, zoneId);
@@ -91,9 +100,6 @@ public class ZoneController {
 		Preconditions.checkArgument(infraId.equals(zone.getInfraId()));
 		LOGGER.info("add new zone: {}", zone);
 		Zone zon = repository.save(zone);
-		if (zon == null) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
 		return new ResponseEntity<>(assembler.toResource(zon), HttpStatus.CREATED);
 	}
 

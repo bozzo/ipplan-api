@@ -78,6 +78,15 @@ public class AddressController {
 		return pagedAssembler.toResource(addresses, assembler);
 	}
 
+	@RequestMapping(value = "/{ip}", method = RequestMethod.GET, produces = {MediaType.TEXT_HTML_VALUE})
+	public ModelAndView getAddressView(@PathVariable Integer infraId, @PathVariable Long subnetId, @PathVariable Long ip) {
+		HttpEntity<AddressResource> address = this.getAddress(infraId, subnetId, ip);
+		ModelAndView view = new ModelAndView("address");
+		view.addObject("id", ip);
+		view.addObject("object", address.getBody());
+		return view;
+	}
+
 	@RequestMapping(value = "/{ip}", method=RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
 	public HttpEntity<AddressResource> getAddress(@PathVariable Integer infraId, @PathVariable Long subnetId, @PathVariable Long ip) {
 		Address address = this.repository.findBySubnetIdAndIp(subnetId, ip);
@@ -94,9 +103,6 @@ public class AddressController {
 		Preconditions.checkArgument(subnetId.equals(address.getSubnetId()));
 		LOGGER.info("add new address: {}", address);
 		Address ip = repository.save(address);
-		if (ip == null) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
 		ip.setInfraId(infraId);
 		return new ResponseEntity<>(assembler.toResource(ip), HttpStatus.CREATED);
 	}

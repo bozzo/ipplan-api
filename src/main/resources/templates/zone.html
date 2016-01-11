@@ -5,21 +5,21 @@
 	<div th:replace="frames :: navbar">Navigation Bar</div>
 	
 	<div class="container">
-		<h1>Subnet</h1>
+		<h1>Zone</h1>
 		
 		<div class="alert alert-info" th:unless="${object}">
-			No subnet found with id #<span th:text="${id}"></span>.
+			No zone found with id #<span th:text="${id}"></span>.
 		</div>
 		<div class="panel-group" th:if="${object}">
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h3 class="panel-title">Subnet #<span th:text="${object.subnetId}"></span></h3>
+					<h3 class="panel-title">Zone #<span th:text="${object.zoneId}"></span></h3>
 				</div>
 				<div class="panel-body">
 					<div class="form-group">
 						<label class="col-sm-3"><strong>ID:</strong></label>
 						<p class="col-sm-9" 
-							th:text="${object.subnetId}">ID</p>
+							th:text="${object.zoneId}">ID</p>
 					</div>
 					<div class="form-group">
 						<label class="col-sm-3"><strong>Infrastructure ID:</strong></label>
@@ -36,37 +36,12 @@
 						<p class="col-sm-9" 
 							th:text="${T(org.bozzo.ipplan.tools.IpAddress).toString(object.ip)}">IP</p>
 					</div>
-					<div class="form-group">
-						<label class="col-sm-3"><strong>Netmask:</strong></label>
-						<p class="col-sm-9" 
-							th:text="${T(org.bozzo.ipplan.tools.Netmask).toString(object.netmask) + ' / ' + object.netmask}">Netmask</p>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-3"><strong>Size:</strong></label>
-						<p class="col-sm-9" 
-							th:text="${object.size}">Size</p>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-3"><strong>Group:</strong></label>
-						<p class="col-sm-9" 
-							th:text="${object.group}">Group</p>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-3"><strong>Modified on:</strong></label>
-						<p class="col-sm-9" 
-							th:text="${object.lastModifed}">Modified</p>
-					</div>
-					<div class="form-group">
-						<label class="col-sm-3"><strong>Created by:</strong></label>
-						<p class="col-sm-9" 
-							th:text="${object.userId}">User</p>
-					</div>
 				</div>
 			</div>
 		</div>
 		<div class="panel-group" th:if="${object}">
 			<a th:href="${object.getLink('infra').href}" class="btn btn-sm btn-primary">Infrastructure</a>
-			<a th:href="${object.getLink('addresses').href}" class="btn btn-sm btn-primary">IP Addresses</a>
+			<a th:href="${object.getLink('ranges').href}" class="btn btn-sm btn-primary">Ranges</a>
 		</div>
 	</div>
 </body>

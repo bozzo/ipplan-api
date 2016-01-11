@@ -42,6 +42,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.google.common.base.Preconditions;
 
@@ -60,10 +61,27 @@ public class RangeController {
 	@Autowired
 	private RangeResourceAssembler assembler;
 
+	@RequestMapping(method = RequestMethod.GET, produces = {MediaType.TEXT_HTML_VALUE})
+	public ModelAndView getRangesView(@PathVariable Integer infraId, @PathVariable Long zoneId, Pageable pageable, PagedResourcesAssembler<Range> pagedAssembler) {
+		PagedResources<RangeResource> ranges = this.getRanges(infraId, zoneId, pageable, pagedAssembler);
+		ModelAndView view = new ModelAndView("ranges");
+		view.addObject("pages", ranges);
+		return view;
+	}
+
 	@RequestMapping(method=RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
 	public PagedResources<RangeResource> getRanges(@PathVariable Integer infraId, @PathVariable Long zoneId, Pageable pageable, PagedResourcesAssembler<Range> pagedAssembler) {
 		Page<Range> ranges = this.repository.findByInfraIdAndZoneId(infraId, zoneId, pageable);
 		return pagedAssembler.toResource(ranges, assembler);
+	}
+
+	@RequestMapping(value = "/{rangeId}", method = RequestMethod.GET, produces = {MediaType.TEXT_HTML_VALUE})
+	public ModelAndView getRangeView(@PathVariable Integer infraId, @PathVariable Long zoneId, @PathVariable Long rangeId) {
+		HttpEntity<RangeResource> range = this.getRange(infraId, zoneId, rangeId);
+		ModelAndView view = new ModelAndView("range");
+		view.addObject("id", rangeId);
+		view.addObject("object", range.getBody());
+		return view;
 	}
 
 	@RequestMapping(value = "/{rangeId}", method=RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -81,9 +99,6 @@ public class RangeController {
 		Preconditions.checkArgument(zoneId.equals(range.getZoneId()));
 		LOGGER.info("add new range: {}", range);
 		Range rang = repository.save(range);
-		if (rang == null) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
 		return new ResponseEntity<>(assembler.toResource(rang), HttpStatus.CREATED);
 	}
 

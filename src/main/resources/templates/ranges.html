@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="frames :: header" />
+<body>
+	<div th:replace="frames :: navbar">Navigation Bar</div>
+	
+	<div class="container">
+		<h1>Ranges</h1>
+		
+		<div class="alert alert-info" th:if="${#lists.isEmpty(pages.content)}">
+			No ranges found for this zone.
+		</div>
+		<div class="panel-group" th:unless="${#lists.isEmpty(pages.content)}">
+			<table class="table table-striped">
+				<thead>
+					<tr>
+						<th>#</th>
+						<th>IP</th>
+						<th>Netmask</th>
+						<th>Description</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="page : ${pages.content}">
+						<td th:text="${page.rangeId}"></td>
+						<td th:text="${T(org.bozzo.ipplan.tools.IpAddress).toString(page.ip)}"></td>
+						<td th:text="${page.netmask}"></td>
+						<td th:text="${page.description}"></td>
+						<td>
+							<a th:href="${page.id.href}" class="btn btn-sm btn-primary">Details</a>
+						</td>
+					</tr>
+				</tbody>
+				<tfoot>
+					<tr>
+						<th>
+							<div class="dropdown btn-group">
+							  <button class="btn btn-primary" th:text="${pages.metadata.size}"></button>
+							  <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+							    <span class="caret"></span>
+							  </button>
+						      <ul class="dropdown-menu">
+				                  <li><a th:href="${pages.id.href + '?size=10'}">10</a></li>
+				                  <li><a th:href="${pages.id.href + '?size=20'}">20</a></li>
+				                  <li><a th:href="${pages.id.href + '?size=50'}">50</a></li>
+				                  <li><a th:href="${pages.id.href + '?size=100'}">100</a></li>
+						      </ul>
+						    </div>
+			           	</th>
+						<th class="text-right" colspan="3">Total elements: <span th:text="${pages.metadata.totalElements}"></span></th>
+					</tr>
+				</tfoot>
+			</table>
+			<div>
+				<ul class="pagination">
+					<li th:unless="${pages.getLink('first')}"><a class="disabled">&laquo;</a></li>
+					<li th:if="${pages.getLink('first')}"><a
+						th:href="${pages.getLink('first').href}">&laquo;</a></li>
+					<li th:unless="${pages.getLink('prev')}"><a class="disabled">&lt;</a></li>
+					<li th:if="${pages.getLink('prev')}"><a
+						th:href="${pages.getLink('prev').href}">&lt;</a></li>
+	
+					<li th:if="${pages.getLink('first') ne null and pages.metadata.number gt 0}">
+						<a th:href="${pages.getLink('first').href}">1</a>
+					</li>
+	
+					<li th:if="${pages.metadata.number gt 2}"><a class="disabled">...</a></li>
+					<li th:if="${pages.metadata.number gt 1}"><a
+						th:href="${pages.getLink('prev').href}"
+						th:text="${pages.metadata.number}"></a></li>
+					<li th:if="${pages.metadata.totalPages ge 1}">
+						<a class="disabled">
+							<strong	th:text="${pages.metadata.number + 1}"></strong>
+						</a>
+					</li>
+					<li
+						th:if="${pages.metadata.number lt pages.metadata.totalPages - 2}"><a
+						th:href="${pages.getLink('next').href}"
+						th:text="${pages.metadata.number + 2}"></a></li>
+					<li
+						th:if="${pages.metadata.number lt pages.metadata.totalPages - 3}"><a
+						class="disabled">...</a></li>
+	
+					<li th:if="${pages.metadata.totalPages ge 2 and pages.metadata.number ne pages.metadata.totalPages - 1}"><a
+						th:href="${pages.getLink('last').href}"
+						th:text="${pages.metadata.totalPages}"></a></li>
+	
+					<li th:unless="${pages.getLink('next')}"><a class="disabled">&gt;</a></li>
+					<li th:if="${pages.getLink('next')}"><a
+						th:href="${pages.getLink('next').href}">&gt;</a></li>
+					<li th:unless="${pages.getLink('last')}"><a class="disabled">&raquo;</a></li>
+					<li th:if="${pages.getLink('last')}"><a
+						th:href="${pages.getLink('last').href}">&raquo;</a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<script>
+		$('.dropdown-toggle').dropdown()
+	</script>
+</body>
+</html>
