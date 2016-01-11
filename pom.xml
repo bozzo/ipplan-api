@@ -71,6 +71,13 @@
 			<groupId>org.mariadb.jdbc</groupId>
 			<artifactId>mariadb-java-client</artifactId>
 		</dependency>
+		<dependency>
+			 <groupId>org.jacoco</groupId>
+			 <artifactId>org.jacoco.agent</artifactId>
+			 <classifier>runtime</classifier> 
+			 <version>0.7.5.201505241946</version>
+			 <scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
