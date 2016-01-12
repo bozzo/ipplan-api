@@ -52,11 +52,7 @@ public class ZoneResource extends ResourceSupport {
 	}
 
 	public ZoneResource(Zone zone) {
-		super();
-		this.id = zone.getId();
-		this.infraId = zone.getInfraId();
-		this.ip = zone.getIp();
-		this.description = zone.getDescription();
+		this(zone.getId(),zone.getInfraId(),zone.getIp(),zone.getDescription());
 	}
 
 	/**

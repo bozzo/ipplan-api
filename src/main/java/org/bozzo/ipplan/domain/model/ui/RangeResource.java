@@ -61,14 +61,7 @@ public class RangeResource extends ResourceSupport {
 	}
 	
 	public RangeResource(Range range) {
-		super();
-		this.id = range.getId();
-		this.ip = range.getIp();
-		this.size = range.getSize();
-		this.netmask = Netmask.fromNumberHosts(range.getSize());
-		this.description = range.getDescription();
-		this.zoneId = range.getZoneId();
-		this.infraId = range.getInfraId();
+		this(range.getId(),range.getIp(),range.getSize(),Netmask.fromNumberHosts(range.getSize()),range.getDescription(),range.getZoneId(),range.getInfraId());
 	}
 
 	/**

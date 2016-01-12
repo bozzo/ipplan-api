@@ -75,17 +75,19 @@ public class SubnetResource extends ResourceSupport {
 	}
 	
 	public SubnetResource( Subnet subnet) {
-		this.id = subnet.getId();
-		this.infraId = subnet.getInfraId();
-		this.ip = subnet.getIp();
-		this.size = subnet.getSize();
-		this.netmask = Netmask.fromNumberHosts(subnet.getSize());
-		this.description = subnet.getDescription();
-		this.group = subnet.getGroup();
-		this.lastModifed = subnet.getLastModifed();
-		this.userId = subnet.getUserId();
-		this.optionId = subnet.getOptionId();
-		this.swipMod = subnet.getSwipMod();
+		this(
+				subnet.getId(),
+				subnet.getInfraId(),
+				subnet.getIp(),
+				Netmask.fromNumberHosts(subnet.getSize()),
+				subnet.getSize(),
+				subnet.getDescription(),
+				subnet.getGroup(),
+				subnet.getLastModifed(),
+				subnet.getUserId(),
+				subnet.getOptionId(),
+				subnet.getSwipMod()
+			);
 	}
 
 	/**

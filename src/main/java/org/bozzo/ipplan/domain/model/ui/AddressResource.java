@@ -76,19 +76,20 @@ public class AddressResource extends ResourceSupport {
 	}
 
 	public AddressResource(Address address) {
-		super();
-		this.ip = address.getIp();
-		this.infraId = address.getInfraId();
-		this.subnetId = address.getSubnetId();
-		this.lastModifed = address.getLastModifed();
-		this.lastPol = address.getLastPol();
-		this.mac = address.getMac();
-		this.description = address.getDescription();
-		this.name = address.getName();
-		this.phone = address.getPhone();
-		this.userInfo = address.getUserInfo();
-		this.userId = address.getUserId();
-		this.location = address.getLocation();
+		this(
+				address.getIp(),
+				address.getInfraId(),
+				address.getSubnetId(),
+				address.getLastModifed(),
+				address.getLastPol(),
+				address.getMac(),
+				address.getDescription(),
+				address.getName(),
+				address.getPhone(),
+				address.getUserInfo(),
+				address.getUserId(),
+				address.getLocation()
+		);
 	}
 
 	/**

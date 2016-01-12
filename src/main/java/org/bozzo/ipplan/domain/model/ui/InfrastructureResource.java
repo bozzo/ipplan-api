@@ -51,10 +51,7 @@ public class InfrastructureResource extends ResourceSupport {
 	}
 
 	public InfrastructureResource(Infrastructure infra) {
-		this.id = infra.getId();
-		this.description = infra.getDescription();
-		this.crm = infra.getCrm();
-		this.group = infra.getGroup();
+		this(infra.getId(),infra.getDescription(),infra.getCrm(),infra.getGroup());
 	}
 
 	/**
