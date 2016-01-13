@@ -109,9 +109,6 @@ public class RangeController {
 		Preconditions.checkArgument(rangeId.equals(range.getId()));
 		LOGGER.info("update range: {}", range);
 		Range rang = repository.save(range);
-		if (rang == null) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
 		return new ResponseEntity<>(assembler.toResource(rang), HttpStatus.CREATED);
 	}
 

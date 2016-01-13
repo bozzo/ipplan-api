@@ -127,9 +127,6 @@ public class SubnetController {
 		Preconditions.checkArgument(subnetId.equals(subnet.getId()));
 		LOGGER.info("update subnet: {}", subnet);
 		Subnet sub = repository.save(subnet);
-		if (sub == null) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
 		return new ResponseEntity<>(assembler.toResource(sub), HttpStatus.CREATED);
 	}
 

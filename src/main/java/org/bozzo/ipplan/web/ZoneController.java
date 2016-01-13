@@ -109,9 +109,6 @@ public class ZoneController {
 		Preconditions.checkArgument(zoneId.equals(zone.getId()));
 		LOGGER.info("update zone: {}", zone);
 		Zone zon = repository.save(zone);
-		if (zon == null) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
 		return new ResponseEntity<>(assembler.toResource(zon), HttpStatus.CREATED);
 	}
 

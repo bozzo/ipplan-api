@@ -112,10 +112,7 @@ public class InfrastructureController {
 		Preconditions.checkArgument(infraId.equals(infra.getId()));
 		LOGGER.info("update infrastruture: {}", infra);
 		Infrastructure infrastructure = repository.save(infra);
-		if (infrastructure == null) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-		return new ResponseEntity<>(assembler.toResource(infra), HttpStatus.CREATED);
+		return new ResponseEntity<>(assembler.toResource(infrastructure), HttpStatus.CREATED);
 	}
 
 	@RequestMapping(value = "/{infraId}", method = RequestMethod.DELETE)

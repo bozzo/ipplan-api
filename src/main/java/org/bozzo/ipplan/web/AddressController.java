@@ -113,9 +113,6 @@ public class AddressController {
 		Preconditions.checkArgument(ip.equals(address.getIp()));
 		LOGGER.info("update address: {}", address);
 		Address addr = repository.save(address);
-		if (addr == null) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
 		addr.setInfraId(infraId);
 		return new ResponseEntity<>(assembler.toResource(addr), HttpStatus.CREATED);
 	}
