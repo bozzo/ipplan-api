@@ -29,6 +29,7 @@
 						<td th:text="${page.description}"></td>
 						<td>
 							<a th:href="${page.id.href}" class="btn btn-sm btn-primary">Details</a>
+							<a th:href="${page.getLink('subnets').href}" class="btn btn-sm btn-default">Subnets</a>
 						</td>
 					</tr>
 				</tbody>

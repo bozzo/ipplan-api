@@ -121,7 +121,7 @@ public class RangeControllerTests {
 		Assert.assertEquals(range.getZoneId(), rangeReturned.getZoneId());
 		Assert.assertEquals(range.getIp(), rangeReturned.getIp());
 		Assert.assertEquals(range.getSize(), rangeReturned.getSize());
-		Assert.assertEquals(3, rangeReturned.getLinks().size());
+		Assert.assertEquals(4, rangeReturned.getLinks().size());
 		id = rangeReturned.getRangeId();
 	}
 
@@ -152,7 +152,7 @@ public class RangeControllerTests {
 		Assert.assertEquals(range.getZoneId(), rangeReturned.getZoneId());
 		Assert.assertEquals(range.getIp(), rangeReturned.getIp());
 		Assert.assertEquals(range.getSize(), rangeReturned.getSize());
-		Assert.assertEquals(3, rangeReturned.getLinks().size());
+		Assert.assertEquals(4, rangeReturned.getLinks().size());
 	}
 
 	@Test
@@ -181,7 +181,7 @@ public class RangeControllerTests {
 		Assert.assertEquals(range.getZoneId(), rangeReturned.getZoneId());
 		Assert.assertEquals(range.getIp(), rangeReturned.getIp());
 		Assert.assertEquals(range.getSize(), rangeReturned.getSize());
-		Assert.assertEquals(3, rangeReturned.getLinks().size());
+		Assert.assertEquals(4, rangeReturned.getLinks().size());
 		id2 = rangeReturned.getRangeId();
 	}
 
@@ -214,7 +214,7 @@ public class RangeControllerTests {
 		RangeResource range = resp.getBody();
 		Assert.assertEquals("Test description 3", range.getDescription());
 		Assert.assertEquals(0xC0A80002L, (long) range.getIp());
-		Assert.assertEquals(3, range.getLinks().size());
+		Assert.assertEquals(4, range.getLinks().size());
 	}
 
 	@Test

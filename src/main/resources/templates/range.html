@@ -57,6 +57,7 @@
 		<div class="panel-group" th:if="${object}">
 			<a th:href="${object.getLink('infra').href}" class="btn btn-sm btn-primary">Infrastructure</a>
 			<a th:href="${object.getLink('zone').href}" class="btn btn-sm btn-primary">Zone</a>
+			<a th:href="${object.getLink('subnets').href}" class="btn btn-sm btn-primary">Subnets</a>
 		</div>
 	</div>
 </body>

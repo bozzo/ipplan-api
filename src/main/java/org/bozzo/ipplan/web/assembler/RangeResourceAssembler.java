@@ -27,8 +27,10 @@ import java.util.List;
 
 import org.bozzo.ipplan.domain.model.Range;
 import org.bozzo.ipplan.domain.model.ui.RangeResource;
+import org.bozzo.ipplan.tools.IpAddress;
 import org.bozzo.ipplan.web.InfrastructureController;
 import org.bozzo.ipplan.web.RangeController;
+import org.bozzo.ipplan.web.SubnetController;
 import org.bozzo.ipplan.web.ZoneController;
 import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
 import org.springframework.stereotype.Component;
@@ -54,6 +56,7 @@ public class RangeResourceAssembler extends ResourceAssemblerSupport<Range, Rang
 		RangeResource range = new RangeResource(entity);
 		range.add(linkTo(methodOn(ZoneController.class).getZone(range.getInfraId(), range.getZoneId())).withRel("zone"));
 		range.add(linkTo(methodOn(InfrastructureController.class).getInfrastructure(range.getInfraId())).withRel("infra"));
+		range.add(linkTo(methodOn(SubnetController.class).getSubnets(IpAddress.toString(range.getIp()), range.getSize(), range.getInfraId(), null, null)).withRel("subnets"));
 		range.add(linkTo(methodOn(RangeController.class).getRange(range.getInfraId(), range.getZoneId(),range.getRangeId())).withSelfRel());
 		return range;
 	}
