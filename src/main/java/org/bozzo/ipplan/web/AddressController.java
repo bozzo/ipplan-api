@@ -21,9 +21,11 @@ package org.bozzo.ipplan.web;
 
 import javax.validation.constraints.NotNull;
 
+import org.bozzo.ipplan.domain.Mode;
 import org.bozzo.ipplan.domain.dao.AddressRepository;
 import org.bozzo.ipplan.domain.model.Address;
 import org.bozzo.ipplan.domain.model.ui.AddressResource;
+import org.bozzo.ipplan.domain.service.AddressService;
 import org.bozzo.ipplan.web.assembler.AddressResourceAssembler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +42,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
@@ -56,26 +59,44 @@ public class AddressController {
 	private static Logger LOGGER = LoggerFactory.getLogger(AddressController.class);
 	
 	@Autowired
+	private AddressService service;
+	
+	@Autowired
 	private AddressRepository repository;
 	
 	@Autowired
 	private AddressResourceAssembler assembler;
 
 	@RequestMapping(method = RequestMethod.GET, produces = {MediaType.TEXT_HTML_VALUE})
-	public ModelAndView getAddressesView(@PathVariable Integer infraId, @PathVariable Long subnetId, Pageable pageable, PagedResourcesAssembler<Address> pagedAssembler) {
-		PagedResources<AddressResource> addresses = this.getAddresses(infraId, subnetId, pageable, pagedAssembler);
+	public ModelAndView getAddressesView(@RequestParam(required = false) Mode mode, @PathVariable Integer infraId, @PathVariable Long subnetId, Pageable pageable, PagedResourcesAssembler<Address> pagedAssembler) {
+		PagedResources<AddressResource> addresses = this.getAddresses(mode, infraId, subnetId, pageable, pagedAssembler);
 		ModelAndView view = new ModelAndView("addresses");
 		view.addObject("pages", addresses);
 		return view;
 	}
 
 	@RequestMapping(method=RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-	public PagedResources<AddressResource> getAddresses(@PathVariable Integer infraId, @PathVariable Long subnetId, Pageable pageable, PagedResourcesAssembler<Address> pagedAssembler) {
-		Page<Address> addresses = this.repository.findBySubnetId(subnetId, pageable);
+	public PagedResources<AddressResource> getAddresses(@RequestParam(required = false) Mode mode, @PathVariable Integer infraId, @PathVariable Long subnetId, Pageable pageable, PagedResourcesAssembler<Address> pagedAssembler) {
+		Page<Address> addresses;
+		if (Mode.Free.equals(mode)) {
+			addresses = this.service.findFreeBySubnetId(subnetId, pageable);
+		} else {
+			addresses = this.repository.findBySubnetId(subnetId, pageable);
+		}
 		for (Address address : addresses) {
 			address.setInfraId(infraId);
 		}
 		return pagedAssembler.toResource(addresses, assembler);
+	}
+
+	@RequestMapping(value = "/free", method=RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
+	public HttpEntity<AddressResource> getFreeAddress(@PathVariable Integer infraId, @PathVariable Long subnetId) {
+		Address address = this.service.findFreeAddressBySubnetId(subnetId);
+		if (address == null) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		address.setInfraId(infraId);
+		return new ResponseEntity<>(assembler.toResource(address), HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/{ip}", method = RequestMethod.GET, produces = {MediaType.TEXT_HTML_VALUE})

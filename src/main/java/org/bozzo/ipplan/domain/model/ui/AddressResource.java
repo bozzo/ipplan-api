@@ -44,6 +44,7 @@ public class AddressResource extends ResourceSupport {
 	private final String userInfo;
 	private final String userId;
 	private final String location;
+	private final boolean free;
 	/**
 	 * @param ip
 	 * @param subnetId
@@ -59,7 +60,7 @@ public class AddressResource extends ResourceSupport {
 	 */
 	@JsonCreator
 	public AddressResource(Long ip, Integer infraId, Long subnetId, Date lastModifed, Date lastPol, String mac, String description,
-			String name, String phone, String userInfo, String userId, String location) {
+			String name, String phone, String userInfo, String userId, String location, boolean free) {
 		super();
 		this.ip = ip;
 		this.infraId = infraId;
@@ -73,6 +74,7 @@ public class AddressResource extends ResourceSupport {
 		this.userInfo = userInfo;
 		this.userId = userId;
 		this.location = location;
+		this.free = free;
 	}
 
 	public AddressResource(Address address) {
@@ -88,7 +90,8 @@ public class AddressResource extends ResourceSupport {
 				address.getPhone(),
 				address.getUserInfo(),
 				address.getUserId(),
-				address.getLocation()
+				address.getLocation(),
+				address.isFree()
 		);
 	}
 
@@ -164,6 +167,13 @@ public class AddressResource extends ResourceSupport {
 	 */
 	public String getLocation() {
 		return location;
+	}
+
+	/**
+	 * @return the free
+	 */
+	public boolean isFree() {
+		return free;
 	}
 	
 }

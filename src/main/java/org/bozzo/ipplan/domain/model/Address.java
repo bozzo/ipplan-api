@@ -77,6 +77,17 @@ public class Address implements Serializable {
 	
 	@Column(name="location")
 	private String location;
+	
+	@Transient
+	private boolean free;
+
+	/**
+	 * 
+	 */
+	public Address() {
+		super();
+		this.free = false;
+	}
 
 	/**
 	 * @return the ip
@@ -246,6 +257,20 @@ public class Address implements Serializable {
 		this.location = location;
 	}
 
+	/**
+	 * @return the free
+	 */
+	public boolean isFree() {
+		return free;
+	}
+
+	/**
+	 * @param free the free to set
+	 */
+	public void setFree(boolean free) {
+		this.free = free;
+	}
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
@@ -256,7 +281,7 @@ public class Address implements Serializable {
 				.append(lastModifed).append(", lastPol=").append(lastPol).append(", mac=").append(mac)
 				.append(", description=").append(description).append(", name=").append(name).append(", phone=")
 				.append(phone).append(", userInfo=").append(userInfo).append(", userId=").append(userId)
-				.append(", location=").append(location).append("]");
+				.append(", location=").append(location).append(", free=").append(free).append("]");
 		return builder.toString();
 	}
 
