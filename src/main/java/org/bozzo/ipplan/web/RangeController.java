@@ -27,6 +27,7 @@ import org.bozzo.ipplan.domain.model.ApiError;
 import org.bozzo.ipplan.domain.model.Range;
 import org.bozzo.ipplan.domain.model.ui.RangeResource;
 import org.bozzo.ipplan.web.assembler.RangeResourceAssembler;
+import org.bozzo.ipplan.web.assembler.ZoneResourceAssembler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.google.common.base.Preconditions;
+import com.mangofactory.swagger.annotations.ApiIgnore;
 
 /**
  * @author boris
@@ -55,7 +57,7 @@ import com.google.common.base.Preconditions;
 @RestController
 @RequestMapping("/api/infras/{infraId}/zones/{zoneId}/ranges")
 public class RangeController {
-	private static Logger LOGGER = LoggerFactory.getLogger(RangeController.class);
+	private static Logger logger = LoggerFactory.getLogger(RangeController.class);
 	
 	@Autowired
 	private RangeRepository repository;
@@ -64,6 +66,7 @@ public class RangeController {
 	private RangeResourceAssembler assembler;
 
 	@RequestMapping(method = RequestMethod.GET, produces = {MediaType.TEXT_HTML_VALUE})
+	@ApiIgnore
 	public ModelAndView getRangesView(@PathVariable Integer infraId, @PathVariable Long zoneId, Pageable pageable, PagedResourcesAssembler<Range> pagedAssembler) {
 		PagedResources<RangeResource> ranges = this.getRanges(infraId, zoneId, pageable, pagedAssembler);
 		ModelAndView view = new ModelAndView("ranges");
@@ -74,10 +77,13 @@ public class RangeController {
 	@RequestMapping(method=RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
 	public PagedResources<RangeResource> getRanges(@PathVariable Integer infraId, @PathVariable Long zoneId, Pageable pageable, PagedResourcesAssembler<Range> pagedAssembler) {
 		Page<Range> ranges = this.repository.findByInfraIdAndZoneId(infraId, zoneId, pageable);
-		return pagedAssembler.toResource(ranges, assembler);
+		PagedResources<RangeResource> page = pagedAssembler.toResource(ranges, assembler);
+		page.add(ZoneResourceAssembler.link(infraId, zoneId));
+		return page;
 	}
 
 	@RequestMapping(value = "/{rangeId}", method = RequestMethod.GET, produces = {MediaType.TEXT_HTML_VALUE})
+	@ApiIgnore
 	public ModelAndView getRangeView(@PathVariable Integer infraId, @PathVariable Long zoneId, @PathVariable Long rangeId) {
 		HttpEntity<RangeResource> range = this.getRange(infraId, zoneId, rangeId);
 		ModelAndView view = new ModelAndView("range");
@@ -99,7 +105,7 @@ public class RangeController {
 	public HttpEntity<RangeResource> addRange(@PathVariable Integer infraId, @PathVariable Long zoneId, @RequestBody @NotNull Range range) {
 		Preconditions.checkArgument(infraId.equals(range.getInfraId()));
 		Preconditions.checkArgument(zoneId.equals(range.getZoneId()));
-		LOGGER.info("add new range: {}", range);
+		logger.info("add new range: {}", range);
 		Range rang = repository.save(range);
 		return new ResponseEntity<>(assembler.toResource(rang), HttpStatus.CREATED);
 	}
@@ -109,14 +115,14 @@ public class RangeController {
 		Preconditions.checkArgument(infraId.equals(range.getInfraId()));
 		Preconditions.checkArgument(zoneId.equals(range.getZoneId()));
 		Preconditions.checkArgument(rangeId.equals(range.getId()));
-		LOGGER.info("update range: {}", range);
+		logger.info("update range: {}", range);
 		Range rang = repository.save(range);
 		return new ResponseEntity<>(assembler.toResource(rang), HttpStatus.CREATED);
 	}
 
 	@RequestMapping(value = "/{rangeId}", method=RequestMethod.DELETE)
 	public @ResponseStatus(HttpStatus.NO_CONTENT) void deleteRange(@PathVariable Integer infraId, @PathVariable Long zoneId, @PathVariable Long rangeId) {
-		LOGGER.info("delete range with id: {} (infra id: {}, zone id: {})", rangeId, infraId, zoneId);
+		logger.info("delete range with id: {} (infra id: {}, zone id: {})", rangeId, infraId, zoneId);
 		this.repository.deleteByInfraIdAndZoneIdAndId(infraId, zoneId, rangeId);
 	}
 }

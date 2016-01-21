@@ -48,6 +48,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.google.common.base.Preconditions;
+import com.mangofactory.swagger.annotations.ApiIgnore;
 
 /**
  * @author boris
@@ -56,7 +57,7 @@ import com.google.common.base.Preconditions;
 @RestController
 @RequestMapping("/api/infras/{infraId}/zones")
 public class ZoneController {
-	private static Logger LOGGER = LoggerFactory.getLogger(ZoneController.class);
+	private static Logger logger = LoggerFactory.getLogger(ZoneController.class);
 	
 	@Autowired
 	private ZoneRepository repository;
@@ -65,10 +66,10 @@ public class ZoneController {
 	private ZoneResourceAssembler assembler;
 
 	@RequestMapping(method = RequestMethod.GET, produces = {MediaType.TEXT_HTML_VALUE})
+	@ApiIgnore
 	public ModelAndView getZonesView(@PathVariable @NotNull Integer infraId, Pageable pageable, PagedResourcesAssembler<Zone> pagedAssembler) {
 		PagedResources<ZoneResource> subnets = this.getZones(infraId, pageable, pagedAssembler);
 		ModelAndView view = new ModelAndView("zones");
-		view.addObject("link", InfrastructureResourceAssembler.link(infraId));
 		view.addObject("pages", subnets);
 		return view;
 	}
@@ -76,10 +77,13 @@ public class ZoneController {
 	@RequestMapping(method=RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
 	public PagedResources<ZoneResource> getZones(@PathVariable @NotNull Integer infraId, Pageable pageable, PagedResourcesAssembler<Zone> pagedAssembler) {
 		Page<Zone> zones = this.repository.findByInfraId(infraId, pageable);
-		return pagedAssembler.toResource(zones, assembler);
+		PagedResources<ZoneResource> page = pagedAssembler.toResource(zones, assembler);
+		page.add(InfrastructureResourceAssembler.link(infraId));
+		return page;
 	}
 
 	@RequestMapping(value = "/{zoneId}", method = RequestMethod.GET, produces = {MediaType.TEXT_HTML_VALUE})
+	@ApiIgnore
 	public ModelAndView getZoneView(@PathVariable @NotNull Integer infraId, @PathVariable Long zoneId) {
 		HttpEntity<ZoneResource> zone = this.getZone(infraId, zoneId);
 		ModelAndView view = new ModelAndView("zone");
@@ -100,7 +104,7 @@ public class ZoneController {
 	@RequestMapping(method=RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_VALUE})
 	public HttpEntity<ZoneResource> addZone(@PathVariable Integer infraId, @RequestBody @NotNull Zone zone) {
 		Preconditions.checkArgument(infraId.equals(zone.getInfraId()));
-		LOGGER.info("add new zone: {}", zone);
+		logger.info("add new zone: {}", zone);
 		Zone zon = repository.save(zone);
 		return new ResponseEntity<>(assembler.toResource(zon), HttpStatus.CREATED);
 	}
@@ -109,14 +113,14 @@ public class ZoneController {
 	public HttpEntity<ZoneResource> updateZone(@PathVariable Integer infraId, @PathVariable Long zoneId, @RequestBody @NotNull Zone zone) {
 		Preconditions.checkArgument(infraId.equals(zone.getInfraId()));
 		Preconditions.checkArgument(zoneId.equals(zone.getId()));
-		LOGGER.info("update zone: {}", zone);
+		logger.info("update zone: {}", zone);
 		Zone zon = repository.save(zone);
 		return new ResponseEntity<>(assembler.toResource(zon), HttpStatus.CREATED);
 	}
 
 	@RequestMapping(value = "/{zoneId}", method=RequestMethod.DELETE)
 	public @ResponseStatus(HttpStatus.NO_CONTENT) void deleteZone(@PathVariable Integer infraId, @PathVariable Long zoneId) {
-		LOGGER.info("delete zone with id: {} (infra id: {})", zoneId, infraId);
+		logger.info("delete zone with id: {} (infra id: {})", zoneId, infraId);
 		this.repository.deleteByInfraIdAndId(infraId, zoneId);
 	}
 }

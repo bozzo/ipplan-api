@@ -50,6 +50,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.google.common.base.Preconditions;
+import com.mangofactory.swagger.annotations.ApiIgnore;
 
 /**
  * @author boris
@@ -58,7 +59,7 @@ import com.google.common.base.Preconditions;
 @RestController
 @RequestMapping("/api/infras/{infraId}/subnets")
 public class SubnetController {
-	private static Logger LOGGER = LoggerFactory.getLogger(SubnetController.class);
+	private static Logger logger = LoggerFactory.getLogger(SubnetController.class);
 
 	@Autowired
 	private SubnetRepository repository;
@@ -67,12 +68,12 @@ public class SubnetController {
 	private SubnetResourceAssembler assembler;
 
 	@RequestMapping(method = RequestMethod.GET, produces = {MediaType.TEXT_HTML_VALUE})
+	@ApiIgnore
 	public ModelAndView getSubnetsView(@RequestParam(required = false) String ip,
 			@RequestParam(required = false) Long size, @PathVariable @NotNull Integer infraId, Pageable pageable,
 			PagedResourcesAssembler<Subnet> pagedAssembler) {
 		HttpEntity<PagedResources<SubnetResource>> subnets = this.getSubnets(ip, size, infraId, pageable, pagedAssembler);
 		ModelAndView view = new ModelAndView("subnets");
-		view.addObject("link", InfrastructureResourceAssembler.link(infraId));
 		view.addObject("pages", subnets.getBody());
 		return view;
 	}
@@ -81,7 +82,7 @@ public class SubnetController {
 	public HttpEntity<PagedResources<SubnetResource>> getSubnets(@RequestParam(required = false) String ip,
 			@RequestParam(required = false) Long size, @PathVariable @NotNull Integer infraId, Pageable pageable,
 			PagedResourcesAssembler<Subnet> pagedAssembler) {
-		Page<Subnet> subnets = null;
+		Page<Subnet> subnets;
 		if (ip != null) {
 			long ip4 = IpAddress.toLong(ip);
 			if (size == null) {
@@ -92,10 +93,13 @@ public class SubnetController {
 		} else {
 			subnets = this.repository.findAllByInfraId(infraId, pageable);
 		}
-		return new ResponseEntity<>(pagedAssembler.toResource(subnets, assembler), HttpStatus.OK);
+		PagedResources<SubnetResource> page = pagedAssembler.toResource(subnets, assembler);
+		page.add(InfrastructureResourceAssembler.link(infraId));
+		return new ResponseEntity<>(page, HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/{subnetId}", method = RequestMethod.GET, produces = {MediaType.TEXT_HTML_VALUE})
+	@ApiIgnore
 	public ModelAndView getSubnetView(@PathVariable @NotNull Integer infraId, @PathVariable Long subnetId) {
 		HttpEntity<SubnetResource> subnet = this.getSubnet(infraId, subnetId);
 		ModelAndView view = new ModelAndView("subnet");
@@ -117,7 +121,7 @@ public class SubnetController {
 	public HttpEntity<SubnetResource> addSubnet(@PathVariable @NotNull Integer infraId,
 			@RequestBody @NotNull Subnet subnet) {
 		Preconditions.checkArgument(infraId.equals(subnet.getInfraId()));
-		LOGGER.info("add new subnet: {}", subnet);
+		logger.info("add new subnet: {}", subnet);
 		Subnet sub = repository.save(subnet);
 		return new ResponseEntity<>(assembler.toResource(sub), HttpStatus.CREATED);
 	}
@@ -127,7 +131,7 @@ public class SubnetController {
 			@RequestBody @NotNull Subnet subnet) {
 		Preconditions.checkArgument(infraId.equals(subnet.getInfraId()));
 		Preconditions.checkArgument(subnetId.equals(subnet.getId()));
-		LOGGER.info("update subnet: {}", subnet);
+		logger.info("update subnet: {}", subnet);
 		Subnet sub = repository.save(subnet);
 		return new ResponseEntity<>(assembler.toResource(sub), HttpStatus.CREATED);
 	}
@@ -135,7 +139,7 @@ public class SubnetController {
 	@RequestMapping(value = "/{subnetId}", method = RequestMethod.DELETE)
 	public @ResponseStatus(HttpStatus.NO_CONTENT) void deleteSubnet(@PathVariable Integer infraId,
 			@PathVariable Long subnetId) {
-		LOGGER.info("delete subnet with id: {} (infra id: {})", subnetId, infraId);
+		logger.info("delete subnet with id: {} (infra id: {})", subnetId, infraId);
 		this.repository.deleteByInfraIdAndId(infraId, subnetId);
 	}
 }

@@ -48,7 +48,6 @@ public class RangeResourceAssembler extends ResourceAssemblerSupport<Range, Rang
 
 	public RangeResourceAssembler(Class<?> controllerClass, Class<RangeResource> resourceType) {
 		super(controllerClass, resourceType);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override

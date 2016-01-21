@@ -46,7 +46,6 @@ public class AddressResourceAssembler extends ResourceAssemblerSupport<Address, 
 
 	public AddressResourceAssembler(Class<?> controllerClass, Class<AddressResource> resourceType) {
 		super(controllerClass, resourceType);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override

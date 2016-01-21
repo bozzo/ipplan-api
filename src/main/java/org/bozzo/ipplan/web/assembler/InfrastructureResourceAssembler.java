@@ -47,7 +47,6 @@ public class InfrastructureResourceAssembler extends ResourceAssemblerSupport<In
 
 	public InfrastructureResourceAssembler(Class<?> controllerClass, Class<InfrastructureResource> resourceType) {
 		super(controllerClass, resourceType);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override

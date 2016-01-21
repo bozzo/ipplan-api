@@ -7,7 +7,7 @@
 	<div class="container">
 		<h1>Subnets</h1>
 	
-		<a class="btn btn-default" th:href="${link.href}">&laquo; Back to infrastructure</a>
+		<a class="btn btn-default" th:href="${pages.getLink('infra').href}">&laquo; Back to infrastructure</a>
 		
 		<div class="alert alert-info" th:if="${#lists.isEmpty(pages.content)}">
 			No subnets found for this infrastructure.

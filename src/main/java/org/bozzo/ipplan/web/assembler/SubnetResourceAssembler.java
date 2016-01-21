@@ -47,7 +47,6 @@ public class SubnetResourceAssembler extends ResourceAssemblerSupport<Subnet, Su
 
 	public SubnetResourceAssembler(Class<?> controllerClass, Class<SubnetResource> resourceType) {
 		super(controllerClass, resourceType);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override

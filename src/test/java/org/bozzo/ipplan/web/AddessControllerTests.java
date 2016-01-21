@@ -257,6 +257,32 @@ public class AddessControllerTests {
 	}
 
 	@Test
+	public void f_add_existing_address_should_return_a_conflict_error() {
+		Address address = new Address();
+		address.setDescription("Test description");
+		address.setSubnetId(subnetId2);
+		address.setInfraId(infraId);
+		address.setIp(0xC0A80002L);
+		address.setLocation("somewhere");
+		address.setMac("000000000000");
+		address.setLastModifed(new Date());
+		address.setLastPol(new Date());
+		address.setName("My Server 01");
+		address.setPhone("0000000000");
+		address.setUserId("user");
+		address.setUserInfo("My user");
+		HttpEntity<AddressResource> resp;
+		try {
+			resp = this.controller.addAddress(infraId, subnetId2, address);
+			Assert.assertNull(resp);
+			Assert.fail();
+		} catch (ApiException e) {
+			Assert.assertNotNull(e.getError());
+			Assert.assertEquals(ApiError.IPConflict, e.getError());
+		}
+	}
+
+	@Test
 	public void f_add_address_should_return_a_full_subnet_error() {
 		Address address = new Address();
 		address.setDescription("Test description");

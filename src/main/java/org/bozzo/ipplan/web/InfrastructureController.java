@@ -48,6 +48,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.google.common.base.Preconditions;
+import com.mangofactory.swagger.annotations.ApiIgnore;
 
 /**
  * @author boris
@@ -56,7 +57,7 @@ import com.google.common.base.Preconditions;
 @RestController
 @RequestMapping("/api/infras")
 public class InfrastructureController {
-	private static Logger LOGGER = LoggerFactory.getLogger(InfrastructureController.class);
+	private static Logger logger = LoggerFactory.getLogger(InfrastructureController.class);
 
 	@Autowired
 	private InfrastructureRepository repository;
@@ -65,6 +66,7 @@ public class InfrastructureController {
 	private InfrastructureResourceAssembler assembler;
 
 	@RequestMapping(method = RequestMethod.GET, produces = {MediaType.TEXT_HTML_VALUE})
+	@ApiIgnore
 	public ModelAndView getInfrastructuresView(@RequestParam(required=false) String group, Pageable pageable, PagedResourcesAssembler<Infrastructure> pagedAssembler) {
 		PagedResources<InfrastructureResource> infras = this.getInfrastructures(group, pageable, pagedAssembler);
 		ModelAndView view = new ModelAndView("infras");
@@ -84,6 +86,7 @@ public class InfrastructureController {
 	}
 
 	@RequestMapping(value = "/{infraId}", method = RequestMethod.GET, produces = {MediaType.TEXT_HTML_VALUE})
+	@ApiIgnore
 	public ModelAndView getInfrastructureView(@PathVariable Integer infraId) {
 		HttpEntity<InfrastructureResource> infra = this.getInfrastructure(infraId);
 		ModelAndView view = new ModelAndView("infra");
@@ -103,7 +106,7 @@ public class InfrastructureController {
 
 	@RequestMapping(method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_VALUE})
 	public HttpEntity<InfrastructureResource> addInfrastructure(@RequestBody @NotNull Infrastructure infra) {
-		LOGGER.info("add new infrastruture: {}", infra);
+		logger.info("add new infrastruture: {}", infra);
 		Infrastructure infrastructure = repository.save(infra);
 		return new ResponseEntity<>(assembler.toResource(infrastructure), HttpStatus.CREATED);
 	}
@@ -112,14 +115,14 @@ public class InfrastructureController {
 	public HttpEntity<InfrastructureResource> updateInfrastructure(@PathVariable Integer infraId,
 			@RequestBody @NotNull Infrastructure infra) {
 		Preconditions.checkArgument(infraId.equals(infra.getId()));
-		LOGGER.info("update infrastruture: {}", infra);
+		logger.info("update infrastruture: {}", infra);
 		Infrastructure infrastructure = repository.save(infra);
 		return new ResponseEntity<>(assembler.toResource(infrastructure), HttpStatus.CREATED);
 	}
 
 	@RequestMapping(value = "/{infraId}", method = RequestMethod.DELETE)
 	public @ResponseStatus(HttpStatus.NO_CONTENT) void deleteInfrastructure(@PathVariable Integer infraId) {
-		LOGGER.info("delete infrastruture with id: {}", infraId);
+		logger.info("delete infrastruture with id: {}", infraId);
 		repository.delete(infraId);
 	}
 }

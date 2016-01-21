@@ -43,14 +43,6 @@ public class ApiException extends RuntimeException {
 	}
 
 	/**
-	 * @param cause
-	 */
-	public ApiException(ApiError error, Throwable cause) {
-		super(error.getMessage(), cause);
-		this.error = error;
-	}
-
-	/**
 	 * @return the error
 	 */
 	public ApiError getError() {

@@ -30,6 +30,7 @@ import org.bozzo.ipplan.domain.model.ui.ZoneResource;
 import org.bozzo.ipplan.web.InfrastructureController;
 import org.bozzo.ipplan.web.RangeController;
 import org.bozzo.ipplan.web.ZoneController;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.mvc.ResourceAssemblerSupport;
 import org.springframework.stereotype.Component;
 
@@ -46,7 +47,6 @@ public class ZoneResourceAssembler extends ResourceAssemblerSupport<Zone, ZoneRe
 
 	public ZoneResourceAssembler(Class<?> controllerClass, Class<ZoneResource> resourceType) {
 		super(controllerClass, resourceType);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
@@ -68,6 +68,10 @@ public class ZoneResourceAssembler extends ResourceAssemblerSupport<Zone, ZoneRe
             resources.add(this.toResource(zone));
         }
         return resources;
+	}
+
+	public static Link link(Integer infraId, Long zoneId) {
+		return linkTo(methodOn(ZoneController.class).getZone(infraId, zoneId)).withRel("zone");
 	}
 	
 }

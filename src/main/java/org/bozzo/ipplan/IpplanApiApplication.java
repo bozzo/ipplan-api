@@ -23,9 +23,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class IpplanApiApplication {
+public class IpplanApiApplication { // NOSONAR
 
-    public static void main(String[] args) {
-        SpringApplication.run(IpplanApiApplication.class, args);
+	public static void main(String[] args) {
+        SpringApplication.run(IpplanApiApplication.class, args); // NOSONAR
     }
 }

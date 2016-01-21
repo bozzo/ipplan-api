@@ -29,6 +29,7 @@ import org.bozzo.ipplan.domain.model.ApiError;
 import org.bozzo.ipplan.domain.model.ui.AddressResource;
 import org.bozzo.ipplan.domain.service.AddressService;
 import org.bozzo.ipplan.web.assembler.AddressResourceAssembler;
+import org.bozzo.ipplan.web.assembler.SubnetResourceAssembler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +51,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.google.common.base.Preconditions;
+import com.mangofactory.swagger.annotations.ApiIgnore;
 
 /**
  * @author boris
@@ -58,7 +60,7 @@ import com.google.common.base.Preconditions;
 @RestController
 @RequestMapping("/api/infras/{infraId}/subnets/{subnetId}/addresses")
 public class AddressController {
-	private static Logger LOGGER = LoggerFactory.getLogger(AddressController.class);
+	private static Logger logger = LoggerFactory.getLogger(AddressController.class);
 	
 	@Autowired
 	private AddressService service;
@@ -70,6 +72,7 @@ public class AddressController {
 	private AddressResourceAssembler assembler;
 
 	@RequestMapping(method = RequestMethod.GET, produces = {MediaType.TEXT_HTML_VALUE})
+	@ApiIgnore
 	public ModelAndView getAddressesView(@RequestParam(required = false) Mode mode, @PathVariable Integer infraId, @PathVariable Long subnetId, Pageable pageable, PagedResourcesAssembler<Address> pagedAssembler) {
 		PagedResources<AddressResource> addresses = this.getAddresses(mode, infraId, subnetId, pageable, pagedAssembler);
 		ModelAndView view = new ModelAndView("addresses");
@@ -88,7 +91,9 @@ public class AddressController {
 		for (Address address : addresses) {
 			address.setInfraId(infraId);
 		}
-		return pagedAssembler.toResource(addresses, assembler);
+		PagedResources<AddressResource> page = pagedAssembler.toResource(addresses, assembler);
+		page.add(SubnetResourceAssembler.link(infraId, subnetId));
+		return page;
 	}
 
 	@RequestMapping(value = "/free", method=RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -102,6 +107,7 @@ public class AddressController {
 	}
 
 	@RequestMapping(value = "/{ip}", method = RequestMethod.GET, produces = {MediaType.TEXT_HTML_VALUE})
+	@ApiIgnore
 	public ModelAndView getAddressView(@PathVariable Integer infraId, @PathVariable Long subnetId, @PathVariable Long ip) {
 		HttpEntity<AddressResource> address = this.getAddress(infraId, subnetId, ip);
 		ModelAndView view = new ModelAndView("address");
@@ -124,7 +130,7 @@ public class AddressController {
 	public HttpEntity<AddressResource> addAddress(@PathVariable Integer infraId, @PathVariable Long subnetId, @RequestBody @NotNull Address address) {
 		Preconditions.checkArgument(infraId.equals(address.getInfraId()));
 		Preconditions.checkArgument(subnetId.equals(address.getSubnetId()));
-		LOGGER.info("add new address: {}", address);
+		logger.info("add new address: {}", address);
 		if (address.getIp() == null) { 
 			Address freeAddress = this.service.findFreeAddressBySubnetId(subnetId);
 			if (freeAddress == null) {
@@ -143,7 +149,7 @@ public class AddressController {
 	public HttpEntity<AddressResource> updateAddress(@PathVariable Integer infraId, @PathVariable Long subnetId, @PathVariable Long ip, @RequestBody @NotNull Address address) {
 		Preconditions.checkArgument(subnetId.equals(address.getSubnetId()));
 		Preconditions.checkArgument(ip.equals(address.getIp()));
-		LOGGER.info("update address: {}", address);
+		logger.info("update address: {}", address);
 		Address addr = repository.save(address);
 		addr.setInfraId(infraId);
 		return new ResponseEntity<>(assembler.toResource(addr), HttpStatus.CREATED);
@@ -151,7 +157,7 @@ public class AddressController {
 
 	@RequestMapping(value = "/{addressId}", method=RequestMethod.DELETE)
 	public @ResponseStatus(HttpStatus.NO_CONTENT) void deleteAddress(@PathVariable Integer infraId, @PathVariable Long subnetId, @PathVariable Long addressId) {
-		LOGGER.info("delete address with id: {} (infra id: {}, subnet id: {})", addressId, infraId, subnetId);
+		logger.info("delete address with id: {} (infra id: {}, subnet id: {})", addressId, infraId, subnetId);
 		this.repository.deleteBySubnetIdAndIp(subnetId, addressId);
 	}
 }
