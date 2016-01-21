@@ -19,12 +19,13 @@
  */
 package org.bozzo.ipplan.web.exception;
 
+import org.bozzo.ipplan.domain.exception.ApiException;
 import org.bozzo.ipplan.domain.model.ApiError;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
  * @author boris
@@ -33,21 +34,23 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ControllerAdvice
 public class GlobalErrorHandler {
 
-	@ResponseStatus(HttpStatus.BAD_REQUEST)  // 400
     @ExceptionHandler(IllegalArgumentException.class)
-    public ApiError handleBadRequest(Exception exception) {
-		return new ApiError(400, "Bad request: " + exception.getMessage());
+    public ResponseEntity<ApiError> handleBadRequest(Exception exception) {
+		return ApiError.getResponseEntity(ApiError.BadRequest);
     }
 
-	@ResponseStatus(HttpStatus.CONFLICT)  // 409
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ApiError handleConflict(Exception exception) {
-		return new ApiError(409, "Conflict: " + exception.getMessage());
+    public ResponseEntity<ApiError> handleConflict(Exception exception) {
+		return ApiError.getResponseEntity(ApiError.DataIntegrityViolation);
     }
 
-	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)  // 500
+    @ExceptionHandler(ApiException.class)
+    public HttpEntity<ApiError> handleApiException(ApiException exception) {
+		return ApiError.getResponseEntity(exception.getError());
+    }
+
     @ExceptionHandler(Exception.class)
-    public ApiError handleException(Exception exception) {
-		return new ApiError(500, "Internal error: " + exception.getMessage());
+    public ResponseEntity<ApiError> handleException(Exception exception) {
+		return ApiError.getResponseEntity(ApiError.InternalError);
     }
 }

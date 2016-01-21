@@ -22,6 +22,8 @@ package org.bozzo.ipplan.web;
 import javax.validation.constraints.NotNull;
 
 import org.bozzo.ipplan.domain.dao.InfrastructureRepository;
+import org.bozzo.ipplan.domain.exception.ApiException;
+import org.bozzo.ipplan.domain.model.ApiError;
 import org.bozzo.ipplan.domain.model.Infrastructure;
 import org.bozzo.ipplan.domain.model.ui.InfrastructureResource;
 import org.bozzo.ipplan.web.assembler.InfrastructureResourceAssembler;
@@ -94,7 +96,7 @@ public class InfrastructureController {
 	public HttpEntity<InfrastructureResource> getInfrastructure(@PathVariable Integer infraId) {
 		Infrastructure infra = repository.findOne(infraId);
 		if (infra == null) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			throw new ApiException(ApiError.InfraNotFound);
 		}
 		return new ResponseEntity<>(assembler.toResource(infra), HttpStatus.OK);
 	}

@@ -6,7 +6,9 @@ import java.util.List;
 import org.apache.commons.collections4.IterableUtils;
 import org.bozzo.ipplan.IpplanApiApplication;
 import org.bozzo.ipplan.domain.Mode;
+import org.bozzo.ipplan.domain.exception.ApiException;
 import org.bozzo.ipplan.domain.model.Address;
+import org.bozzo.ipplan.domain.model.ApiError;
 import org.bozzo.ipplan.domain.model.Infrastructure;
 import org.bozzo.ipplan.domain.model.Subnet;
 import org.bozzo.ipplan.domain.model.ui.AddressResource;
@@ -193,7 +195,6 @@ public class AddessControllerTests {
 		address.setSubnetId(subnetId2);
 		address.setInfraId(infraId);
 		address.setLocation("somewhere");
-		address.setIp(0xC0A80001L);
 		address.setMac("000000000000");
 		address.setLastModifed(new Date());
 		address.setLastPol(new Date());
@@ -209,7 +210,7 @@ public class AddessControllerTests {
 		Assert.assertNotNull(addressReturned.getIp());
 		Assert.assertEquals(address.getDescription(), addressReturned.getDescription());
 		Assert.assertEquals(address.getSubnetId(), addressReturned.getSubnetId());
-		Assert.assertEquals(address.getIp(), addressReturned.getIp());
+		Assert.assertEquals(new Long(0xC0A80001L), addressReturned.getIp());
 		Assert.assertEquals(address.getLocation(), addressReturned.getLocation());
 		Assert.assertEquals(address.getMac(), addressReturned.getMac());
 		Assert.assertEquals(address.getLastModifed(), addressReturned.getLastModifed());
@@ -228,7 +229,6 @@ public class AddessControllerTests {
 		address.setSubnetId(subnetId2);
 		address.setInfraId(infraId);
 		address.setLocation("somewhere");
-		address.setIp(0xC0A80002L);
 		address.setMac("000000000000");
 		address.setLastModifed(new Date());
 		address.setLastPol(new Date());
@@ -244,7 +244,7 @@ public class AddessControllerTests {
 		Assert.assertNotNull(addressReturned.getIp());
 		Assert.assertEquals(address.getDescription(), addressReturned.getDescription());
 		Assert.assertEquals(address.getSubnetId(), addressReturned.getSubnetId());
-		Assert.assertEquals(address.getIp(), addressReturned.getIp());
+		Assert.assertEquals(new Long(0xC0A80002L), addressReturned.getIp());
 		Assert.assertEquals(address.getLocation(), addressReturned.getLocation());
 		Assert.assertEquals(address.getMac(), addressReturned.getMac());
 		Assert.assertEquals(address.getLastModifed(), addressReturned.getLastModifed());
@@ -254,6 +254,31 @@ public class AddessControllerTests {
 		Assert.assertEquals(address.getUserId(), addressReturned.getUserId());
 		Assert.assertEquals(address.getUserInfo(), addressReturned.getUserInfo());
 		Assert.assertEquals(3, addressReturned.getLinks().size());
+	}
+
+	@Test
+	public void f_add_address_should_return_a_full_subnet_error() {
+		Address address = new Address();
+		address.setDescription("Test description");
+		address.setSubnetId(subnetId2);
+		address.setInfraId(infraId);
+		address.setLocation("somewhere");
+		address.setMac("000000000000");
+		address.setLastModifed(new Date());
+		address.setLastPol(new Date());
+		address.setName("My Server 01");
+		address.setPhone("0000000000");
+		address.setUserId("user");
+		address.setUserInfo("My user");
+		HttpEntity<AddressResource> resp;
+		try {
+			resp = this.controller.addAddress(infraId, subnetId2, address);
+			Assert.assertNull(resp);
+			Assert.fail();
+		} catch (ApiException e) {
+			Assert.assertNotNull(e.getError());
+			Assert.assertEquals(ApiError.SubnetFull, e.getError());
+		}
 	}
 
 	@Test
@@ -398,9 +423,15 @@ public class AddessControllerTests {
 
 	@Test
 	public void n_get_next_free_should_return_not_found() {
-		HttpEntity<AddressResource> resp = this.controller.getFreeAddress(infraId, subnetId2);
-		Assert.assertNotNull(resp);
-		Assert.assertNull(resp.getBody());
+		HttpEntity<AddressResource> resp;
+		try {
+			resp = this.controller.getFreeAddress(infraId, subnetId2);
+			Assert.assertNull(resp);
+			Assert.fail();
+		} catch (ApiException e) {
+			Assert.assertNotNull(e.getError());
+			Assert.assertEquals(ApiError.SubnetFull, e.getError());
+		}
 	}
 
 	@Test
@@ -422,55 +453,15 @@ public class AddessControllerTests {
 
 	@Test
 	public void p_get_address_shouldnt_return_address() {
-		HttpEntity<AddressResource> resp = this.controller.getAddress(infraId, subnetId, id2);
-		Assert.assertNotNull(resp);
-		Assert.assertNull(resp.getBody());
-		AddressResource address = resp.getBody();
-		Assert.assertNull(address);
-	}
-
-	@Test
-	public void q_delete_address_should_work() {
-		this.controller.deleteAddress(infraId, subnetId, id);
-	}
-
-	@Test
-	public void r_get_all_should_return_an_array_with_no_elem() {
-		List<AddressResource> addresses = IterableUtils.toList(this.controller.getAddresses(null, infraId, subnetId, null, new PagedResourcesAssembler<Address>(resolver, null)));
-		Assert.assertNotNull(addresses);
-		Assert.assertEquals(0, addresses.size());
-	}
-
-	@Test
-	public void s_delete_subnet_should_work() {
-		this.subnetController.deleteSubnet(infraId, subnetId);
-	}
-
-	@Test
-	public void t1_get_all_should_return_an_array_with_no_elem() {
-		HttpEntity<PagedResources<SubnetResource>> resp = this.subnetController.getSubnets(null, null, infraId, null, new PagedResourcesAssembler<Subnet>(resolver, null));
-		Assert.assertNotNull(resp);
-		Assert.assertNotNull(resp.getBody());
-		List<SubnetResource> subnets = IterableUtils.toList(resp.getBody());
-		Assert.assertNotNull(subnets);
-		Assert.assertEquals(1, subnets.size());
-	}
-
-	@Test
-	public void t2_delete_subnet_should_work() {
-		this.subnetController.deleteSubnet(infraId, subnetId2);
-	}
-
-	@Test
-	public void u_delete_infra_should_work() {
-		this.infrastructureController.deleteInfrastructure(infraId);
-	}
-
-	@Test
-	public void v_get_all_should_return_an_array_with_two_elem() {
-		List<InfrastructureResource> infras = IterableUtils.toList(this.infrastructureController.getInfrastructures(null, null, new PagedResourcesAssembler<Infrastructure>(resolver, null)));
-		Assert.assertNotNull(infras);
-		Assert.assertEquals(0, infras.size());
+		HttpEntity<AddressResource> resp;
+		try {
+			resp = this.controller.getAddress(infraId, subnetId, id2);
+			Assert.assertNull(resp);
+			Assert.fail();
+		} catch (ApiException e) {
+			Assert.assertNotNull(e.getError());
+			Assert.assertEquals(ApiError.IPNotFound, e.getError());
+		}
 	}
 
 	@Test
@@ -482,9 +473,53 @@ public class AddessControllerTests {
 
 	@Test
 	public void view_get_view_by_id_should_return_a_model_view() {
-		ModelAndView view = this.controller.getAddressView(infraId, subnetId, id2);
+		ModelAndView view = this.controller.getAddressView(infraId, subnetId, id);
 		Assert.assertNotNull(view);
 		Assert.assertEquals("address", view.getViewName());
+	}
+
+	@Test
+	public void z1_delete_address_should_work() {
+		this.controller.deleteAddress(infraId, subnetId, id);
+	}
+
+	@Test
+	public void z2_get_all_should_return_an_array_with_no_elem() {
+		List<AddressResource> addresses = IterableUtils.toList(this.controller.getAddresses(null, infraId, subnetId, null, new PagedResourcesAssembler<Address>(resolver, null)));
+		Assert.assertNotNull(addresses);
+		Assert.assertEquals(0, addresses.size());
+	}
+
+	@Test
+	public void z3_delete_subnet_should_work() {
+		this.subnetController.deleteSubnet(infraId, subnetId);
+	}
+
+	@Test
+	public void z4_get_all_should_return_an_array_with_no_elem() {
+		HttpEntity<PagedResources<SubnetResource>> resp = this.subnetController.getSubnets(null, null, infraId, null, new PagedResourcesAssembler<Subnet>(resolver, null));
+		Assert.assertNotNull(resp);
+		Assert.assertNotNull(resp.getBody());
+		List<SubnetResource> subnets = IterableUtils.toList(resp.getBody());
+		Assert.assertNotNull(subnets);
+		Assert.assertEquals(1, subnets.size());
+	}
+
+	@Test
+	public void z5_delete_subnet_should_work() {
+		this.subnetController.deleteSubnet(infraId, subnetId2);
+	}
+
+	@Test
+	public void z6_delete_infra_should_work() {
+		this.infrastructureController.deleteInfrastructure(infraId);
+	}
+
+	@Test
+	public void z7_get_all_should_return_an_empty_array() {
+		List<InfrastructureResource> infras = IterableUtils.toList(this.infrastructureController.getInfrastructures(null, null, new PagedResourcesAssembler<Infrastructure>(resolver, null)));
+		Assert.assertNotNull(infras);
+		Assert.assertEquals(0, infras.size());
 	}
 
 }

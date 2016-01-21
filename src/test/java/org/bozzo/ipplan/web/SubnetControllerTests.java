@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.apache.commons.collections4.IterableUtils;
 import org.bozzo.ipplan.IpplanApiApplication;
+import org.bozzo.ipplan.domain.exception.ApiException;
+import org.bozzo.ipplan.domain.model.ApiError;
 import org.bozzo.ipplan.domain.model.Infrastructure;
 import org.bozzo.ipplan.domain.model.Subnet;
 import org.bozzo.ipplan.domain.model.ui.InfrastructureResource;
@@ -268,20 +270,38 @@ public class SubnetControllerTests {
 
 	@Test
 	public void n_get_subnet_shouldnt_return_subnet() {
-		HttpEntity<SubnetResource> resp = this.controller.getSubnet(infraId, id2);
-		Assert.assertNotNull(resp);
-		Assert.assertNull(resp.getBody());
-		SubnetResource subnet = resp.getBody();
-		Assert.assertNull(subnet);
+		HttpEntity<SubnetResource> resp;
+		try {
+			resp = this.controller.getSubnet(infraId, id2);
+			Assert.assertNull(resp);
+			Assert.fail();
+		} catch (ApiException e) {
+			Assert.assertNotNull(e.getError());
+			Assert.assertEquals(ApiError.SubnetNotFound, e.getError());
+		}
 	}
 
 	@Test
-	public void o_delete_subnet_should_work() {
+	public void view_get_view_all_should_return_a_model_view() {
+		ModelAndView view = this.controller.getSubnetsView(null, null, infraId, null, new PagedResourcesAssembler<Subnet>(resolver, null));
+		Assert.assertNotNull(view);
+		Assert.assertEquals("subnets", view.getViewName());
+	}
+
+	@Test
+	public void view_get_view_by_id_should_return_a_model_view() {
+		ModelAndView view = this.controller.getSubnetView(infraId, id);
+		Assert.assertNotNull(view);
+		Assert.assertEquals("subnet", view.getViewName());
+	}
+
+	@Test
+	public void z1_delete_subnet_should_work() {
 		this.controller.deleteSubnet(infraId, id);
 	}
 
 	@Test
-	public void p_get_all_should_return_an_array_with_no_elem() {
+	public void z2_get_all_should_return_an_array_with_no_elem() {
 		HttpEntity<PagedResources<SubnetResource>> resp = this.controller.getSubnets(null, null, infraId, null, new PagedResourcesAssembler<Subnet>(resolver, null));
 		Assert.assertNotNull(resp);
 		Assert.assertNotNull(resp.getBody());
@@ -291,22 +311,15 @@ public class SubnetControllerTests {
 	}
 
 	@Test
-	public void q_delete_infra_should_work() {
+	public void z3_delete_infra_should_work() {
 		this.infrastructureController.deleteInfrastructure(infraId);
 	}
 
 	@Test
-	public void r_get_all_should_return_an_array_with_two_elem() {
+	public void z4_get_all_should_return_an_array_with_two_elem() {
 		List<InfrastructureResource> infras = IterableUtils.toList(this.infrastructureController.getInfrastructures(null, null, new PagedResourcesAssembler<Infrastructure>(resolver, null)));
 		Assert.assertNotNull(infras);
 		Assert.assertEquals(0, infras.size());
-	}
-
-	@Test
-	public void view_get_view_all_should_return_a_model_view() {
-		ModelAndView view = this.controller.getSubnetsView(null, null, infraId, null, new PagedResourcesAssembler<Subnet>(resolver, null));
-		Assert.assertNotNull(view);
-		Assert.assertEquals("subnets", view.getViewName());
 	}
 
 }

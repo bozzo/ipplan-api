@@ -19,12 +19,40 @@
  */
 package org.bozzo.ipplan.domain.model;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * @author boris
  *
  */
-public class ApiError {
+public enum ApiError {
 
+	InternalError(HttpStatus.INTERNAL_SERVER_ERROR, 500, "Internal server error."),
+
+	BadRequest(HttpStatus.BAD_REQUEST, 400, "Bad request, check request parameters."),
+
+	DataIntegrityViolation(HttpStatus.BAD_REQUEST, 401, "Integrity violation."),
+	
+	NotFound(HttpStatus.NOT_FOUND, 404, "Object not found."),
+	
+	InfraNotFound(HttpStatus.NOT_FOUND, 1404, "No infrastructure found."),
+
+	SubnetNotFound(HttpStatus.NOT_FOUND, 2404, "No subnet found."),
+	SubnetFull(HttpStatus.NOT_FOUND, 2405, "No free IP address found, subnet is full."),
+	
+	ZoneNotFound(HttpStatus.NOT_FOUND, 3404, "No zone found."),
+	
+	RangeNotFound(HttpStatus.NOT_FOUND, 4404, "No range found."),
+
+	IPConflict(HttpStatus.NOT_FOUND, 5401, "IP address already exists, use update if you want to modify it or change IP address."),
+	IPNotFound(HttpStatus.NOT_FOUND, 5404, "IP address not found."),
+	
+	;
+	
+	private final HttpStatus status;
 	private final Integer code;
 	private final String message;
 	
@@ -32,10 +60,17 @@ public class ApiError {
 	 * @param code
 	 * @param message
 	 */
-	public ApiError(Integer code, String message) {
-		super();
+	ApiError(HttpStatus status, Integer code, String message) {
+		this.status = status;
 		this.code = code;
 		this.message = message;
+	}
+
+	/**
+	 * @return the Http status
+	 */
+	public HttpStatus getStatus() {
+		return status;
 	}
 
 	/**
@@ -50,5 +85,13 @@ public class ApiError {
 	 */
 	public String getMessage() {
 		return message;
+	}
+
+	/**
+	 * @return the message
+	 */
+	@JsonIgnore
+	public static ResponseEntity<ApiError> getResponseEntity(ApiError error) {
+		return new ResponseEntity<ApiError>(error, error.status);
 	}
 }

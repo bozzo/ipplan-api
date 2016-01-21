@@ -22,6 +22,8 @@ package org.bozzo.ipplan.web;
 import javax.validation.constraints.NotNull;
 
 import org.bozzo.ipplan.domain.dao.RangeRepository;
+import org.bozzo.ipplan.domain.exception.ApiException;
+import org.bozzo.ipplan.domain.model.ApiError;
 import org.bozzo.ipplan.domain.model.Range;
 import org.bozzo.ipplan.domain.model.ui.RangeResource;
 import org.bozzo.ipplan.web.assembler.RangeResourceAssembler;
@@ -88,7 +90,7 @@ public class RangeController {
 	public HttpEntity<RangeResource> getRange(@PathVariable Integer infraId, @PathVariable Long zoneId, @PathVariable Long rangeId) {
 		Range range = this.repository.findByInfraIdAndZoneIdAndId(infraId, zoneId, rangeId);
 		if (range == null) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			throw new ApiException(ApiError.RangeNotFound);
 		}
 		return new ResponseEntity<>(assembler.toResource(range), HttpStatus.OK);
 	}

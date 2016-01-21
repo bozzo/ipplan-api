@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.apache.commons.collections4.IterableUtils;
 import org.bozzo.ipplan.IpplanApiApplication;
+import org.bozzo.ipplan.domain.exception.ApiException;
+import org.bozzo.ipplan.domain.model.ApiError;
 import org.bozzo.ipplan.domain.model.Infrastructure;
 import org.bozzo.ipplan.domain.model.ui.InfrastructureResource;
 import org.junit.Assert;
@@ -159,21 +161,15 @@ public class InfrastrauctureControllerTests {
 
 	@Test
 	public void m_get_infra_shouldnt_return_infra() {
-		HttpEntity<InfrastructureResource> response = this.controller.getInfrastructure(id2);
-		Assert.assertNotNull(response);
-		Assert.assertNull(response.getBody());
-	}
-
-	@Test
-	public void n_delete_infra_should_work() {
-		this.controller.deleteInfrastructure(id);
-	}
-
-	@Test
-	public void o_get_all_should_return_an_array_with_two_elem() {
-		List<InfrastructureResource> infras = IterableUtils.toList(this.controller.getInfrastructures(null, null, new PagedResourcesAssembler<Infrastructure>(resolver, null)));
-		Assert.assertNotNull(infras);
-		Assert.assertEquals(0, infras.size());
+		HttpEntity<InfrastructureResource> response;
+		try {
+			response = this.controller.getInfrastructure(id2);
+			Assert.assertNull(response);
+			Assert.fail();
+		} catch (ApiException e) {
+			Assert.assertNotNull(e.getError());
+			Assert.assertEquals(ApiError.InfraNotFound, e.getError());
+		}
 	}
 
 	@Test
@@ -185,9 +181,21 @@ public class InfrastrauctureControllerTests {
 
 	@Test
 	public void view_get_view_by_id_should_return_a_model_view() {
-		ModelAndView view = this.controller.getInfrastructureView(id2);
+		ModelAndView view = this.controller.getInfrastructureView(id);
 		Assert.assertNotNull(view);
 		Assert.assertEquals("infra", view.getViewName());
+	}
+
+	@Test
+	public void z1_delete_infra_should_work() {
+		this.controller.deleteInfrastructure(id);
+	}
+
+	@Test
+	public void z2_get_all_should_return_an_array_with_two_elem() {
+		List<InfrastructureResource> infras = IterableUtils.toList(this.controller.getInfrastructures(null, null, new PagedResourcesAssembler<Infrastructure>(resolver, null)));
+		Assert.assertNotNull(infras);
+		Assert.assertEquals(0, infras.size());
 	}
 
 }

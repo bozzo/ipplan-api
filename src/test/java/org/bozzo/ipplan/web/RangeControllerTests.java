@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.apache.commons.collections4.IterableUtils;
 import org.bozzo.ipplan.IpplanApiApplication;
+import org.bozzo.ipplan.domain.exception.ApiException;
+import org.bozzo.ipplan.domain.model.ApiError;
 import org.bozzo.ipplan.domain.model.Infrastructure;
 import org.bozzo.ipplan.domain.model.Range;
 import org.bozzo.ipplan.domain.model.Zone;
@@ -224,47 +226,15 @@ public class RangeControllerTests {
 
 	@Test
 	public void p_get_range_shouldnt_return_range() {
-		HttpEntity<RangeResource> resp = this.controller.getRange(infraId, zoneId, id2);
-		Assert.assertNotNull(resp);
-		Assert.assertNull(resp.getBody());
-		RangeResource range = resp.getBody();
-		Assert.assertNull(range);
-	}
-
-	@Test
-	public void q_delete_range_should_work() {
-		this.controller.deleteRange(infraId, zoneId, id);
-	}
-
-	@Test
-	public void r_get_all_should_return_an_array_with_no_elem() {
-		List<RangeResource> ranges = IterableUtils.toList(this.controller.getRanges(infraId, zoneId, null, new PagedResourcesAssembler<Range>(resolver, null)));
-		Assert.assertNotNull(ranges);
-		Assert.assertEquals(0, ranges.size());
-	}
-
-	@Test
-	public void s_delete_zone_should_work() {
-		this.zoneController.deleteZone(infraId, zoneId);
-	}
-
-	@Test
-	public void t_get_all_should_return_an_array_with_no_elem() {
-		List<ZoneResource> zones = IterableUtils.toList(this.zoneController.getZones(infraId, null, new PagedResourcesAssembler<Zone>(resolver, null)));
-		Assert.assertNotNull(zones);
-		Assert.assertEquals(0, zones.size());
-	}
-
-	@Test
-	public void u_delete_infra_should_work() {
-		this.infrastructureController.deleteInfrastructure(infraId);
-	}
-
-	@Test
-	public void v_get_all_should_return_an_array_with_two_elem() {
-		List<InfrastructureResource> infras = IterableUtils.toList(this.infrastructureController.getInfrastructures(null, null, new PagedResourcesAssembler<Infrastructure>(resolver, null)));
-		Assert.assertNotNull(infras);
-		Assert.assertEquals(0, infras.size());
+		HttpEntity<RangeResource> resp;
+		try {
+			resp = this.controller.getRange(infraId, zoneId, id2);
+			Assert.assertNull(resp);
+			Assert.fail();
+		} catch (ApiException e) {
+			Assert.assertNotNull(e.getError());
+			Assert.assertEquals(ApiError.RangeNotFound, e.getError());
+		}
 	}
 
 	@Test
@@ -276,9 +246,45 @@ public class RangeControllerTests {
 
 	@Test
 	public void view_get_view_by_id_should_return_a_model_view() {
-		ModelAndView view = this.controller.getRangeView(infraId, zoneId, id2);
+		ModelAndView view = this.controller.getRangeView(infraId, zoneId, id);
 		Assert.assertNotNull(view);
 		Assert.assertEquals("range", view.getViewName());
+	}
+
+	@Test
+	public void z1_delete_range_should_work() {
+		this.controller.deleteRange(infraId, zoneId, id);
+	}
+
+	@Test
+	public void z2_get_all_should_return_an_array_with_no_elem() {
+		List<RangeResource> ranges = IterableUtils.toList(this.controller.getRanges(infraId, zoneId, null, new PagedResourcesAssembler<Range>(resolver, null)));
+		Assert.assertNotNull(ranges);
+		Assert.assertEquals(0, ranges.size());
+	}
+
+	@Test
+	public void z3_delete_zone_should_work() {
+		this.zoneController.deleteZone(infraId, zoneId);
+	}
+
+	@Test
+	public void z4_get_all_should_return_an_array_with_no_elem() {
+		List<ZoneResource> zones = IterableUtils.toList(this.zoneController.getZones(infraId, null, new PagedResourcesAssembler<Zone>(resolver, null)));
+		Assert.assertNotNull(zones);
+		Assert.assertEquals(0, zones.size());
+	}
+
+	@Test
+	public void z5_delete_infra_should_work() {
+		this.infrastructureController.deleteInfrastructure(infraId);
+	}
+
+	@Test
+	public void z6_get_all_should_return_an_array_with_two_elem() {
+		List<InfrastructureResource> infras = IterableUtils.toList(this.infrastructureController.getInfrastructures(null, null, new PagedResourcesAssembler<Infrastructure>(resolver, null)));
+		Assert.assertNotNull(infras);
+		Assert.assertEquals(0, infras.size());
 	}
 
 }

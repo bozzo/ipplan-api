@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.apache.commons.collections4.IterableUtils;
 import org.bozzo.ipplan.IpplanApiApplication;
+import org.bozzo.ipplan.domain.exception.ApiException;
+import org.bozzo.ipplan.domain.model.ApiError;
 import org.bozzo.ipplan.domain.model.Infrastructure;
 import org.bozzo.ipplan.domain.model.Zone;
 import org.bozzo.ipplan.domain.model.ui.InfrastructureResource;
@@ -182,35 +184,15 @@ public class ZoneControllerTests {
 
 	@Test
 	public void n_get_zone_shouldnt_return_zone() {
-		HttpEntity<ZoneResource> resp = this.controller.getZone(infraId, id2);
-		Assert.assertNotNull(resp);
-		Assert.assertNull(resp.getBody());
-		ZoneResource zone = resp.getBody();
-		Assert.assertNull(zone);
-	}
-
-	@Test
-	public void o_delete_zone_should_work() {
-		this.controller.deleteZone(infraId, id);
-	}
-
-	@Test
-	public void p_get_all_should_return_an_array_with_no_elem() {
-		List<ZoneResource> zones = IterableUtils.toList(this.controller.getZones(infraId, null, new PagedResourcesAssembler<Zone>(resolver, null)));
-		Assert.assertNotNull(zones);
-		Assert.assertEquals(0, zones.size());
-	}
-
-	@Test
-	public void q_delete_infra_should_work() {
-		this.infrastructureController.deleteInfrastructure(infraId);
-	}
-
-	@Test
-	public void r_get_all_should_return_an_array_with_two_elem() {
-		List<InfrastructureResource> infras = IterableUtils.toList(this.infrastructureController.getInfrastructures(null, null, new PagedResourcesAssembler<Infrastructure>(resolver, null)));
-		Assert.assertNotNull(infras);
-		Assert.assertEquals(0, infras.size());
+		HttpEntity<ZoneResource> resp;
+		try {
+			resp = this.controller.getZone(infraId, id2);
+			Assert.assertNull(resp);
+			Assert.fail();
+		} catch (ApiException e) {
+			Assert.assertNotNull(e.getError());
+			Assert.assertEquals(ApiError.ZoneNotFound, e.getError());
+		}
 	}
 
 	@Test
@@ -222,9 +204,33 @@ public class ZoneControllerTests {
 
 	@Test
 	public void view_get_view_by_id_should_return_a_model_view() {
-		ModelAndView view = this.controller.getZoneView(infraId, id2);
+		ModelAndView view = this.controller.getZoneView(infraId, id);
 		Assert.assertNotNull(view);
 		Assert.assertEquals("zone", view.getViewName());
+	}
+
+	@Test
+	public void z1_delete_zone_should_work() {
+		this.controller.deleteZone(infraId, id);
+	}
+
+	@Test
+	public void z2_get_all_should_return_an_array_with_no_elem() {
+		List<ZoneResource> zones = IterableUtils.toList(this.controller.getZones(infraId, null, new PagedResourcesAssembler<Zone>(resolver, null)));
+		Assert.assertNotNull(zones);
+		Assert.assertEquals(0, zones.size());
+	}
+
+	@Test
+	public void z3_delete_infra_should_work() {
+		this.infrastructureController.deleteInfrastructure(infraId);
+	}
+
+	@Test
+	public void z4_get_all_should_return_an_array_with_two_elem() {
+		List<InfrastructureResource> infras = IterableUtils.toList(this.infrastructureController.getInfrastructures(null, null, new PagedResourcesAssembler<Infrastructure>(resolver, null)));
+		Assert.assertNotNull(infras);
+		Assert.assertEquals(0, infras.size());
 	}
 
 }

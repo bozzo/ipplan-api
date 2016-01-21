@@ -22,6 +22,8 @@ package org.bozzo.ipplan.web;
 import javax.validation.constraints.NotNull;
 
 import org.bozzo.ipplan.domain.dao.SubnetRepository;
+import org.bozzo.ipplan.domain.exception.ApiException;
+import org.bozzo.ipplan.domain.model.ApiError;
 import org.bozzo.ipplan.domain.model.Subnet;
 import org.bozzo.ipplan.domain.model.ui.SubnetResource;
 import org.bozzo.ipplan.tools.IpAddress;
@@ -106,7 +108,7 @@ public class SubnetController {
 	public HttpEntity<SubnetResource> getSubnet(@PathVariable @NotNull Integer infraId, @PathVariable Long subnetId) {
 		Subnet subnet = repository.findByInfraIdAndId(infraId, subnetId);
 		if (subnet == null) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			throw new ApiException(ApiError.SubnetNotFound);
 		}
 		return new ResponseEntity<>(assembler.toResource(subnet), HttpStatus.OK);
 	}

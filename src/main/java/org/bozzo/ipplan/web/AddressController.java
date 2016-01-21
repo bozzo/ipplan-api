@@ -23,7 +23,9 @@ import javax.validation.constraints.NotNull;
 
 import org.bozzo.ipplan.domain.Mode;
 import org.bozzo.ipplan.domain.dao.AddressRepository;
+import org.bozzo.ipplan.domain.exception.ApiException;
 import org.bozzo.ipplan.domain.model.Address;
+import org.bozzo.ipplan.domain.model.ApiError;
 import org.bozzo.ipplan.domain.model.ui.AddressResource;
 import org.bozzo.ipplan.domain.service.AddressService;
 import org.bozzo.ipplan.web.assembler.AddressResourceAssembler;
@@ -93,7 +95,7 @@ public class AddressController {
 	public HttpEntity<AddressResource> getFreeAddress(@PathVariable Integer infraId, @PathVariable Long subnetId) {
 		Address address = this.service.findFreeAddressBySubnetId(subnetId);
 		if (address == null) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			throw new ApiException(ApiError.SubnetFull);
 		}
 		address.setInfraId(infraId);
 		return new ResponseEntity<>(assembler.toResource(address), HttpStatus.OK);
@@ -112,7 +114,7 @@ public class AddressController {
 	public HttpEntity<AddressResource> getAddress(@PathVariable Integer infraId, @PathVariable Long subnetId, @PathVariable Long ip) {
 		Address address = this.repository.findBySubnetIdAndIp(subnetId, ip);
 		if (address == null) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			throw new ApiException(ApiError.IPNotFound);
 		}
 		address.setInfraId(infraId);
 		return new ResponseEntity<>(assembler.toResource(address), HttpStatus.OK);
@@ -123,6 +125,15 @@ public class AddressController {
 		Preconditions.checkArgument(infraId.equals(address.getInfraId()));
 		Preconditions.checkArgument(subnetId.equals(address.getSubnetId()));
 		LOGGER.info("add new address: {}", address);
+		if (address.getIp() == null) { 
+			Address freeAddress = this.service.findFreeAddressBySubnetId(subnetId);
+			if (freeAddress == null) {
+				throw new ApiException(ApiError.SubnetFull);
+			}
+			address.setIp(freeAddress.getIp());
+		} else if (this.repository.exists(address.getIp())) {
+			throw new ApiException(ApiError.IPConflict);
+		}
 		Address ip = repository.save(address);
 		ip.setInfraId(infraId);
 		return new ResponseEntity<>(assembler.toResource(ip), HttpStatus.CREATED);

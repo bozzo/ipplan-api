@@ -22,6 +22,8 @@ package org.bozzo.ipplan.web;
 import javax.validation.constraints.NotNull;
 
 import org.bozzo.ipplan.domain.dao.ZoneRepository;
+import org.bozzo.ipplan.domain.exception.ApiException;
+import org.bozzo.ipplan.domain.model.ApiError;
 import org.bozzo.ipplan.domain.model.Zone;
 import org.bozzo.ipplan.domain.model.ui.ZoneResource;
 import org.bozzo.ipplan.web.assembler.InfrastructureResourceAssembler;
@@ -90,7 +92,7 @@ public class ZoneController {
 	public HttpEntity<ZoneResource> getZone(@PathVariable Integer infraId, @PathVariable Long zoneId) {
 		Zone zone = repository.findByInfraIdAndId(infraId, zoneId);
 		if (zone == null) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			throw new ApiException(ApiError.ZoneNotFound);
 		}
 		return new ResponseEntity<>(assembler.toResource(zone), HttpStatus.OK);
 	}
