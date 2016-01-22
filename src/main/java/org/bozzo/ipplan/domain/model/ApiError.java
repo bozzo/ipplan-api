@@ -40,16 +40,17 @@ public enum ApiError {
 	
 	INFRA_NOT_FOUND(HttpStatus.NOT_FOUND, 1404, "No infrastructure found."),
 
-	SUBNEET_NOT_FOUND(HttpStatus.NOT_FOUND, 2404, "No subnet found."),
+	SUBNET_NOT_FOUND(HttpStatus.NOT_FOUND, 2404, "No subnet found."),
 	SUBNET_FULL(HttpStatus.NOT_FOUND, 2405, "No free IP address found, subnet is full."),
+	SUBNET_CONFLICT(HttpStatus.CONFLICT, 2409, "The subnet overlaps another subnet, check the subnet IP and size."),
 	
 	ZONE_NOT_FOUND(HttpStatus.NOT_FOUND, 3404, "No zone found."),
 	
 	RANGE_NOT_FOUND(HttpStatus.NOT_FOUND, 4404, "No range found."),
 
-	IP_NOT_IN_SUBNET(HttpStatus.BAD_REQUEST, 5400, "IP address does not belong to the given subnet or subnet does exists."),
-	IP_CONFLICT(HttpStatus.NOT_FOUND, 5401, "IP address already exists, use update if you want to modify it or change IP address."),
+	IP_NOT_IN_SUBNET(HttpStatus.BAD_REQUEST, 5400, "The IP address does not belong to the given subnet or subnet does exists."),
 	IP_NOT_FOUND(HttpStatus.NOT_FOUND, 5404, "IP address not found."),
+	IP_CONFLICT(HttpStatus.CONFLICT, 5409, "The IP address already exists, use update if you want to modify it or change IP address."),
 	
 	;
 	

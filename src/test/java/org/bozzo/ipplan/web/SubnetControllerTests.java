@@ -161,13 +161,13 @@ public class SubnetControllerTests {
 	}
 
 	@Test
-	public void h_add_subnet_shouldnt_create_a_new_subnet() {
+	public void h1_add_subnet_shouldnt_create_a_new_subnet() {
 		Subnet subnet = new Subnet();
 		subnet.setDescription("Test description 3");
 		subnet.setInfraId(infraId);
 		subnet.setGroup("group");
-		subnet.setIp(0xC1A80000L);
-		subnet.setSize(65535L);
+		subnet.setIp(0xC1A80064L);
+		subnet.setSize(64L);
 		subnet.setLastModifed(new Date());
 		subnet.setOptionId(1L);
 		subnet.setSwipMod(new Date());
@@ -192,13 +192,158 @@ public class SubnetControllerTests {
 	}
 
 	@Test
+	public void h2_add_subnet_shouldnt_return_a_subnet_conflict_inside() {
+		Subnet subnet = new Subnet();
+		subnet.setId(120L);
+		subnet.setDescription("Test description 3");
+		subnet.setInfraId(infraId);
+		subnet.setGroup("group");
+		subnet.setIp(0xC1A80064L);
+		subnet.setSize(32L);
+		subnet.setLastModifed(new Date());
+		subnet.setOptionId(1L);
+		subnet.setSwipMod(new Date());
+		subnet.setUserId("user");
+		try {
+			this.controller.addSubnet(infraId, subnet);
+			Assert.fail();
+		} catch (ApiException e) {
+			Assert.assertNotNull(e.getError());
+			Assert.assertEquals(ApiError.SUBNET_CONFLICT, e.getError());
+		}
+	}
+
+	@Test
+	public void h2_add_subnet_shouldnt_return_a_subnet_conflict_before() {
+		Subnet subnet = new Subnet();
+		subnet.setDescription("Test description 3");
+		subnet.setInfraId(infraId);
+		subnet.setGroup("group");
+		subnet.setIp(0xC1A80000L);
+		subnet.setSize(128L);
+		subnet.setLastModifed(new Date());
+		subnet.setOptionId(1L);
+		subnet.setSwipMod(new Date());
+		subnet.setUserId("user");
+		try {
+			this.controller.addSubnet(infraId, subnet);
+			Assert.fail();
+		} catch (ApiException e) {
+			Assert.assertNotNull(e.getError());
+			Assert.assertEquals(ApiError.SUBNET_CONFLICT, e.getError());
+		}
+	}
+
+	@Test
+	public void h2_add_subnet_shouldnt_return_a_subnet_conflict_outside() {
+		Subnet subnet = new Subnet();
+		subnet.setDescription("Test description 3");
+		subnet.setInfraId(infraId);
+		subnet.setGroup("group");
+		subnet.setIp(0xC1A80000L);
+		subnet.setSize(256L);
+		subnet.setLastModifed(new Date());
+		subnet.setOptionId(1L);
+		subnet.setSwipMod(new Date());
+		subnet.setUserId("user");
+		try {
+			this.controller.addSubnet(infraId, subnet);
+			Assert.fail();
+		} catch (ApiException e) {
+			Assert.assertNotNull(e.getError());
+			Assert.assertEquals(ApiError.SUBNET_CONFLICT, e.getError());
+		}
+	}
+
+	@Test
+	public void h2_add_subnet_shouldnt_return_a_infra_not_found() {
+		Subnet subnet = new Subnet();
+		subnet.setDescription("Test description 3");
+		subnet.setInfraId(12);
+		subnet.setGroup("group");
+		subnet.setIp(0xC1A80000L);
+		subnet.setSize(256L);
+		subnet.setLastModifed(new Date());
+		subnet.setOptionId(1L);
+		subnet.setSwipMod(new Date());
+		subnet.setUserId("user");
+		try {
+			this.controller.addSubnet(12, subnet);
+			Assert.fail();
+		} catch (ApiException e) {
+			Assert.assertNotNull(e.getError());
+			Assert.assertEquals(ApiError.INFRA_NOT_FOUND, e.getError());
+		}
+	}
+
+	@Test
+	public void h3_add_subnet_should_create_a_new_subnet_before() {
+		Subnet subnet = new Subnet();
+		subnet.setDescription("Test description 3");
+		subnet.setInfraId(infraId);
+		subnet.setGroup("group");
+		subnet.setIp(0xC1A80032L);
+		subnet.setSize(32L);
+		subnet.setLastModifed(new Date());
+		subnet.setOptionId(1L);
+		subnet.setSwipMod(new Date());
+		subnet.setUserId("user");
+		HttpEntity<SubnetResource> resp = this.controller.addSubnet(infraId, subnet);
+		Assert.assertNotNull(resp);
+		Assert.assertNotNull(resp.getBody());
+		SubnetResource subnetReturned = resp.getBody();
+		Assert.assertNotNull(subnetReturned);
+		Assert.assertNotNull(subnetReturned.getId());
+		Assert.assertEquals(subnet.getDescription(), subnetReturned.getDescription());
+		Assert.assertEquals(subnet.getInfraId(), subnetReturned.getInfraId());
+		Assert.assertEquals(subnet.getIp(), subnetReturned.getIp());
+		Assert.assertEquals(subnet.getGroup(), subnetReturned.getGroup());
+		Assert.assertEquals(subnet.getSize(), subnetReturned.getSize());
+		Assert.assertEquals(subnet.getLastModifed(), subnetReturned.getLastModifed());
+		Assert.assertEquals(subnet.getOptionId(), subnetReturned.getOptionId());
+		Assert.assertEquals(subnet.getSwipMod(), subnetReturned.getSwipMod());
+		Assert.assertEquals(subnet.getUserId(), subnetReturned.getUserId());
+		Assert.assertEquals(3, subnetReturned.getLinks().size());
+	}
+
+	@Test
+	public void h3_add_subnet_should_create_a_new_subnet_after() {
+		Subnet subnet = new Subnet();
+		subnet.setDescription("Test description 3");
+		subnet.setInfraId(infraId);
+		subnet.setGroup("group");
+		subnet.setIp(0xC1A800128L);
+		subnet.setSize(128L);
+		subnet.setLastModifed(new Date());
+		subnet.setOptionId(1L);
+		subnet.setSwipMod(new Date());
+		subnet.setUserId("user");
+		HttpEntity<SubnetResource> resp = this.controller.addSubnet(infraId, subnet);
+		Assert.assertNotNull(resp);
+		Assert.assertNotNull(resp.getBody());
+		SubnetResource subnetReturned = resp.getBody();
+		Assert.assertNotNull(subnetReturned);
+		Assert.assertNotNull(subnetReturned.getId());
+		Assert.assertEquals(subnet.getDescription(), subnetReturned.getDescription());
+		Assert.assertEquals(subnet.getInfraId(), subnetReturned.getInfraId());
+		Assert.assertEquals(subnet.getIp(), subnetReturned.getIp());
+		Assert.assertEquals(subnet.getGroup(), subnetReturned.getGroup());
+		Assert.assertEquals(subnet.getSize(), subnetReturned.getSize());
+		Assert.assertEquals(subnet.getLastModifed(), subnetReturned.getLastModifed());
+		Assert.assertEquals(subnet.getOptionId(), subnetReturned.getOptionId());
+		Assert.assertEquals(subnet.getSwipMod(), subnetReturned.getSwipMod());
+		Assert.assertEquals(subnet.getUserId(), subnetReturned.getUserId());
+		Assert.assertEquals(3, subnetReturned.getLinks().size());
+	}
+
+	@Test
 	public void i_get_all_should_return_an_array_with_two_elem() {
 		HttpEntity<PagedResources<SubnetResource>> resp = this.controller.getSubnets(null, null, infraId, null, new PagedResourcesAssembler<Subnet>(resolver, null));
 		Assert.assertNotNull(resp);
 		Assert.assertNotNull(resp.getBody());
 		List<SubnetResource> subnets = IterableUtils.toList(resp.getBody());
 		Assert.assertNotNull(subnets);
-		Assert.assertEquals(2, subnets.size());
+		Assert.assertEquals(4, subnets.size());
 	}
 
 	@Test
@@ -248,7 +393,7 @@ public class SubnetControllerTests {
 		Assert.assertNotNull(resp.getBody());
 		List<SubnetResource> subnets = IterableUtils.toList(resp.getBody());
 		Assert.assertNotNull(subnets);
-		Assert.assertEquals(2, subnets.size());
+		Assert.assertEquals(4, subnets.size());
 	}
 
 	@Test
@@ -259,7 +404,7 @@ public class SubnetControllerTests {
 		SubnetResource subnet = resp.getBody();
 		Assert.assertNotNull(subnet);
 		Assert.assertEquals("Test description 3", subnet.getDescription());
-		Assert.assertEquals(0xC1A80000L, (long) subnet.getIp());
+		Assert.assertEquals(0xC1A80064L, (long) subnet.getIp());
 		Assert.assertEquals(3, subnet.getLinks().size());
 	}
 
@@ -277,7 +422,7 @@ public class SubnetControllerTests {
 			Assert.fail();
 		} catch (ApiException e) {
 			Assert.assertNotNull(e.getError());
-			Assert.assertEquals(ApiError.SUBNEET_NOT_FOUND, e.getError());
+			Assert.assertEquals(ApiError.SUBNET_NOT_FOUND, e.getError());
 		}
 	}
 
@@ -307,7 +452,7 @@ public class SubnetControllerTests {
 		Assert.assertNotNull(resp.getBody());
 		List<SubnetResource> subnets = IterableUtils.toList(resp.getBody());
 		Assert.assertNotNull(subnets);
-		Assert.assertEquals(0, subnets.size());
+		Assert.assertEquals(2, subnets.size());
 	}
 
 	@Test

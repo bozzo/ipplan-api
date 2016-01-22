@@ -40,6 +40,25 @@ public interface SubnetRepository extends PagingAndSortingRepository<Subnet, Lon
 	@Query("SELECT CASE WHEN COUNT(s) > 0 THEN 'true' ELSE 'false' END FROM Subnet s WHERE s.id = :subnetId AND s.ip < :ip AND (s.ip + s.size - 1) > :ip")
 	public Boolean existsInSubnet(@Param("subnetId") Long subnetId, @Param("ip") Long ip);
 
+	@Query("SELECT CASE WHEN COUNT(s) > 0 THEN 'true' ELSE 'false' END "
+			+ "FROM Subnet s "
+			+ "WHERE  ( "
+				+ "(s.ip >= :ip AND s.ip < (:ip + :size)) "
+				+ "OR ((s.ip + s.size) > :ip AND (s.ip + s.size) <= (:ip + :size)) "
+				+ "OR (:ip >= s.ip AND :ip < (s.ip + s.size)) "
+				+ "OR ((:ip + :size) > s.ip AND (:ip + :size) <= (s.ip + s.size)) "
+				+ ") AND NOT s.id = :subnetId")
+	public Boolean existsSubnetConflict(@Param("subnetId") Long subnetId, @Param("ip") Long ip, @Param("size") Long size);
+
+	@Query("SELECT CASE WHEN COUNT(s) > 0 THEN 'true' ELSE 'false' END "
+			+ "FROM Subnet s "
+			+ "WHERE (s.ip >= :ip AND s.ip < (:ip + :size)) "
+				+ "OR ((s.ip + s.size) > :ip AND (s.ip + s.size) <= (:ip + :size)) "
+				+ "OR (:ip >= s.ip AND :ip < (s.ip + s.size)) "
+				+ "OR ((:ip + :size) > s.ip AND (:ip + :size) <= (s.ip + s.size)) "
+				+ ")")
+	public Boolean existsSubnetConflict(@Param("ip") Long ip, @Param("size") Long size);
+
 	public Page<Subnet> findAllByInfraId(Integer infraId, Pageable pageable);
 
 	@Query("SELECT s FROM Subnet s WHERE s.infraId = :infraId AND s.ip <= :ip AND (s.ip + s.size) > :ip")

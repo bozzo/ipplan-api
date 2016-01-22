@@ -26,6 +26,7 @@ import org.bozzo.ipplan.domain.exception.ApiException;
 import org.bozzo.ipplan.domain.model.ApiError;
 import org.bozzo.ipplan.domain.model.Subnet;
 import org.bozzo.ipplan.domain.model.ui.SubnetResource;
+import org.bozzo.ipplan.domain.service.SubnetService;
 import org.bozzo.ipplan.tools.IpAddress;
 import org.bozzo.ipplan.web.assembler.InfrastructureResourceAssembler;
 import org.bozzo.ipplan.web.assembler.SubnetResourceAssembler;
@@ -62,17 +63,21 @@ public class SubnetController {
 	private static Logger logger = LoggerFactory.getLogger(SubnetController.class);
 
 	@Autowired
+	private SubnetService service;
+
+	@Autowired
 	private SubnetRepository repository;
 
 	@Autowired
 	private SubnetResourceAssembler assembler;
 
-	@RequestMapping(method = RequestMethod.GET, produces = {MediaType.TEXT_HTML_VALUE})
+	@RequestMapping(method = RequestMethod.GET, produces = { MediaType.TEXT_HTML_VALUE })
 	@ApiIgnore
 	public ModelAndView getSubnetsView(@RequestParam(required = false) String ip,
 			@RequestParam(required = false) Long size, @PathVariable @NotNull Integer infraId, Pageable pageable,
 			PagedResourcesAssembler<Subnet> pagedAssembler) {
-		HttpEntity<PagedResources<SubnetResource>> subnets = this.getSubnets(ip, size, infraId, pageable, pagedAssembler);
+		HttpEntity<PagedResources<SubnetResource>> subnets = this.getSubnets(ip, size, infraId, pageable,
+				pagedAssembler);
 		ModelAndView view = new ModelAndView("subnets");
 		view.addObject("pages", subnets.getBody());
 		return view;
@@ -98,7 +103,7 @@ public class SubnetController {
 		return new ResponseEntity<>(page, HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "/{subnetId}", method = RequestMethod.GET, produces = {MediaType.TEXT_HTML_VALUE})
+	@RequestMapping(value = "/{subnetId}", method = RequestMethod.GET, produces = { MediaType.TEXT_HTML_VALUE })
 	@ApiIgnore
 	public ModelAndView getSubnetView(@PathVariable @NotNull Integer infraId, @PathVariable Long subnetId) {
 		HttpEntity<SubnetResource> subnet = this.getSubnet(infraId, subnetId);
@@ -108,11 +113,11 @@ public class SubnetController {
 		return view;
 	}
 
-	@RequestMapping(value = "/{subnetId}", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
+	@RequestMapping(value = "/{subnetId}", method = RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_VALUE })
 	public HttpEntity<SubnetResource> getSubnet(@PathVariable @NotNull Integer infraId, @PathVariable Long subnetId) {
 		Subnet subnet = repository.findByInfraIdAndId(infraId, subnetId);
 		if (subnet == null) {
-			throw new ApiException(ApiError.SUBNEET_NOT_FOUND);
+			throw new ApiException(ApiError.SUBNET_NOT_FOUND);
 		}
 		return new ResponseEntity<>(assembler.toResource(subnet), HttpStatus.OK);
 	}
@@ -122,23 +127,23 @@ public class SubnetController {
 			@RequestBody @NotNull Subnet subnet) {
 		Preconditions.checkArgument(infraId.equals(subnet.getInfraId()));
 		logger.info("add new subnet: {}", subnet);
-		Subnet sub = repository.save(subnet);
+		Subnet sub = service.save(subnet);
 		return new ResponseEntity<>(assembler.toResource(sub), HttpStatus.CREATED);
 	}
 
-	@RequestMapping(value = "/{subnetId}", method = RequestMethod.PUT, produces = {MediaType.APPLICATION_JSON_VALUE})
+	@RequestMapping(value = "/{subnetId}", method = RequestMethod.PUT, produces = { MediaType.APPLICATION_JSON_VALUE })
 	public HttpEntity<SubnetResource> updateSubnet(@PathVariable Integer infraId, @PathVariable Long subnetId,
 			@RequestBody @NotNull Subnet subnet) {
 		Preconditions.checkArgument(infraId.equals(subnet.getInfraId()));
 		Preconditions.checkArgument(subnetId.equals(subnet.getId()));
 		logger.info("update subnet: {}", subnet);
-		Subnet sub = repository.save(subnet);
+		Subnet sub = service.save(subnet);
 		return new ResponseEntity<>(assembler.toResource(sub), HttpStatus.CREATED);
 	}
 
 	@RequestMapping(value = "/{subnetId}", method = RequestMethod.DELETE)
-	public @ResponseStatus(HttpStatus.NO_CONTENT) void deleteSubnet(@PathVariable Integer infraId,
-			@PathVariable Long subnetId) {
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void deleteSubnet(@PathVariable Integer infraId, @PathVariable Long subnetId) {
 		logger.info("delete subnet with id: {} (infra id: {})", subnetId, infraId);
 		this.repository.deleteByInfraIdAndId(infraId, subnetId);
 	}
