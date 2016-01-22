@@ -233,7 +233,7 @@ public class RangeControllerTests {
 			Assert.fail();
 		} catch (ApiException e) {
 			Assert.assertNotNull(e.getError());
-			Assert.assertEquals(ApiError.RangeNotFound, e.getError());
+			Assert.assertEquals(ApiError.RANGE_NOT_FOUND, e.getError());
 		}
 	}
 

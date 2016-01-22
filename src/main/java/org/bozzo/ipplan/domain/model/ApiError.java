@@ -30,25 +30,26 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  */
 public enum ApiError {
 
-	InternalError(HttpStatus.INTERNAL_SERVER_ERROR, 500, "Internal server error."),
+	INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 500, "Internal server error."),
 
-	BadRequest(HttpStatus.BAD_REQUEST, 400, "Bad request, check request parameters."),
+	BAD_REQUEST(HttpStatus.BAD_REQUEST, 400, "Bad request, check request parameters."),
 
-	DataIntegrityViolation(HttpStatus.BAD_REQUEST, 401, "Integrity violation."),
+	DATA_INTEGRITY_VIOLATION(HttpStatus.BAD_REQUEST, 401, "Integrity violation."),
 	
-	NotFound(HttpStatus.NOT_FOUND, 404, "Object not found."),
+	NOT_FOUND(HttpStatus.NOT_FOUND, 404, "Object not found."),
 	
-	InfraNotFound(HttpStatus.NOT_FOUND, 1404, "No infrastructure found."),
+	INFRA_NOT_FOUND(HttpStatus.NOT_FOUND, 1404, "No infrastructure found."),
 
-	SubnetNotFound(HttpStatus.NOT_FOUND, 2404, "No subnet found."),
-	SubnetFull(HttpStatus.NOT_FOUND, 2405, "No free IP address found, subnet is full."),
+	SUBNEET_NOT_FOUND(HttpStatus.NOT_FOUND, 2404, "No subnet found."),
+	SUBNET_FULL(HttpStatus.NOT_FOUND, 2405, "No free IP address found, subnet is full."),
 	
-	ZoneNotFound(HttpStatus.NOT_FOUND, 3404, "No zone found."),
+	ZONE_NOT_FOUND(HttpStatus.NOT_FOUND, 3404, "No zone found."),
 	
-	RangeNotFound(HttpStatus.NOT_FOUND, 4404, "No range found."),
+	RANGE_NOT_FOUND(HttpStatus.NOT_FOUND, 4404, "No range found."),
 
-	IPConflict(HttpStatus.NOT_FOUND, 5401, "IP address already exists, use update if you want to modify it or change IP address."),
-	IPNotFound(HttpStatus.NOT_FOUND, 5404, "IP address not found."),
+	IP_NOT_IN_SUBNET(HttpStatus.BAD_REQUEST, 5400, "IP address does not belong to the given subnet or subnet does exists."),
+	IP_CONFLICT(HttpStatus.NOT_FOUND, 5401, "IP address already exists, use update if you want to modify it or change IP address."),
+	IP_NOT_FOUND(HttpStatus.NOT_FOUND, 5404, "IP address not found."),
 	
 	;
 	
@@ -92,6 +93,6 @@ public enum ApiError {
 	 */
 	@JsonIgnore
 	public static ResponseEntity<ApiError> getResponseEntity(ApiError error) {
-		return new ResponseEntity<ApiError>(error, error.status);
+		return new ResponseEntity<>(error, error.status);
 	}
 }

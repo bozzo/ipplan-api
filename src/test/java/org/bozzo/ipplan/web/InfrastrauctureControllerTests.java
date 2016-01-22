@@ -168,7 +168,7 @@ public class InfrastrauctureControllerTests {
 			Assert.fail();
 		} catch (ApiException e) {
 			Assert.assertNotNull(e.getError());
-			Assert.assertEquals(ApiError.InfraNotFound, e.getError());
+			Assert.assertEquals(ApiError.INFRA_NOT_FOUND, e.getError());
 		}
 	}
 

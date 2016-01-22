@@ -191,7 +191,7 @@ public class ZoneControllerTests {
 			Assert.fail();
 		} catch (ApiException e) {
 			Assert.assertNotNull(e.getError());
-			Assert.assertEquals(ApiError.ZoneNotFound, e.getError());
+			Assert.assertEquals(ApiError.ZONE_NOT_FOUND, e.getError());
 		}
 	}
 

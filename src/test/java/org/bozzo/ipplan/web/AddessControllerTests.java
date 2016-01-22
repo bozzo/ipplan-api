@@ -271,14 +271,12 @@ public class AddessControllerTests {
 		address.setPhone("0000000000");
 		address.setUserId("user");
 		address.setUserInfo("My user");
-		HttpEntity<AddressResource> resp;
 		try {
-			resp = this.controller.addAddress(infraId, subnetId2, address);
-			Assert.assertNull(resp);
+			this.controller.addAddress(infraId, subnetId2, address);
 			Assert.fail();
 		} catch (ApiException e) {
 			Assert.assertNotNull(e.getError());
-			Assert.assertEquals(ApiError.IPConflict, e.getError());
+			Assert.assertEquals(ApiError.IP_CONFLICT, e.getError());
 		}
 	}
 
@@ -296,14 +294,36 @@ public class AddessControllerTests {
 		address.setPhone("0000000000");
 		address.setUserId("user");
 		address.setUserInfo("My user");
-		HttpEntity<AddressResource> resp;
 		try {
-			resp = this.controller.addAddress(infraId, subnetId2, address);
-			Assert.assertNull(resp);
+			this.controller.addAddress(infraId, subnetId2, address);
 			Assert.fail();
 		} catch (ApiException e) {
 			Assert.assertNotNull(e.getError());
-			Assert.assertEquals(ApiError.SubnetFull, e.getError());
+			Assert.assertEquals(ApiError.SUBNET_FULL, e.getError());
+		}
+	}
+
+	@Test
+	public void f_add_bad_address_should_return_a_not_in_subnet_error() {
+		Address address = new Address();
+		address.setDescription("Test description");
+		address.setSubnetId(subnetId);
+		address.setInfraId(infraId);
+		address.setIp(0xC0A80000L);
+		address.setLocation("somewhere");
+		address.setMac("000000000000");
+		address.setLastModifed(new Date());
+		address.setLastPol(new Date());
+		address.setName("My Server 01");
+		address.setPhone("0000000000");
+		address.setUserId("user");
+		address.setUserInfo("My user");
+		try {
+			this.controller.addAddress(infraId, subnetId, address);
+			Assert.fail();
+		} catch (ApiException e) {
+			Assert.assertNotNull(e.getError());
+			Assert.assertEquals(ApiError.IP_NOT_IN_SUBNET, e.getError());
 		}
 	}
 
@@ -449,14 +469,12 @@ public class AddessControllerTests {
 
 	@Test
 	public void n_get_next_free_should_return_not_found() {
-		HttpEntity<AddressResource> resp;
 		try {
-			resp = this.controller.getFreeAddress(infraId, subnetId2);
-			Assert.assertNull(resp);
+			this.controller.getFreeAddress(infraId, subnetId2);
 			Assert.fail();
 		} catch (ApiException e) {
 			Assert.assertNotNull(e.getError());
-			Assert.assertEquals(ApiError.SubnetFull, e.getError());
+			Assert.assertEquals(ApiError.SUBNET_FULL, e.getError());
 		}
 	}
 
@@ -479,14 +497,12 @@ public class AddessControllerTests {
 
 	@Test
 	public void p_get_address_shouldnt_return_address() {
-		HttpEntity<AddressResource> resp;
 		try {
-			resp = this.controller.getAddress(infraId, subnetId, id2);
-			Assert.assertNull(resp);
+			this.controller.getAddress(infraId, subnetId, id2);
 			Assert.fail();
 		} catch (ApiException e) {
 			Assert.assertNotNull(e.getError());
-			Assert.assertEquals(ApiError.IPNotFound, e.getError());
+			Assert.assertEquals(ApiError.IP_NOT_FOUND, e.getError());
 		}
 	}
 

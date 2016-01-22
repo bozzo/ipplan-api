@@ -100,7 +100,7 @@ public class AddressController {
 	public HttpEntity<AddressResource> getFreeAddress(@PathVariable Integer infraId, @PathVariable Long subnetId) {
 		Address address = this.service.findFreeAddressBySubnetId(subnetId);
 		if (address == null) {
-			throw new ApiException(ApiError.SubnetFull);
+			throw new ApiException(ApiError.SUBNET_FULL);
 		}
 		address.setInfraId(infraId);
 		return new ResponseEntity<>(assembler.toResource(address), HttpStatus.OK);
@@ -120,7 +120,7 @@ public class AddressController {
 	public HttpEntity<AddressResource> getAddress(@PathVariable Integer infraId, @PathVariable Long subnetId, @PathVariable Long ip) {
 		Address address = this.repository.findBySubnetIdAndIp(subnetId, ip);
 		if (address == null) {
-			throw new ApiException(ApiError.IPNotFound);
+			throw new ApiException(ApiError.IP_NOT_FOUND);
 		}
 		address.setInfraId(infraId);
 		return new ResponseEntity<>(assembler.toResource(address), HttpStatus.OK);
@@ -134,13 +134,13 @@ public class AddressController {
 		if (address.getIp() == null) { 
 			Address freeAddress = this.service.findFreeAddressBySubnetId(subnetId);
 			if (freeAddress == null) {
-				throw new ApiException(ApiError.SubnetFull);
+				throw new ApiException(ApiError.SUBNET_FULL);
 			}
 			address.setIp(freeAddress.getIp());
 		} else if (this.repository.exists(address.getIp())) {
-			throw new ApiException(ApiError.IPConflict);
+			throw new ApiException(ApiError.IP_CONFLICT);
 		}
-		Address ip = repository.save(address);
+		Address ip = service.save(address);
 		ip.setInfraId(infraId);
 		return new ResponseEntity<>(assembler.toResource(ip), HttpStatus.CREATED);
 	}
@@ -150,13 +150,14 @@ public class AddressController {
 		Preconditions.checkArgument(subnetId.equals(address.getSubnetId()));
 		Preconditions.checkArgument(ip.equals(address.getIp()));
 		logger.info("update address: {}", address);
-		Address addr = repository.save(address);
+		Address addr = service.save(address);
 		addr.setInfraId(infraId);
 		return new ResponseEntity<>(assembler.toResource(addr), HttpStatus.CREATED);
 	}
 
 	@RequestMapping(value = "/{addressId}", method=RequestMethod.DELETE)
-	public @ResponseStatus(HttpStatus.NO_CONTENT) void deleteAddress(@PathVariable Integer infraId, @PathVariable Long subnetId, @PathVariable Long addressId) {
+	@ResponseStatus(HttpStatus.NO_CONTENT) 
+	public void deleteAddress(@PathVariable Integer infraId, @PathVariable Long subnetId, @PathVariable Long addressId) {
 		logger.info("delete address with id: {} (infra id: {}, subnet id: {})", addressId, infraId, subnetId);
 		this.repository.deleteBySubnetIdAndIp(subnetId, addressId);
 	}

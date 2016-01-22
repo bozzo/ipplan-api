@@ -96,7 +96,7 @@ public class RangeController {
 	public HttpEntity<RangeResource> getRange(@PathVariable Integer infraId, @PathVariable Long zoneId, @PathVariable Long rangeId) {
 		Range range = this.repository.findByInfraIdAndZoneIdAndId(infraId, zoneId, rangeId);
 		if (range == null) {
-			throw new ApiException(ApiError.RangeNotFound);
+			throw new ApiException(ApiError.RANGE_NOT_FOUND);
 		}
 		return new ResponseEntity<>(assembler.toResource(range), HttpStatus.OK);
 	}

@@ -277,7 +277,7 @@ public class SubnetControllerTests {
 			Assert.fail();
 		} catch (ApiException e) {
 			Assert.assertNotNull(e.getError());
-			Assert.assertEquals(ApiError.SubnetNotFound, e.getError());
+			Assert.assertEquals(ApiError.SUBNEET_NOT_FOUND, e.getError());
 		}
 	}
 

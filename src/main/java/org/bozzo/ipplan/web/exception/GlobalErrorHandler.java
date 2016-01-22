@@ -36,12 +36,12 @@ public class GlobalErrorHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ApiError> handleBadRequest() {
-		return ApiError.getResponseEntity(ApiError.BadRequest);
+		return ApiError.getResponseEntity(ApiError.BAD_REQUEST);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ApiError> handleConflict() {
-		return ApiError.getResponseEntity(ApiError.DataIntegrityViolation);
+		return ApiError.getResponseEntity(ApiError.DATA_INTEGRITY_VIOLATION);
     }
 
     @ExceptionHandler(ApiException.class)
@@ -51,6 +51,6 @@ public class GlobalErrorHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleException() {
-		return ApiError.getResponseEntity(ApiError.InternalError);
+		return ApiError.getResponseEntity(ApiError.INTERNAL_ERROR);
     }
 }

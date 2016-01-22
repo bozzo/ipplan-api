@@ -112,7 +112,7 @@ public class SubnetController {
 	public HttpEntity<SubnetResource> getSubnet(@PathVariable @NotNull Integer infraId, @PathVariable Long subnetId) {
 		Subnet subnet = repository.findByInfraIdAndId(infraId, subnetId);
 		if (subnet == null) {
-			throw new ApiException(ApiError.SubnetNotFound);
+			throw new ApiException(ApiError.SUBNEET_NOT_FOUND);
 		}
 		return new ResponseEntity<>(assembler.toResource(subnet), HttpStatus.OK);
 	}

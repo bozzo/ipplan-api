@@ -24,7 +24,9 @@ import java.util.List;
 
 import org.bozzo.ipplan.domain.dao.AddressRepository;
 import org.bozzo.ipplan.domain.dao.SubnetRepository;
+import org.bozzo.ipplan.domain.exception.ApiException;
 import org.bozzo.ipplan.domain.model.Address;
+import org.bozzo.ipplan.domain.model.ApiError;
 import org.bozzo.ipplan.domain.model.Subnet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -51,16 +53,17 @@ public class AddressService {
 		List<Long> addresses = this.addressRepository.findAllIpBySubnetId(subnetId);
 		ArrayList<Address> list = new ArrayList<>();
 
+		Pageable page = pageable;
 		int start = 0;
 		int startPage = 0;
 		int pageSize = 1024;
 		long totalElem = 0;
 
-		if (pageable != null) {
-			startPage = pageable.getPageNumber() * pageable.getPageSize();
-			pageSize = pageable.getPageSize();
+		if (page != null) {
+			startPage = page.getPageNumber() * page.getPageSize();
+			pageSize = page.getPageSize();
 		} else {
-			pageable = new PageRequest(0, pageSize);
+			page = new PageRequest(0, pageSize);
 		}
 
 		for (long ip = subnet.getIp() + 1; ip < subnet.getIp() + subnet.getSize() - 1; ip++) {
@@ -79,7 +82,7 @@ public class AddressService {
 			}
 		}
 
-		return new PageImpl<>(list, pageable, totalElem);
+		return new PageImpl<>(list, page, totalElem);
 	}
 
 	public Address findFreeAddressBySubnetId(Long subnetId) {
@@ -98,5 +101,12 @@ public class AddressService {
 		}
 
 		return null;
+	}
+
+	public Address save(Address address) {
+		if (! this.subnetRepository.existsInSubnet(address.getSubnetId(), address.getIp())) {
+			throw new ApiException(ApiError.IP_NOT_IN_SUBNET);
+		} 
+		return this.addressRepository.save(address);
 	}
 }

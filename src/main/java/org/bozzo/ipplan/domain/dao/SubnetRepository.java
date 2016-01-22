@@ -37,6 +37,9 @@ import org.springframework.stereotype.Repository;
 @Transactional
 public interface SubnetRepository extends PagingAndSortingRepository<Subnet, Long> {
 
+	@Query("SELECT CASE WHEN COUNT(s) > 0 THEN 'true' ELSE 'false' END FROM Subnet s WHERE s.id = :subnetId AND s.ip < :ip AND (s.ip + s.size - 1) > :ip")
+	public Boolean existsInSubnet(@Param("subnetId") Long subnetId, @Param("ip") Long ip);
+
 	public Page<Subnet> findAllByInfraId(Integer infraId, Pageable pageable);
 
 	@Query("SELECT s FROM Subnet s WHERE s.infraId = :infraId AND s.ip <= :ip AND (s.ip + s.size) > :ip")

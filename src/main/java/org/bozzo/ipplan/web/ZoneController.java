@@ -96,7 +96,7 @@ public class ZoneController {
 	public HttpEntity<ZoneResource> getZone(@PathVariable Integer infraId, @PathVariable Long zoneId) {
 		Zone zone = repository.findByInfraIdAndId(infraId, zoneId);
 		if (zone == null) {
-			throw new ApiException(ApiError.ZoneNotFound);
+			throw new ApiException(ApiError.ZONE_NOT_FOUND);
 		}
 		return new ResponseEntity<>(assembler.toResource(zone), HttpStatus.OK);
 	}

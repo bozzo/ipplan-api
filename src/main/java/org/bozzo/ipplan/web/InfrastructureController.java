@@ -99,7 +99,7 @@ public class InfrastructureController {
 	public HttpEntity<InfrastructureResource> getInfrastructure(@PathVariable Integer infraId) {
 		Infrastructure infra = repository.findOne(infraId);
 		if (infra == null) {
-			throw new ApiException(ApiError.InfraNotFound);
+			throw new ApiException(ApiError.INFRA_NOT_FOUND);
 		}
 		return new ResponseEntity<>(assembler.toResource(infra), HttpStatus.OK);
 	}
