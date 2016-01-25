@@ -39,13 +39,18 @@ import org.springframework.stereotype.Repository;
 @Transactional
 public interface AddressRepository extends PagingAndSortingRepository<Address, Long> {
 
+	@Query("SELECT CASE WHEN COUNT(a) > 0 THEN 'true' ELSE 'false' END FROM Address a WHERE a.subnetId = :subnetId")
+	public Boolean existsBySubnet(@Param("subnetId") Long subnetId);
+
 	@Query("SELECT a.ip FROM Address a WHERE a.subnetId=:subnetId")
 	public List<Long> findAllIpBySubnetId(@Param("subnetId") Long subnetId);
 
 	public Page<Address> findBySubnetId(Long subnetId, Pageable pageable);
 
-	public Address findBySubnetIdAndIp(Long zoneId, Long ip);
+	public Address findBySubnetIdAndIp(Long subnetId, Long ip);
 
-	public void deleteBySubnetIdAndIp(Long zoneId, Long ip);
+	public void deleteBySubnetIdAndIp(Long subnetId, Long ip);
+
+	public void deleteBySubnetId(Long subnetId);
 
 }

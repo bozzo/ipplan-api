@@ -19,8 +19,8 @@
  */
 package org.bozzo.ipplan.web.exception;
 
+import org.bozzo.ipplan.domain.ApiError;
 import org.bozzo.ipplan.domain.exception.ApiException;
-import org.bozzo.ipplan.domain.model.ApiError;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;

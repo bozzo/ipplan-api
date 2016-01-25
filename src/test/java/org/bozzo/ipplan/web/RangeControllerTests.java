@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.apache.commons.collections4.IterableUtils;
 import org.bozzo.ipplan.IpplanApiApplication;
+import org.bozzo.ipplan.domain.ApiError;
 import org.bozzo.ipplan.domain.exception.ApiException;
-import org.bozzo.ipplan.domain.model.ApiError;
 import org.bozzo.ipplan.domain.model.Infrastructure;
 import org.bozzo.ipplan.domain.model.Range;
 import org.bozzo.ipplan.domain.model.Zone;

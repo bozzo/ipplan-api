@@ -22,11 +22,11 @@ package org.bozzo.ipplan.domain.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bozzo.ipplan.domain.ApiError;
 import org.bozzo.ipplan.domain.dao.AddressRepository;
 import org.bozzo.ipplan.domain.dao.SubnetRepository;
 import org.bozzo.ipplan.domain.exception.ApiException;
 import org.bozzo.ipplan.domain.model.Address;
-import org.bozzo.ipplan.domain.model.ApiError;
 import org.bozzo.ipplan.domain.model.Subnet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

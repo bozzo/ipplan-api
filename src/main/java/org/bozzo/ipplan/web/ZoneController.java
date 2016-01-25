@@ -21,9 +21,9 @@ package org.bozzo.ipplan.web;
 
 import javax.validation.constraints.NotNull;
 
+import org.bozzo.ipplan.domain.ApiError;
 import org.bozzo.ipplan.domain.dao.ZoneRepository;
 import org.bozzo.ipplan.domain.exception.ApiException;
-import org.bozzo.ipplan.domain.model.ApiError;
 import org.bozzo.ipplan.domain.model.Zone;
 import org.bozzo.ipplan.domain.model.ui.ZoneResource;
 import org.bozzo.ipplan.web.assembler.InfrastructureResourceAssembler;

@@ -21,11 +21,11 @@ package org.bozzo.ipplan.web;
 
 import javax.validation.constraints.NotNull;
 
-import org.bozzo.ipplan.domain.Mode;
+import org.bozzo.ipplan.domain.ApiError;
+import org.bozzo.ipplan.domain.RequestMode;
 import org.bozzo.ipplan.domain.dao.AddressRepository;
 import org.bozzo.ipplan.domain.exception.ApiException;
 import org.bozzo.ipplan.domain.model.Address;
-import org.bozzo.ipplan.domain.model.ApiError;
 import org.bozzo.ipplan.domain.model.ui.AddressResource;
 import org.bozzo.ipplan.domain.service.AddressService;
 import org.bozzo.ipplan.web.assembler.AddressResourceAssembler;
@@ -73,7 +73,7 @@ public class AddressController {
 
 	@RequestMapping(method = RequestMethod.GET, produces = {MediaType.TEXT_HTML_VALUE})
 	@ApiIgnore
-	public ModelAndView getAddressesView(@RequestParam(required = false) Mode mode, @PathVariable Integer infraId, @PathVariable Long subnetId, Pageable pageable, PagedResourcesAssembler<Address> pagedAssembler) {
+	public ModelAndView getAddressesView(@RequestParam(required = false) RequestMode mode, @PathVariable Integer infraId, @PathVariable Long subnetId, Pageable pageable, PagedResourcesAssembler<Address> pagedAssembler) {
 		PagedResources<AddressResource> addresses = this.getAddresses(mode, infraId, subnetId, pageable, pagedAssembler);
 		ModelAndView view = new ModelAndView("addresses");
 		view.addObject("pages", addresses);
@@ -81,9 +81,9 @@ public class AddressController {
 	}
 
 	@RequestMapping(method=RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-	public PagedResources<AddressResource> getAddresses(@RequestParam(required = false) Mode mode, @PathVariable Integer infraId, @PathVariable Long subnetId, Pageable pageable, PagedResourcesAssembler<Address> pagedAssembler) {
+	public PagedResources<AddressResource> getAddresses(@RequestParam(required = false) RequestMode mode, @PathVariable Integer infraId, @PathVariable Long subnetId, Pageable pageable, PagedResourcesAssembler<Address> pagedAssembler) {
 		Page<Address> addresses;
-		if (Mode.Free.equals(mode)) {
+		if (RequestMode.FREE.equals(mode)) {
 			addresses = this.service.findFreeBySubnetId(subnetId, pageable);
 		} else {
 			addresses = this.repository.findBySubnetId(subnetId, pageable);

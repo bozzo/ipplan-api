@@ -21,9 +21,10 @@ package org.bozzo.ipplan.web;
 
 import javax.validation.constraints.NotNull;
 
+import org.bozzo.ipplan.domain.ApiError;
+import org.bozzo.ipplan.domain.DeleteMode;
 import org.bozzo.ipplan.domain.dao.SubnetRepository;
 import org.bozzo.ipplan.domain.exception.ApiException;
-import org.bozzo.ipplan.domain.model.ApiError;
 import org.bozzo.ipplan.domain.model.Subnet;
 import org.bozzo.ipplan.domain.model.ui.SubnetResource;
 import org.bozzo.ipplan.domain.service.SubnetService;
@@ -143,8 +144,8 @@ public class SubnetController {
 
 	@RequestMapping(value = "/{subnetId}", method = RequestMethod.DELETE)
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void deleteSubnet(@PathVariable Integer infraId, @PathVariable Long subnetId) {
+	public void deleteSubnet(@PathVariable Integer infraId, @PathVariable Long subnetId, @RequestParam(required = false) DeleteMode mode) {
 		logger.info("delete subnet with id: {} (infra id: {})", subnetId, infraId);
-		this.repository.deleteByInfraIdAndId(infraId, subnetId);
+		this.service.deleteByInfraIdAndId(mode, infraId, subnetId);
 	}
 }

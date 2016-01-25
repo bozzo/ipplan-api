@@ -23,6 +23,6 @@ package org.bozzo.ipplan.domain;
  * @author boris
  *
  */
-public enum Mode {
-	Reserved,Free
+public enum RequestMode {
+	RESERVED,FREE
 }

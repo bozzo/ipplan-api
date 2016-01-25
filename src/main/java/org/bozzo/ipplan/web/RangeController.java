@@ -21,9 +21,9 @@ package org.bozzo.ipplan.web;
 
 import javax.validation.constraints.NotNull;
 
+import org.bozzo.ipplan.domain.ApiError;
 import org.bozzo.ipplan.domain.dao.RangeRepository;
 import org.bozzo.ipplan.domain.exception.ApiException;
-import org.bozzo.ipplan.domain.model.ApiError;
 import org.bozzo.ipplan.domain.model.Range;
 import org.bozzo.ipplan.domain.model.ui.RangeResource;
 import org.bozzo.ipplan.web.assembler.RangeResourceAssembler;

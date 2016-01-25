@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.apache.commons.collections4.IterableUtils;
 import org.bozzo.ipplan.IpplanApiApplication;
+import org.bozzo.ipplan.domain.ApiError;
 import org.bozzo.ipplan.domain.exception.ApiException;
-import org.bozzo.ipplan.domain.model.ApiError;
 import org.bozzo.ipplan.domain.model.Infrastructure;
 import org.bozzo.ipplan.domain.model.Subnet;
 import org.bozzo.ipplan.domain.model.ui.InfrastructureResource;
@@ -410,7 +410,7 @@ public class SubnetControllerTests {
 
 	@Test
 	public void m_delete_subnet_should_work() {
-		this.controller.deleteSubnet(infraId, id2);
+		this.controller.deleteSubnet(infraId, id2, null);
 	}
 
 	@Test
@@ -442,7 +442,7 @@ public class SubnetControllerTests {
 
 	@Test
 	public void z1_delete_subnet_should_work() {
-		this.controller.deleteSubnet(infraId, id);
+		this.controller.deleteSubnet(infraId, id, null);
 	}
 
 	@Test

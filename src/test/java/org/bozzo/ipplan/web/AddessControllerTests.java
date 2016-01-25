@@ -5,10 +5,11 @@ import java.util.List;
 
 import org.apache.commons.collections4.IterableUtils;
 import org.bozzo.ipplan.IpplanApiApplication;
-import org.bozzo.ipplan.domain.Mode;
+import org.bozzo.ipplan.domain.ApiError;
+import org.bozzo.ipplan.domain.DeleteMode;
+import org.bozzo.ipplan.domain.RequestMode;
 import org.bozzo.ipplan.domain.exception.ApiException;
 import org.bozzo.ipplan.domain.model.Address;
-import org.bozzo.ipplan.domain.model.ApiError;
 import org.bozzo.ipplan.domain.model.Infrastructure;
 import org.bozzo.ipplan.domain.model.Subnet;
 import org.bozzo.ipplan.domain.model.ui.AddressResource;
@@ -428,7 +429,7 @@ public class AddessControllerTests {
 
 	@Test
 	public void m_get_free_should_return_an_array_with_two_elem_with_null_page() {
-		PagedResources<AddressResource> resources = this.controller.getAddresses(Mode.Free, infraId, subnetId, null, new PagedResourcesAssembler<Address>(resolver, null));
+		PagedResources<AddressResource> resources = this.controller.getAddresses(RequestMode.FREE, infraId, subnetId, null, new PagedResourcesAssembler<Address>(resolver, null));
 		List<AddressResource> addresses = IterableUtils.toList(resources.getContent());
 		Assert.assertNotNull(addresses);
 		Assert.assertEquals(1024, addresses.size());
@@ -439,7 +440,7 @@ public class AddessControllerTests {
 
 	@Test
 	public void m_get_free_should_return_an_array_with_two_elem_with_second_page() {
-		PagedResources<AddressResource> resources = this.controller.getAddresses(Mode.Free, infraId, subnetId, new PageRequest(2, 512), new PagedResourcesAssembler<Address>(resolver, null));
+		PagedResources<AddressResource> resources = this.controller.getAddresses(RequestMode.FREE, infraId, subnetId, new PageRequest(2, 512), new PagedResourcesAssembler<Address>(resolver, null));
 		List<AddressResource> addresses = IterableUtils.toList(resources.getContent());
 		Assert.assertNotNull(addresses);
 		Assert.assertEquals(512, addresses.size());
@@ -534,7 +535,7 @@ public class AddessControllerTests {
 
 	@Test
 	public void z3_delete_subnet_should_work() {
-		this.subnetController.deleteSubnet(infraId, subnetId);
+		this.subnetController.deleteSubnet(infraId, subnetId, null);
 	}
 
 	@Test
@@ -549,16 +550,26 @@ public class AddessControllerTests {
 
 	@Test
 	public void z5_delete_subnet_should_work() {
-		this.subnetController.deleteSubnet(infraId, subnetId2);
+		try {
+			this.subnetController.deleteSubnet(infraId, subnetId2, null);Assert.fail();
+		} catch (ApiException e) {
+			Assert.assertNotNull(e.getError());
+			Assert.assertEquals(ApiError.SUBNET_NOT_EMPTY, e.getError());
+		}
 	}
 
 	@Test
-	public void z6_delete_infra_should_work() {
+	public void z6_delete_subnet_full_mode_should_work() {
+		this.subnetController.deleteSubnet(infraId, subnetId2, DeleteMode.FULL);
+	}
+
+	@Test
+	public void z7_delete_infra_should_work() {
 		this.infrastructureController.deleteInfrastructure(infraId);
 	}
 
 	@Test
-	public void z7_get_all_should_return_an_empty_array() {
+	public void z8_get_all_should_return_an_empty_array() {
 		List<InfrastructureResource> infras = IterableUtils.toList(this.infrastructureController.getInfrastructures(null, null, new PagedResourcesAssembler<Infrastructure>(resolver, null)));
 		Assert.assertNotNull(infras);
 		Assert.assertEquals(0, infras.size());

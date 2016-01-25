@@ -19,10 +19,12 @@
  */
 package org.bozzo.ipplan.domain.service;
 
+import org.bozzo.ipplan.domain.ApiError;
+import org.bozzo.ipplan.domain.DeleteMode;
+import org.bozzo.ipplan.domain.dao.AddressRepository;
 import org.bozzo.ipplan.domain.dao.InfrastructureRepository;
 import org.bozzo.ipplan.domain.dao.SubnetRepository;
 import org.bozzo.ipplan.domain.exception.ApiException;
-import org.bozzo.ipplan.domain.model.ApiError;
 import org.bozzo.ipplan.domain.model.Subnet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,6 +35,9 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class SubnetService {
+
+	@Autowired
+	private AddressRepository addressRepository;
 
 	@Autowired
 	private SubnetRepository subnetRepository;
@@ -49,5 +54,14 @@ public class SubnetService {
 			throw new ApiException(ApiError.SUBNET_CONFLICT);
 		}
 		return this.subnetRepository.save(subnet);
+	}
+
+	public void deleteByInfraIdAndId(DeleteMode mode, Integer infraId, Long subnetId) {
+		if (DeleteMode.FULL.equals(mode)) {
+			this.addressRepository.deleteBySubnetId(subnetId);
+		} else if (this.addressRepository.existsBySubnet(subnetId)) {
+			throw new ApiException(ApiError.SUBNET_NOT_EMPTY);
+		}
+		this.subnetRepository.deleteByInfraIdAndId(infraId, subnetId);
 	}
 }

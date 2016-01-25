@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with ipplan-api.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.bozzo.ipplan.domain.model;
+package org.bozzo.ipplan.domain;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,6 +43,7 @@ public enum ApiError {
 	SUBNET_NOT_FOUND(HttpStatus.NOT_FOUND, 2404, "No subnet found."),
 	SUBNET_FULL(HttpStatus.NOT_FOUND, 2405, "No free IP address found, subnet is full."),
 	SUBNET_CONFLICT(HttpStatus.CONFLICT, 2409, "The subnet overlaps another subnet, check the subnet IP and size."),
+	SUBNET_NOT_EMPTY(HttpStatus.CONFLICT, 2410, "The subnet is not empty, remove IP addresses before or use 'full' option."),
 	
 	ZONE_NOT_FOUND(HttpStatus.NOT_FOUND, 3404, "No zone found."),
 	
