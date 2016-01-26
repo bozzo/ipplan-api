@@ -35,7 +35,7 @@ import org.springframework.web.servlet.ModelAndView;
 @SpringApplicationConfiguration(classes = IpplanApiApplication.class)
 @WebAppConfiguration
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class AddessControllerTests {
+public class AddessControllerTest {
 
 	private static long id, id2;
 	private static int infraId;

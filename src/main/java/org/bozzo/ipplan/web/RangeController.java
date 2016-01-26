@@ -26,6 +26,9 @@ import org.bozzo.ipplan.domain.dao.RangeRepository;
 import org.bozzo.ipplan.domain.exception.ApiException;
 import org.bozzo.ipplan.domain.model.Range;
 import org.bozzo.ipplan.domain.model.ui.RangeResource;
+import org.bozzo.ipplan.domain.service.RangeService;
+import org.bozzo.ipplan.tools.IpAddress;
+import org.bozzo.ipplan.tools.Netmask;
 import org.bozzo.ipplan.web.assembler.RangeResourceAssembler;
 import org.bozzo.ipplan.web.assembler.ZoneResourceAssembler;
 import org.slf4j.Logger;
@@ -58,6 +61,9 @@ import com.mangofactory.swagger.annotations.ApiIgnore;
 @RequestMapping("/api/infras/{infraId}/zones/{zoneId}/ranges")
 public class RangeController {
 	private static Logger logger = LoggerFactory.getLogger(RangeController.class);
+	
+	@Autowired
+	private RangeService service;
 	
 	@Autowired
 	private RangeRepository repository;
@@ -105,8 +111,15 @@ public class RangeController {
 	public HttpEntity<RangeResource> addRange(@PathVariable Integer infraId, @PathVariable Long zoneId, @RequestBody @NotNull Range range) {
 		Preconditions.checkArgument(infraId.equals(range.getInfraId()));
 		Preconditions.checkArgument(zoneId.equals(range.getZoneId()));
+		
+		if (! Netmask.isValidNetmask(range.getSize())) {
+			throw new ApiException(ApiError.BAD_NETMASK);
+		} else if (! IpAddress.isNetworkAddress(range.getIp(), range.getSize())) {
+			throw new ApiException(ApiError.BAD_NETWORK);
+		}
+		
 		logger.info("add new range: {}", range);
-		Range rang = repository.save(range);
+		Range rang = service.save(range);
 		return new ResponseEntity<>(assembler.toResource(rang), HttpStatus.CREATED);
 	}
 
@@ -115,13 +128,21 @@ public class RangeController {
 		Preconditions.checkArgument(infraId.equals(range.getInfraId()));
 		Preconditions.checkArgument(zoneId.equals(range.getZoneId()));
 		Preconditions.checkArgument(rangeId.equals(range.getId()));
+		
+		if (! Netmask.isValidNetmask(range.getSize())) {
+			throw new ApiException(ApiError.BAD_NETMASK);
+		} else if (! IpAddress.isNetworkAddress(range.getIp(), range.getSize())) {
+			throw new ApiException(ApiError.BAD_NETWORK);
+		}
+		
 		logger.info("update range: {}", range);
-		Range rang = repository.save(range);
+		Range rang = service.save(range);
 		return new ResponseEntity<>(assembler.toResource(rang), HttpStatus.CREATED);
 	}
 
 	@RequestMapping(value = "/{rangeId}", method=RequestMethod.DELETE)
-	public @ResponseStatus(HttpStatus.NO_CONTENT) void deleteRange(@PathVariable Integer infraId, @PathVariable Long zoneId, @PathVariable Long rangeId) {
+	@ResponseStatus(HttpStatus.NO_CONTENT) 
+	public void deleteRange(@PathVariable Integer infraId, @PathVariable Long zoneId, @PathVariable Long rangeId) {
 		logger.info("delete range with id: {} (infra id: {}, zone id: {})", rangeId, infraId, zoneId);
 		this.repository.deleteByInfraIdAndZoneIdAndId(infraId, zoneId, rangeId);
 	}

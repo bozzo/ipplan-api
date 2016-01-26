@@ -31,7 +31,7 @@ import org.springframework.web.servlet.ModelAndView;
 @SpringApplicationConfiguration(classes = IpplanApiApplication.class)
 @WebAppConfiguration
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class SubnetControllerTests {
+public class SubnetControllerTest {
 
 	private static long id, id2;
 	private static int infraId;
@@ -415,10 +415,8 @@ public class SubnetControllerTests {
 
 	@Test
 	public void n_get_subnet_shouldnt_return_subnet() {
-		HttpEntity<SubnetResource> resp;
 		try {
-			resp = this.controller.getSubnet(infraId, id2);
-			Assert.assertNull(resp);
+			this.controller.getSubnet(infraId, id2);
 			Assert.fail();
 		} catch (ApiException e) {
 			Assert.assertNotNull(e.getError());

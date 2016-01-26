@@ -33,8 +33,10 @@ public enum ApiError {
 	INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 500, "Internal server error."),
 
 	BAD_REQUEST(HttpStatus.BAD_REQUEST, 400, "Bad request, check request parameters."),
+	BAD_NETWORK(HttpStatus.BAD_REQUEST, 401, "Bad network, IP and size does not belong to a valid network. Check request parameters."),
+	BAD_NETMASK(HttpStatus.BAD_REQUEST, 402, "Bad netmask, netmask or size does not belong to a netmask. Check request parameters."),
 
-	DATA_INTEGRITY_VIOLATION(HttpStatus.BAD_REQUEST, 401, "Integrity violation."),
+	DATA_INTEGRITY_VIOLATION(HttpStatus.BAD_REQUEST, 409, "Integrity violation."),
 	
 	NOT_FOUND(HttpStatus.NOT_FOUND, 404, "Object not found."),
 	
@@ -48,6 +50,7 @@ public enum ApiError {
 	ZONE_NOT_FOUND(HttpStatus.NOT_FOUND, 3404, "No zone found."),
 	
 	RANGE_NOT_FOUND(HttpStatus.NOT_FOUND, 4404, "No range found."),
+	RANGE_CONFLICT(HttpStatus.CONFLICT, 4409, "The range overlaps another range, check the range IP and size."),
 
 	IP_NOT_IN_SUBNET(HttpStatus.BAD_REQUEST, 5400, "The IP address does not belong to the given subnet or subnet does exists."),
 	IP_NOT_FOUND(HttpStatus.NOT_FOUND, 5404, "IP address not found."),

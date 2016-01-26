@@ -26,7 +26,7 @@ import org.junit.Test;
  * @author boris
  *
  */
-public class NetmaskTests {
+public class NetmaskTest {
 
 	@Test(expected=IllegalArgumentException.class)
 	public void toString_with_negative_int_should_throw_IAE() {
@@ -125,6 +125,23 @@ public class NetmaskTests {
 		Assert.assertEquals(2, (int) Netmask.fromNumberHosts(1073741824L));
 		Assert.assertEquals(1, (int) Netmask.fromNumberHosts(2147483648L));
 		Assert.assertEquals(0, (int) Netmask.fromNumberHosts(4294967296L));
+	}
+
+	@Test
+	public void isValidNetmask_should_work() {
+		Assert.assertFalse(Netmask.isValidNetmask(-256L));
+		Assert.assertFalse(Netmask.isValidNetmask(0L));
+		for (int i = 0; i <= 32; i++) {
+			Assert.assertTrue(Netmask.isValidNetmask(1L << i));
+		}
+		Assert.assertFalse(Netmask.isValidNetmask(1L << 33));
+		Assert.assertFalse(Netmask.isValidNetmask(1L << 34));
+		Assert.assertFalse(Netmask.isValidNetmask(65535L));
+	}
+
+	@Test(expected=IllegalArgumentException.class)
+	public void isValidNetmask_should_return_illegal_arg() {
+		Netmask.isValidNetmask(null);
 	}
 
 }

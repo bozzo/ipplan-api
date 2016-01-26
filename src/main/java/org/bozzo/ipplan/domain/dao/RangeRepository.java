@@ -24,7 +24,9 @@ import javax.transaction.Transactional;
 import org.bozzo.ipplan.domain.model.Range;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -34,6 +36,26 @@ import org.springframework.stereotype.Repository;
 @Repository
 @Transactional
 public interface RangeRepository extends PagingAndSortingRepository<Range, Long> {
+
+	@Query("SELECT CASE WHEN COUNT(r) > 0 THEN 'true' ELSE 'false' END "
+			+ "FROM Range r "
+			+ "WHERE  ( "
+				+ "(r.ip >= :ip AND r.ip < (:ip + :size)) "
+				+ "OR ((r.ip + r.size) > :ip AND (r.ip + r.size) <= (:ip + :size)) "
+				+ "OR (:ip >= r.ip AND :ip < (r.ip + r.size)) "
+				+ "OR ((:ip + :size) > r.ip AND (:ip + :size) <= (r.ip + r.size)) "
+				+ ") AND NOT r.id = :rangeId")
+	public Boolean existsRangeConflict(@Param("rangeId") Long rangeId, @Param("ip") Long ip, @Param("size") Long size);
+
+	@Query("SELECT CASE WHEN COUNT(r) > 0 THEN 'true' ELSE 'false' END "
+			+ "FROM Range r "
+			+ "WHERE  ( "
+				+ "(r.ip >= :ip AND r.ip < (:ip + :size)) "
+				+ "OR ((r.ip + r.size) > :ip AND (r.ip + r.size) <= (:ip + :size)) "
+				+ "OR (:ip >= r.ip AND :ip < (r.ip + r.size)) "
+				+ "OR ((:ip + :size) > r.ip AND (:ip + :size) <= (r.ip + r.size)) "
+				+ ")")
+	public Boolean existsRangeConflict(@Param("ip") Long ip, @Param("size") Long size);
 
 	public Page<Range> findByInfraIdAndZoneId(Integer infraId, Long zoneId, Pageable pageable);
 

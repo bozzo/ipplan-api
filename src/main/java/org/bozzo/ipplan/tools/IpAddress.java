@@ -19,12 +19,16 @@
  */
 package org.bozzo.ipplan.tools;
 
+import com.google.common.base.Preconditions;
+
 /**
  * @author boris
  *
  */
 public class IpAddress {
 
+	private IpAddress() {}
+	
 	/**
 	 * Return the long value of an IP address
 	 * @param ip the IP address in {@link String} format x.x.x.x
@@ -48,9 +52,21 @@ public class IpAddress {
 	 * @return the IP address in format x.x.x.x
 	 */
 	public static String toString(Long ip) {
-		if (ip == null)
-			return null;
+		Preconditions.checkArgument(ip != null, "IP address shouldn't be null");
 		
 		return ((ip >> 24) & 0xFF) + "." + ((ip >> 16) & 0xFF) + "." + ((ip >> 8) & 0xFF) + "." + (ip & 0xFF);
+	}
+
+	/**
+	 * Check the validity of the network address
+	 * @param ip the IP address as {@link Long} value
+	 * @param size the network size
+	 * @return true if it's a valid network address, false otherwise
+	 */
+	public static boolean isNetworkAddress(Long ip, Long size) {
+		Preconditions.checkArgument(ip != null, "IP address shouldn't be null");
+		Preconditions.checkArgument(size != null, "Network size shouldn't be null");
+		
+		return (ip % size) == 0;
 	}
 }

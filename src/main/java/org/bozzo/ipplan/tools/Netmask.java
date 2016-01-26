@@ -27,6 +27,8 @@ import com.google.common.base.Preconditions;
  */
 public class Netmask {
 
+	private Netmask() {}
+
 	/**
 	 * Return the netmask from the number of hosts
 	 * @param number the number of hosts
@@ -57,5 +59,17 @@ public class Netmask {
             mask += 1 << 32 - shift;
         }
         return IpAddress.toString(mask);
+	}
+
+	/**
+	 * Check the validity of the network address
+	 * @param ip the IP address as {@link Long} value
+	 * @param size the network size
+	 * @return true if it's a valid network address, false otherwise
+	 */
+	public static boolean isValidNetmask(Long size) {
+		Preconditions.checkArgument(size != null, "Network size shouldn't be null");
+		
+		return size > 0 && size <= (1L << 32) && Long.bitCount(size) == 1;
 	}
 }

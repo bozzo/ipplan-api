@@ -31,7 +31,7 @@ import org.springframework.web.servlet.ModelAndView;
 @SpringApplicationConfiguration(classes = IpplanApiApplication.class)
 @WebAppConfiguration
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class RangeControllerTests {
+public class RangeControllerTest {
 
 	private static long id, id2;
 	private static int infraId;
@@ -110,8 +110,8 @@ public class RangeControllerTests {
 		range.setDescription("Test description");
 		range.setInfraId(infraId);
 		range.setZoneId(zoneId);
-		range.setSize(65535L);
-		range.setIp(0xC0A80001L);
+		range.setSize(65536L);
+		range.setIp(0xC0A80000L);
 		HttpEntity<RangeResource> resp = this.controller.addRange(infraId, zoneId, range);
 		Assert.assertNotNull(resp);
 		Assert.assertNotNull(resp.getBody());
@@ -135,14 +135,14 @@ public class RangeControllerTests {
 	}
 
 	@Test
-	public void h_update_zone_shouldnt_create_a_new_zone() {
+	public void h1_update_range_shouldnt_create_a_new_range() {
 		Range range = new Range();
 		range.setDescription("Test description 2");
 		range.setInfraId(infraId);
 		range.setZoneId(zoneId);
 		range.setId(id);
-		range.setSize(65535L);
-		range.setIp(0xC0A80001L);
+		range.setSize(131072L);
+		range.setIp(0xC0A80000L);
 		HttpEntity<RangeResource> resp = this.controller.updateRange(infraId, zoneId, id, range);
 		Assert.assertNotNull(resp);
 		Assert.assertNotNull(resp.getBody());
@@ -158,6 +158,24 @@ public class RangeControllerTests {
 	}
 
 	@Test
+	public void h2_update_range_should_should_return_zone_not_found() {
+		Range range = new Range();
+		range.setDescription("Test description 3");
+		range.setInfraId(infraId);
+		range.setZoneId(12L);
+		range.setId(id);
+		range.setSize(65536L);
+		range.setIp(0xC0A90000L);
+		try {
+			this.controller.updateRange(infraId, 12L, id, range);
+			Assert.fail();
+		} catch (ApiException e) {
+			Assert.assertNotNull(e.getError());
+			Assert.assertEquals(ApiError.ZONE_NOT_FOUND, e.getError());
+		}
+	}
+
+	@Test
 	public void i_get_all_should_return_an_array_with_one_elem() {
 		List<RangeResource> ranges = IterableUtils.toList(this.controller.getRanges(infraId, zoneId, null, new PagedResourcesAssembler<Range>(resolver, null)));
 		Assert.assertNotNull(ranges);
@@ -165,13 +183,13 @@ public class RangeControllerTests {
 	}
 
 	@Test
-	public void j_add_range_shouldnt_create_a_new_range() {
+	public void j01_add_range_shouldnt_create_a_new_range() {
 		Range range = new Range();
 		range.setDescription("Test description 3");
 		range.setInfraId(infraId);
 		range.setZoneId(zoneId);
-		range.setSize(65535L);
-		range.setIp(0xC0A80002L);
+		range.setSize(131072L);
+		range.setIp(0xD0A80000L);
 		HttpEntity<RangeResource> resp = this.controller.addRange(infraId, zoneId, range);
 		Assert.assertNotNull(resp);
 		Assert.assertNotNull(resp.getBody());
@@ -185,6 +203,199 @@ public class RangeControllerTests {
 		Assert.assertEquals(range.getSize(), rangeReturned.getSize());
 		Assert.assertEquals(4, rangeReturned.getLinks().size());
 		id2 = rangeReturned.getRangeId();
+	}
+
+	@Test
+	public void j02_add_range_should_should_return_zone_not_found() {
+		Range range = new Range();
+		range.setDescription("Test description 3");
+		range.setInfraId(infraId);
+		range.setZoneId(12L);
+		range.setSize(65536L);
+		range.setIp(0xD0A90000L);
+		try {
+			this.controller.addRange(infraId, 12L, range);
+			Assert.fail();
+		} catch (ApiException e) {
+			Assert.assertNotNull(e.getError());
+			Assert.assertEquals(ApiError.ZONE_NOT_FOUND, e.getError());
+		}
+	}
+
+	@Test
+	public void j03_add_range_should_return_range_conflict() {
+		Range range = new Range();
+		range.setDescription("Test description 3");
+		range.setInfraId(infraId);
+		range.setZoneId(zoneId);
+		range.setSize(131072L);
+		range.setIp(0xD0A80000L);
+		try {
+			this.controller.addRange(infraId, zoneId, range);
+			Assert.fail();
+		} catch (ApiException e) {
+			Assert.assertNotNull(e.getError());
+			Assert.assertEquals(ApiError.RANGE_CONFLICT, e.getError());
+		}
+	}
+
+	@Test
+	public void j04_add_range_should_return_range_conflict() {
+		Range range = new Range();
+		range.setDescription("Test description 3");
+		range.setInfraId(infraId);
+		range.setZoneId(zoneId);
+		range.setSize(512L);
+		range.setIp(0xD0A80200L);
+		range.setId(12L);
+		try {
+			this.controller.addRange(infraId, zoneId, range);
+			Assert.fail();
+		} catch (ApiException e) {
+			Assert.assertNotNull(e.getError());
+			Assert.assertEquals(ApiError.RANGE_CONFLICT, e.getError());
+		}
+	}
+
+	@Test
+	public void j06_add_range_should_return_range_conflict() {
+		Range range = new Range();
+		range.setDescription("Test description 3");
+		range.setInfraId(infraId);
+		range.setZoneId(zoneId);
+		range.setSize(1L << 24);
+		range.setIp(0xD0000000L);
+		try {
+			this.controller.addRange(infraId, zoneId, range);
+			Assert.fail();
+		} catch (ApiException e) {
+			Assert.assertNotNull(e.getError());
+			Assert.assertEquals(ApiError.RANGE_CONFLICT, e.getError());
+		}
+	}
+
+	@Test
+	public void j07_add_range_should_return_bad_network() {
+		Range range = new Range();
+		range.setDescription("Test description 3");
+		range.setInfraId(infraId);
+		range.setZoneId(zoneId);
+		range.setSize(1L << 24);
+		range.setIp(0xD0000001L);
+		try {
+			this.controller.addRange(infraId, zoneId, range);
+			Assert.fail();
+		} catch (ApiException e) {
+			Assert.assertNotNull(e.getError());
+			Assert.assertEquals(ApiError.BAD_NETWORK, e.getError());
+		}
+	}
+
+	@Test
+	public void j08_add_range_should_return_bad_netmask() {
+		Range range = new Range();
+		range.setDescription("Test description 3");
+		range.setInfraId(infraId);
+		range.setZoneId(zoneId);
+		range.setSize(1L + (1L << 24));
+		range.setIp(0xD0000000L);
+		try {
+			this.controller.addRange(infraId, zoneId, range);
+			Assert.fail();
+		} catch (ApiException e) {
+			Assert.assertNotNull(e.getError());
+			Assert.assertEquals(ApiError.BAD_NETMASK, e.getError());
+		}
+	}
+
+	@Test
+	public void j09_update_range_should_return_range_conflict() {
+		Range range = new Range();
+		range.setDescription("Test description 3");
+		range.setInfraId(infraId);
+		range.setZoneId(zoneId);
+		range.setId(id);
+		range.setSize(131072L);
+		range.setIp(0xD0A80000L);
+		try {
+			this.controller.updateRange(infraId, zoneId, id, range);
+			Assert.fail();
+		} catch (ApiException e) {
+			Assert.assertNotNull(e.getError());
+			Assert.assertEquals(ApiError.RANGE_CONFLICT, e.getError());
+		}
+	}
+
+	@Test
+	public void j10_update_range_should_return_range_conflict() {
+		Range range = new Range();
+		range.setDescription("Test description 3");
+		range.setInfraId(infraId);
+		range.setZoneId(zoneId);
+		range.setId(id);
+		range.setSize(512L);
+		range.setIp(0xD0A80200L);
+		try {
+			this.controller.updateRange(infraId, zoneId, id, range);
+			Assert.fail();
+		} catch (ApiException e) {
+			Assert.assertNotNull(e.getError());
+			Assert.assertEquals(ApiError.RANGE_CONFLICT, e.getError());
+		}
+	}
+
+	@Test
+	public void j11_update_range_should_return_range_conflict() {
+		Range range = new Range();
+		range.setDescription("Test description 3");
+		range.setInfraId(infraId);
+		range.setZoneId(zoneId);
+		range.setId(id);
+		range.setSize(1L << 24);
+		range.setIp(0xD0000000L);
+		try {
+			this.controller.updateRange(infraId, zoneId, id, range);
+			Assert.fail();
+		} catch (ApiException e) {
+			Assert.assertNotNull(e.getError());
+			Assert.assertEquals(ApiError.RANGE_CONFLICT, e.getError());
+		}
+	}
+
+	@Test
+	public void j12_update_range_should_return_bad_network() {
+		Range range = new Range();
+		range.setDescription("Test description 3");
+		range.setInfraId(infraId);
+		range.setZoneId(zoneId);
+		range.setId(id);
+		range.setSize(1L << 24);
+		range.setIp(0xD0000001L);
+		try {
+			this.controller.updateRange(infraId, zoneId, id, range);
+			Assert.fail();
+		} catch (ApiException e) {
+			Assert.assertNotNull(e.getError());
+			Assert.assertEquals(ApiError.BAD_NETWORK, e.getError());
+		}
+	}
+
+	@Test
+	public void j13_update_range_should_return_bad_netmask() {
+		Range range = new Range();
+		range.setDescription("Test description 3");
+		range.setInfraId(infraId);
+		range.setZoneId(zoneId);
+		range.setId(id);
+		range.setSize(1L + (1L << 24));
+		range.setIp(0xD0000000L);
+		try {
+			this.controller.updateRange(infraId, zoneId, id, range);
+			Assert.fail();
+		} catch (ApiException e) {
+			Assert.assertNotNull(e.getError());
+			Assert.assertEquals(ApiError.BAD_NETMASK, e.getError());
+		}
 	}
 
 	@Test
@@ -215,7 +426,7 @@ public class RangeControllerTests {
 		Assert.assertNotNull(resp.getBody());
 		RangeResource range = resp.getBody();
 		Assert.assertEquals("Test description 3", range.getDescription());
-		Assert.assertEquals(0xC0A80002L, (long) range.getIp());
+		Assert.assertEquals(0xD0A80000L, (long) range.getIp());
 		Assert.assertEquals(4, range.getLinks().size());
 	}
 
@@ -226,10 +437,8 @@ public class RangeControllerTests {
 
 	@Test
 	public void p_get_range_shouldnt_return_range() {
-		HttpEntity<RangeResource> resp;
 		try {
-			resp = this.controller.getRange(infraId, zoneId, id2);
-			Assert.assertNull(resp);
+			this.controller.getRange(infraId, zoneId, id2);
 			Assert.fail();
 		} catch (ApiException e) {
 			Assert.assertNotNull(e.getError());

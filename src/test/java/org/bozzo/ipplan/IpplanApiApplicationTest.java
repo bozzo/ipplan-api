@@ -10,7 +10,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = IpplanApiApplication.class)
 @WebAppConfiguration
-public class IpplanApiApplicationTests {
+public class IpplanApiApplicationTest {
 
 	@Test
 	public void contextLoads() {
