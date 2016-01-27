@@ -84,8 +84,8 @@ public class SubnetControllerTest {
 		subnet.setDescription("Test description");
 		subnet.setInfraId(infraId);
 		subnet.setGroup("group");
-		subnet.setIp(0xC0A80001L);
-		subnet.setSize(65535L);
+		subnet.setIp(0xC0A80000L);
+		subnet.setSize(65536L);
 		subnet.setLastModifed(new Date());
 		subnet.setOptionId(1L);
 		subnet.setSwipMod(new Date());
@@ -166,7 +166,7 @@ public class SubnetControllerTest {
 		subnet.setDescription("Test description 3");
 		subnet.setInfraId(infraId);
 		subnet.setGroup("group");
-		subnet.setIp(0xC1A80064L);
+		subnet.setIp(0xC1A80040L);
 		subnet.setSize(64L);
 		subnet.setLastModifed(new Date());
 		subnet.setOptionId(1L);
@@ -198,7 +198,7 @@ public class SubnetControllerTest {
 		subnet.setDescription("Test description 3");
 		subnet.setInfraId(infraId);
 		subnet.setGroup("group");
-		subnet.setIp(0xC1A80064L);
+		subnet.setIp(0xC1A80040L);
 		subnet.setSize(32L);
 		subnet.setLastModifed(new Date());
 		subnet.setOptionId(1L);
@@ -282,7 +282,7 @@ public class SubnetControllerTest {
 		subnet.setDescription("Test description 3");
 		subnet.setInfraId(infraId);
 		subnet.setGroup("group");
-		subnet.setIp(0xC1A80032L);
+		subnet.setIp(0xC1A80020L);
 		subnet.setSize(32L);
 		subnet.setLastModifed(new Date());
 		subnet.setOptionId(1L);
@@ -312,7 +312,7 @@ public class SubnetControllerTest {
 		subnet.setDescription("Test description 3");
 		subnet.setInfraId(infraId);
 		subnet.setGroup("group");
-		subnet.setIp(0xC1A800128L);
+		subnet.setIp(0xC1A80080L);
 		subnet.setSize(128L);
 		subnet.setLastModifed(new Date());
 		subnet.setOptionId(1L);
@@ -334,6 +334,86 @@ public class SubnetControllerTest {
 		Assert.assertEquals(subnet.getSwipMod(), subnetReturned.getSwipMod());
 		Assert.assertEquals(subnet.getUserId(), subnetReturned.getUserId());
 		Assert.assertEquals(3, subnetReturned.getLinks().size());
+	}
+
+	@Test
+	public void h4_update_subnet_should_return_bad_network() {
+		Subnet subnet = new Subnet();
+		subnet.setDescription("Test description 3");
+		subnet.setInfraId(infraId);
+		subnet.setGroup("group");
+		subnet.setLastModifed(new Date());
+		subnet.setOptionId(1L);
+		subnet.setSwipMod(new Date());
+		subnet.setUserId("user");
+		subnet.setId(id);
+		subnet.setSize(1L << 24);
+		subnet.setIp(0xD0000001L);
+		try {
+			this.controller.updateSubnet(infraId, id, subnet);
+			Assert.fail();
+		} catch (ApiException e) {
+			Assert.assertNotNull(e.getError());
+			Assert.assertEquals(ApiError.BAD_NETWORK, e.getError());
+		}
+	}
+
+	@Test
+	public void h5_update_subnet_should_return_bad_netmask() {
+		Subnet subnet = new Subnet();
+		subnet.setDescription("Test description 3");
+		subnet.setInfraId(infraId);
+		subnet.setGroup("group");
+		subnet.setLastModifed(new Date());
+		subnet.setOptionId(1L);
+		subnet.setId(id);
+		subnet.setSize(1L + (1L << 24));
+		subnet.setIp(0xD0000000L);
+		try {
+			this.controller.updateSubnet(infraId, id, subnet);
+			Assert.fail();
+		} catch (ApiException e) {
+			Assert.assertNotNull(e.getError());
+			Assert.assertEquals(ApiError.BAD_NETMASK, e.getError());
+		}
+	}
+
+	@Test
+	public void h6_add_subnet_should_return_bad_network() {
+		Subnet subnet = new Subnet();
+		subnet.setDescription("Test description 3");
+		subnet.setInfraId(infraId);
+		subnet.setGroup("group");
+		subnet.setLastModifed(new Date());
+		subnet.setOptionId(1L);
+		subnet.setSize(1L << 24);
+		subnet.setIp(0xD0000001L);
+		try {
+			this.controller.addSubnet(infraId, subnet);
+			Assert.fail();
+		} catch (ApiException e) {
+			Assert.assertNotNull(e.getError());
+			Assert.assertEquals(ApiError.BAD_NETWORK, e.getError());
+		}
+	}
+
+	@Test
+	public void h7_add_subnet_should_return_bad_netmask() {
+		Subnet subnet = new Subnet();
+		subnet.setDescription("Test description 3");
+		subnet.setInfraId(infraId);
+		subnet.setGroup("group");
+		subnet.setLastModifed(new Date());
+		subnet.setOptionId(1L);
+		subnet.setSize(1L + (1L << 24));
+		subnet.setIp(0xD0000000L);
+		try {
+			this.controller.addSubnet(infraId, subnet);
+			Assert.fail();
+		} catch (ApiException e) {
+			Assert.assertNotNull(e.getError());
+			Assert.assertEquals(ApiError.BAD_NETMASK, e.getError());
+		}
 	}
 
 	@Test
@@ -404,7 +484,7 @@ public class SubnetControllerTest {
 		SubnetResource subnet = resp.getBody();
 		Assert.assertNotNull(subnet);
 		Assert.assertEquals("Test description 3", subnet.getDescription());
-		Assert.assertEquals(0xC1A80064L, (long) subnet.getIp());
+		Assert.assertEquals(0xC1A80040L, (long) subnet.getIp());
 		Assert.assertEquals(3, subnet.getLinks().size());
 	}
 

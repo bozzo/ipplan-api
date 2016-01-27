@@ -29,6 +29,7 @@ import org.bozzo.ipplan.domain.model.Subnet;
 import org.bozzo.ipplan.domain.model.ui.SubnetResource;
 import org.bozzo.ipplan.domain.service.SubnetService;
 import org.bozzo.ipplan.tools.IpAddress;
+import org.bozzo.ipplan.tools.Netmask;
 import org.bozzo.ipplan.web.assembler.InfrastructureResourceAssembler;
 import org.bozzo.ipplan.web.assembler.SubnetResourceAssembler;
 import org.slf4j.Logger;
@@ -128,6 +129,13 @@ public class SubnetController {
 			@RequestBody @NotNull Subnet subnet) {
 		Preconditions.checkArgument(infraId.equals(subnet.getInfraId()));
 		logger.info("add new subnet: {}", subnet);
+		
+		if (! Netmask.isValidNetmask(subnet.getSize())) {
+			throw new ApiException(ApiError.BAD_NETMASK);
+		} else if (! IpAddress.isNetworkAddress(subnet.getIp(), subnet.getSize())) {
+			throw new ApiException(ApiError.BAD_NETWORK);
+		}
+		
 		Subnet sub = service.save(subnet);
 		return new ResponseEntity<>(assembler.toResource(sub), HttpStatus.CREATED);
 	}
@@ -138,6 +146,13 @@ public class SubnetController {
 		Preconditions.checkArgument(infraId.equals(subnet.getInfraId()));
 		Preconditions.checkArgument(subnetId.equals(subnet.getId()));
 		logger.info("update subnet: {}", subnet);
+		
+		if (! Netmask.isValidNetmask(subnet.getSize())) {
+			throw new ApiException(ApiError.BAD_NETMASK);
+		} else if (! IpAddress.isNetworkAddress(subnet.getIp(), subnet.getSize())) {
+			throw new ApiException(ApiError.BAD_NETWORK);
+		}
+		
 		Subnet sub = service.save(subnet);
 		return new ResponseEntity<>(assembler.toResource(sub), HttpStatus.CREATED);
 	}
