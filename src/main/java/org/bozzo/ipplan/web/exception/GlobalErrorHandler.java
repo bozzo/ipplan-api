@@ -35,12 +35,12 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class GlobalErrorHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ApiError> handleBadRequest() {
+    public ResponseEntity<ApiError> handleIllegalArgumentException() {
 		return ApiError.getResponseEntity(ApiError.BAD_REQUEST);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<ApiError> handleConflict() {
+    public ResponseEntity<ApiError> handleDataIntegrityViolationException() {
 		return ApiError.getResponseEntity(ApiError.DATA_INTEGRITY_VIOLATION);
     }
 
