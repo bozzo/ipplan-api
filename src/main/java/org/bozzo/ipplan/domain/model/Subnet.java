@@ -27,6 +27,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  * @author boris
@@ -72,6 +73,9 @@ public class Subnet implements Serializable {
 
 	@Column(name="swipmod")
 	private Date swipMod;
+	
+	@Transient
+	private Iterable<Address> addresses;
 
 	/**
 	 * @return the id
@@ -211,6 +215,20 @@ public class Subnet implements Serializable {
 	 */
 	public void setSwipMod(Date swipMod) {
 		this.swipMod = swipMod;
+	}
+
+	/**
+	 * @return the addresses
+	 */
+	public Iterable<Address> getAddresses() {
+		return addresses;
+	}
+
+	/**
+	 * @param addresses the addresses to set
+	 */
+	public void setAddresses(Iterable<Address> addresses) {
+		this.addresses = addresses;
 	}
 
 	/* (non-Javadoc)

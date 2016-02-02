@@ -21,6 +21,7 @@ package org.bozzo.ipplan.domain.service;
 
 import org.bozzo.ipplan.domain.ApiError;
 import org.bozzo.ipplan.domain.DeleteMode;
+import org.bozzo.ipplan.domain.RequestMode;
 import org.bozzo.ipplan.domain.dao.AddressRepository;
 import org.bozzo.ipplan.domain.dao.InfrastructureRepository;
 import org.bozzo.ipplan.domain.dao.SubnetRepository;
@@ -63,5 +64,13 @@ public class SubnetService {
 			throw new ApiException(ApiError.SUBNET_NOT_EMPTY);
 		}
 		this.subnetRepository.deleteByInfraIdAndId(infraId, subnetId);
+	}
+	
+	public Subnet findByInfraIdAndId(Integer infraId, Long subnetId, RequestMode mode) {
+		Subnet subnet = this.subnetRepository.findByInfraIdAndId(infraId, subnetId);
+		if (RequestMode.FULL.equals(mode)) {
+			subnet.setAddresses(this.addressRepository.findBySubnetId(subnetId, null));
+		}
+		return subnet;
 	}
 }

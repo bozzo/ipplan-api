@@ -23,6 +23,7 @@ import javax.validation.constraints.NotNull;
 
 import org.bozzo.ipplan.domain.ApiError;
 import org.bozzo.ipplan.domain.DeleteMode;
+import org.bozzo.ipplan.domain.RequestMode;
 import org.bozzo.ipplan.domain.dao.SubnetRepository;
 import org.bozzo.ipplan.domain.exception.ApiException;
 import org.bozzo.ipplan.domain.model.Subnet;
@@ -107,8 +108,8 @@ public class SubnetController {
 
 	@RequestMapping(value = "/{subnetId}", method = RequestMethod.GET, produces = { MediaType.TEXT_HTML_VALUE })
 	@ApiIgnore
-	public ModelAndView getSubnetView(@PathVariable @NotNull Integer infraId, @PathVariable Long subnetId) {
-		HttpEntity<SubnetResource> subnet = this.getSubnet(infraId, subnetId);
+	public ModelAndView getSubnetView(@PathVariable @NotNull Integer infraId, @PathVariable Long subnetId, @RequestParam(required=false) RequestMode mode) {
+		HttpEntity<SubnetResource> subnet = this.getSubnet(infraId, subnetId, mode);
 		ModelAndView view = new ModelAndView("subnet");
 		view.addObject("id", subnetId);
 		view.addObject("object", subnet.getBody());
@@ -116,8 +117,8 @@ public class SubnetController {
 	}
 
 	@RequestMapping(value = "/{subnetId}", method = RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_VALUE })
-	public HttpEntity<SubnetResource> getSubnet(@PathVariable @NotNull Integer infraId, @PathVariable Long subnetId) {
-		Subnet subnet = repository.findByInfraIdAndId(infraId, subnetId);
+	public HttpEntity<SubnetResource> getSubnet(@PathVariable @NotNull Integer infraId, @PathVariable Long subnetId, @RequestParam(required=false) RequestMode mode) {
+		Subnet subnet = this.service.findByInfraIdAndId(infraId, subnetId, mode);
 		if (subnet == null) {
 			throw new ApiException(ApiError.SUBNET_NOT_FOUND);
 		}

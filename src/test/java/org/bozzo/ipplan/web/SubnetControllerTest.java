@@ -478,7 +478,7 @@ public class SubnetControllerTest {
 
 	@Test
 	public void l_get_subnet_should_return_second_subnet() {
-		HttpEntity<SubnetResource> resp = this.controller.getSubnet(infraId, id2);
+		HttpEntity<SubnetResource> resp = this.controller.getSubnet(infraId, id2, null);
 		Assert.assertNotNull(resp);
 		Assert.assertNotNull(resp.getBody());
 		SubnetResource subnet = resp.getBody();
@@ -496,7 +496,7 @@ public class SubnetControllerTest {
 	@Test
 	public void n_get_subnet_shouldnt_return_subnet() {
 		try {
-			this.controller.getSubnet(infraId, id2);
+			this.controller.getSubnet(infraId, id2, null);
 			Assert.fail();
 		} catch (ApiException e) {
 			Assert.assertNotNull(e.getError());
@@ -513,7 +513,7 @@ public class SubnetControllerTest {
 
 	@Test
 	public void view_get_view_by_id_should_return_a_model_view() {
-		ModelAndView view = this.controller.getSubnetView(infraId, id);
+		ModelAndView view = this.controller.getSubnetView(infraId, id, null);
 		Assert.assertNotNull(view);
 		Assert.assertEquals("subnet", view.getViewName());
 	}

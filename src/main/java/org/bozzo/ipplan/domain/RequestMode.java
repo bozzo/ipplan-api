@@ -24,5 +24,5 @@ package org.bozzo.ipplan.domain;
  *
  */
 public enum RequestMode {
-	RESERVED,FREE
+	RESERVED,FREE,FULL
 }

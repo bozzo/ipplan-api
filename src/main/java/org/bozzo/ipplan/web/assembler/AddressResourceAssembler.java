@@ -51,7 +51,7 @@ public class AddressResourceAssembler extends ResourceAssemblerSupport<Address, 
 	@Override
 	public AddressResource toResource(Address entity) {
 		AddressResource address = new AddressResource(entity);
-		address.add(linkTo(methodOn(SubnetController.class).getSubnet(address.getInfraId(), address.getSubnetId())).withRel("subnet"));
+		address.add(linkTo(methodOn(SubnetController.class).getSubnet(address.getInfraId(), address.getSubnetId(), null)).withRel("subnet"));
 		address.add(linkTo(methodOn(InfrastructureController.class).getInfrastructure(address.getInfraId())).withRel("infra"));
 		address.add(linkTo(methodOn(AddressController.class).getAddress(address.getInfraId(), address.getSubnetId(), address.getIp())).withSelfRel());
 		return address;

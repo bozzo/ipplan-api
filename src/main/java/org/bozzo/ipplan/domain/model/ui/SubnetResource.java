@@ -21,6 +21,7 @@ package org.bozzo.ipplan.domain.model.ui;
 
 import java.util.Date;
 
+import org.bozzo.ipplan.domain.model.Address;
 import org.bozzo.ipplan.domain.model.Subnet;
 import org.bozzo.ipplan.tools.Netmask;
 import org.springframework.hateoas.ResourceSupport;
@@ -45,6 +46,7 @@ public class SubnetResource extends ResourceSupport {
 	private final String userId;
 	private final Long optionId;
 	private final Date swipMod;
+	private Iterable<Address> addresses;
 	
 	/**
 	 * @param id
@@ -60,7 +62,7 @@ public class SubnetResource extends ResourceSupport {
 	 */
 	@JsonCreator
 	public SubnetResource( @JsonProperty("id") Long id, @JsonProperty Integer infraId, @JsonProperty Long ip, @JsonProperty Integer netmask, @JsonProperty Long size, @JsonProperty String description, @JsonProperty String group,
-			@JsonProperty Date lastModifed, @JsonProperty String userId, @JsonProperty Long optionId, @JsonProperty Date swipMod) {
+			@JsonProperty Date lastModifed, @JsonProperty String userId, @JsonProperty Long optionId, @JsonProperty Date swipMod, @JsonProperty Iterable<Address> addresses) {
 		this.id = id;
 		this.infraId = infraId;
 		this.ip = ip;
@@ -72,6 +74,7 @@ public class SubnetResource extends ResourceSupport {
 		this.userId = userId;
 		this.optionId = optionId;
 		this.swipMod = swipMod;
+		this.setAddresses(addresses);
 	}
 	
 	public SubnetResource( Subnet subnet) {
@@ -86,7 +89,8 @@ public class SubnetResource extends ResourceSupport {
 				subnet.getLastModifed(),
 				subnet.getUserId(),
 				subnet.getOptionId(),
-				subnet.getSwipMod()
+				subnet.getSwipMod(),
+				subnet.getAddresses()
 			);
 	}
 
@@ -166,5 +170,19 @@ public class SubnetResource extends ResourceSupport {
 	 */
 	public Date getSwipMod() {
 		return swipMod;
+	}
+
+	/**
+	 * @return the addresses
+	 */
+	public Iterable<Address> getAddresses() {
+		return addresses;
+	}
+
+	/**
+	 * @param addresses the addresses to set
+	 */
+	public void setAddresses(Iterable<Address> addresses) {
+		this.addresses = addresses;
 	}
 }
