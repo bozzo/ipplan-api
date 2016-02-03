@@ -52,12 +52,17 @@
 		</dependency>
 
 		<!-- Other includes -->
+<!-- 		<dependency> -->
+<!-- 			<groupId>com.mangofactory</groupId> -->
+<!-- 			<artifactId>swagger-springmvc</artifactId> -->
+<!-- 			<version>1.0.2</version> -->
+<!-- 			<scope>compile</scope> -->
+<!-- 		</dependency> -->
 		<dependency>
-			<groupId>com.mangofactory</groupId>
-			<artifactId>swagger-springmvc</artifactId>
-			<version>1.0.2</version>
-			<scope>compile</scope>
-		</dependency>
+		    <groupId>io.springfox</groupId>
+		    <artifactId>springfox-swagger2</artifactId>
+		    <version>2.3.1</version>
+		</dependency> 
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
@@ -98,8 +103,8 @@
 				<version>0.7.5.201505241946</version>
 				<configuration>
 					<excludes>
-                            <exclude>**/*Test.*</exclude>
-                    </excludes>
+						<exclude>**/*Test.*</exclude>
+					</excludes>
 				</configuration>
 				<executions>
 					<execution>

@@ -19,50 +19,70 @@
  */
 package org.bozzo.ipplan.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.web.servlet.ModelAndView;
 
-import com.mangofactory.swagger.configuration.SpringSwaggerConfig;
-import com.mangofactory.swagger.models.dto.ApiInfo;
-import com.mangofactory.swagger.plugin.EnableSwagger;
-import com.mangofactory.swagger.plugin.SwaggerSpringMvcPlugin;
+import springfox.documentation.builders.PathSelectors;
+import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.service.ApiInfo;
+import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 /**
  * @author boris
  *
  */
 @Configuration
-@EnableSwagger
+@EnableSwagger2
 @EnableAutoConfiguration
 public class SwaggerConfig {
 	
-	private SpringSwaggerConfig springSwaggerConfig;
-	 
-    @Autowired
-    public void setSpringSwaggerConfig(SpringSwaggerConfig springSwaggerConfig) {
-        this.springSwaggerConfig = springSwaggerConfig;
+//	private SpringSwaggerConfig springSwaggerConfig;
+//	 
+//    @Autowired
+//    public void setSpringSwaggerConfig(SpringSwaggerConfig springSwaggerConfig) {
+//        this.springSwaggerConfig = springSwaggerConfig;
+//    }
+// 
+//    @Bean
+//    public SwaggerSpringMvcPlugin swagger() {
+//        return new SwaggerSpringMvcPlugin(this.springSwaggerConfig)
+//                .apiInfo(new ApiInfo(
+//                        "IpPlan API",
+//                        "A Java implemented API to interact with Ipplan Database",
+//                        null,
+//                        null,
+//                        "GNU GENERAL PUBLIC LICENSE Version 3",
+//                        "https://www.gnu.org/licenses/gpl.html"
+//                ))
+//                .useDefaultResponseMessages(false)
+//                .ignoredParameterTypes(ModelAndView.class)
+//                .ignoredParameterTypes(PagedResourcesAssembler.class)
+//                .ignoredParameterTypes(Pageable.class)
+//                .includePatterns("/api/.*");
+//    }
+	
+	@Bean
+    public Docket api(){
+        return new Docket(DocumentationType.SWAGGER_2)
+            .select()
+            .apis(RequestHandlerSelectors.any())
+            .paths(PathSelectors.regex("/api/.*"))
+            .build()
+            .apiInfo(apiInfo());
     }
- 
-    @Bean
-    public SwaggerSpringMvcPlugin swagger() {
-        return new SwaggerSpringMvcPlugin(this.springSwaggerConfig)
-                .apiInfo(new ApiInfo(
-                        "IpPlan API",
-                        "A Java implemented API to interact with Ipplan Database",
-                        null,
-                        null,
-                        "GNU GENERAL PUBLIC LICENSE Version 3",
-                        "https://www.gnu.org/licenses/gpl.html"
-                ))
-                .useDefaultResponseMessages(false)
-                .ignoredParameterTypes(ModelAndView.class)
-                .ignoredParameterTypes(PagedResourcesAssembler.class)
-                .ignoredParameterTypes(Pageable.class)
-                .includePatterns("/api/.*");
+
+    private ApiInfo apiInfo() {
+        return new ApiInfo(
+        		"IpPlan API",
+              "A Java implemented API to interact with Ipplan Database",
+              "0.0.1",
+              null,
+              null,
+              "GNU GENERAL PUBLIC LICENSE Version 3",
+              "https://www.gnu.org/licenses/gpl.html"
+        );
     }
 }

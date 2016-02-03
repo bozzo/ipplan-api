@@ -51,7 +51,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.google.common.base.Preconditions;
-import com.mangofactory.swagger.annotations.ApiIgnore;
+
+import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * @author boris

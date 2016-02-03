@@ -5,3 +5,4 @@ target/
 .settings/
 .README.md.html
 src/main/resources/static/swagger/
+generated/
