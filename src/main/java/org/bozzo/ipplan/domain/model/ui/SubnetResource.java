@@ -20,7 +20,10 @@
 package org.bozzo.ipplan.domain.model.ui;
 
 import java.util.Date;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
+import org.bozzo.ipplan.domain.functions.ToAddressResourceFunction;
 import org.bozzo.ipplan.domain.model.Address;
 import org.bozzo.ipplan.domain.model.Subnet;
 import org.bozzo.ipplan.tools.Netmask;
@@ -46,7 +49,7 @@ public class SubnetResource extends ResourceSupport {
 	private final String userId;
 	private final Long optionId;
 	private final Date swipMod;
-	private Iterable<Address> addresses;
+	private Stream<AddressResource> addresses;
 	
 	/**
 	 * @param id
@@ -74,7 +77,9 @@ public class SubnetResource extends ResourceSupport {
 		this.userId = userId;
 		this.optionId = optionId;
 		this.swipMod = swipMod;
-		this.setAddresses(addresses);
+		if (addresses != null) {
+			this.setAddresses(StreamSupport.stream(addresses.spliterator(), true).map(new ToAddressResourceFunction()));
+		}
 	}
 	
 	public SubnetResource( Subnet subnet) {
@@ -175,14 +180,14 @@ public class SubnetResource extends ResourceSupport {
 	/**
 	 * @return the addresses
 	 */
-	public Iterable<Address> getAddresses() {
+	public Stream<AddressResource> getAddresses() {
 		return addresses;
 	}
 
 	/**
 	 * @param addresses the addresses to set
 	 */
-	public void setAddresses(Iterable<Address> addresses) {
+	public void setAddresses(Stream<AddressResource> addresses) {
 		this.addresses = addresses;
 	}
 }

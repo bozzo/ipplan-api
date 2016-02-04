@@ -27,13 +27,15 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.springframework.hateoas.Identifiable;
+
 /**
  * @author boris
  *
  */
 @Entity
 @Table(name="netrange")
-public class Range implements Serializable {
+public class Range implements Serializable, Identifiable<Long> {
 
 	/**
 	 * 
@@ -63,6 +65,7 @@ public class Range implements Serializable {
 	/**
 	 * @return the id
 	 */
+	@Override
 	public Long getId() {
 		return id;
 	}

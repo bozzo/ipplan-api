@@ -19,6 +19,11 @@
  */
 package org.bozzo.ipplan.domain.model.ui;
 
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+
+import org.bozzo.ipplan.domain.functions.ToRangeResourceFunction;
+import org.bozzo.ipplan.domain.model.Range;
 import org.bozzo.ipplan.domain.model.Zone;
 import org.springframework.hateoas.ResourceSupport;
 
@@ -35,6 +40,7 @@ public class ZoneResource extends ResourceSupport {
 	private final Integer infraId;
 	private final Long ip;
 	private final String description;
+	private Stream<RangeResource> ranges;
 	
 	/**
 	 * @param id
@@ -43,16 +49,19 @@ public class ZoneResource extends ResourceSupport {
 	 * @param description
 	 */
 	@JsonCreator
-	public ZoneResource(@JsonProperty("id") Long id, @JsonProperty Integer infraId, @JsonProperty Long ip, @JsonProperty String description) {
+	public ZoneResource(@JsonProperty("id") Long id, @JsonProperty Integer infraId, @JsonProperty Long ip, @JsonProperty String description, @JsonProperty Iterable<Range> ranges) {
 		super();
 		this.id = id;
 		this.infraId = infraId;
 		this.ip = ip;
 		this.description = description;
+		if (ranges != null) {
+			this.setRanges(StreamSupport.stream(ranges.spliterator(), true).map(new ToRangeResourceFunction()));
+		}
 	}
 
 	public ZoneResource(Zone zone) {
-		this(zone.getId(),zone.getInfraId(),zone.getIp(),zone.getDescription());
+		this(zone.getId(),zone.getInfraId(),zone.getIp(),zone.getDescription(), zone.getRanges());
 	}
 
 	/**
@@ -82,5 +91,19 @@ public class ZoneResource extends ResourceSupport {
 	 */
 	public String getDescription() {
 		return description;
+	}
+
+	/**
+	 * @return the ranges
+	 */
+	public Stream<RangeResource> getRanges() {
+		return ranges;
+	}
+
+	/**
+	 * @param ranges the ranges to set
+	 */
+	public void setRanges(Stream<RangeResource> ranges) {
+		this.ranges = ranges;
 	}
 }

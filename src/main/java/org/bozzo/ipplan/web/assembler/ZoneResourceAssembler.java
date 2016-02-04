@@ -45,14 +45,10 @@ public class ZoneResourceAssembler extends ResourceAssemblerSupport<Zone, ZoneRe
 		super(ZoneController.class, ZoneResource.class);
 	}
 
-	public ZoneResourceAssembler(Class<?> controllerClass, Class<ZoneResource> resourceType) {
-		super(controllerClass, resourceType);
-	}
-
 	@Override
 	public ZoneResource toResource(Zone entity) {
 		ZoneResource zone = new ZoneResource(entity);
-		zone.add(linkTo(methodOn(ZoneController.class).getZone(zone.getInfraId(), zone.getZoneId())).withSelfRel());
+		zone.add(linkTo(methodOn(ZoneController.class).getZone(zone.getInfraId(), zone.getZoneId(), null)).withSelfRel());
 		zone.add(linkTo(methodOn(InfrastructureController.class).getInfrastructure(zone.getInfraId())).withRel("infra"));
 		zone.add(linkTo(methodOn(RangeController.class).getRanges(zone.getInfraId(), zone.getZoneId(), null, null)).withRel("ranges"));
 		return zone;
@@ -71,7 +67,7 @@ public class ZoneResourceAssembler extends ResourceAssemblerSupport<Zone, ZoneRe
 	}
 
 	public static Link link(Integer infraId, Long zoneId) {
-		return linkTo(methodOn(ZoneController.class).getZone(infraId, zoneId)).withRel("zone");
+		return linkTo(methodOn(ZoneController.class).getZone(infraId, zoneId, null)).withRel("zone");
 	}
 	
 }

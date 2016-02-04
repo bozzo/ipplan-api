@@ -26,6 +26,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.springframework.hateoas.Identifiable;
 
 /**
  * @author boris
@@ -33,7 +36,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name="area")
-public class Zone implements Serializable {
+public class Zone implements Serializable, Identifiable<Long> {
 
 	/**
 	 * 
@@ -53,10 +56,14 @@ public class Zone implements Serializable {
 
 	@Column(name="descrip", nullable=false)
 	private String description;
+	
+	@Transient
+	private Iterable<Range> ranges;
 
 	/**
 	 * @return the id
 	 */
+	@Override
 	public Long getId() {
 		return id;
 	}
@@ -111,6 +118,20 @@ public class Zone implements Serializable {
 	 */
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	/**
+	 * @return the ranges
+	 */
+	public Iterable<Range> getRanges() {
+		return ranges;
+	}
+
+	/**
+	 * @param ranges the ranges to set
+	 */
+	public void setRanges(Iterable<Range> ranges) {
+		this.ranges = ranges;
 	}
 
 	/* (non-Javadoc)

@@ -29,13 +29,15 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.springframework.hateoas.Identifiable;
+
 /**
  * @author boris
  *
  */
 @Entity
 @Table(name="base")
-public class Subnet implements Serializable {
+public class Subnet implements Serializable, Identifiable<Long> {
 
 	/**
 	 * 
@@ -80,6 +82,7 @@ public class Subnet implements Serializable {
 	/**
 	 * @return the id
 	 */
+	@Override
 	public Long getId() {
 		return id;
 	}

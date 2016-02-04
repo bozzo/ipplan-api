@@ -26,6 +26,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.springframework.hateoas.Identifiable;
 
@@ -55,10 +56,17 @@ public class Infrastructure implements Serializable, Identifiable<Integer> {
 
 	@Column(name="admingrp", nullable=false)
 	private String group;
+	
+	@Transient
+	private Iterable<Zone> zones;
+	
+	@Transient
+	private Iterable<Subnet> subnets;
 
 	/**
 	 * @return the id
 	 */
+	@Override
 	public Integer getId() {
 		return id;
 	}
@@ -113,6 +121,34 @@ public class Infrastructure implements Serializable, Identifiable<Integer> {
 	 */
 	public void setCrm(String crm) {
 		this.crm = crm;
+	}
+
+	/**
+	 * @return the zones
+	 */
+	public Iterable<Zone> getZones() {
+		return zones;
+	}
+
+	/**
+	 * @param zones the zones to set
+	 */
+	public void setZones(Iterable<Zone> zones) {
+		this.zones = zones;
+	}
+
+	/**
+	 * @return the subnets
+	 */
+	public Iterable<Subnet> getSubnets() {
+		return subnets;
+	}
+
+	/**
+	 * @param subnets the subnets to set
+	 */
+	public void setSubnets(Iterable<Subnet> subnets) {
+		this.subnets = subnets;
 	}
 
 	/*

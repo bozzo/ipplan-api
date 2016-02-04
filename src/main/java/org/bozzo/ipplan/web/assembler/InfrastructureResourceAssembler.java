@@ -45,10 +45,6 @@ public class InfrastructureResourceAssembler extends ResourceAssemblerSupport<In
 		super(InfrastructureController.class, InfrastructureResource.class);
 	}
 
-	public InfrastructureResourceAssembler(Class<?> controllerClass, Class<InfrastructureResource> resourceType) {
-		super(controllerClass, resourceType);
-	}
-
 	@Override
 	public InfrastructureResource toResource(Infrastructure entity) {
 		InfrastructureResource infra = new InfrastructureResource(entity);

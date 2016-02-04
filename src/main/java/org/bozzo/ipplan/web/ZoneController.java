@@ -22,10 +22,12 @@ package org.bozzo.ipplan.web;
 import javax.validation.constraints.NotNull;
 
 import org.bozzo.ipplan.domain.ApiError;
+import org.bozzo.ipplan.domain.RequestMode;
 import org.bozzo.ipplan.domain.dao.ZoneRepository;
 import org.bozzo.ipplan.domain.exception.ApiException;
 import org.bozzo.ipplan.domain.model.Zone;
 import org.bozzo.ipplan.domain.model.ui.ZoneResource;
+import org.bozzo.ipplan.domain.service.ZoneService;
 import org.bozzo.ipplan.web.assembler.InfrastructureResourceAssembler;
 import org.bozzo.ipplan.web.assembler.ZoneResourceAssembler;
 import org.slf4j.Logger;
@@ -43,6 +45,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
@@ -62,6 +65,9 @@ public class ZoneController {
 	
 	@Autowired
 	private ZoneRepository repository;
+	
+	@Autowired
+	private ZoneService service;
 	
 	@Autowired
 	private ZoneResourceAssembler assembler;
@@ -85,8 +91,8 @@ public class ZoneController {
 
 	@RequestMapping(value = "/{zoneId}", method = RequestMethod.GET, produces = {MediaType.TEXT_HTML_VALUE})
 	@ApiIgnore
-	public ModelAndView getZoneView(@PathVariable @NotNull Integer infraId, @PathVariable Long zoneId) {
-		HttpEntity<ZoneResource> zone = this.getZone(infraId, zoneId);
+	public ModelAndView getZoneView(@PathVariable @NotNull Integer infraId, @PathVariable Long zoneId, @RequestParam(required=false) RequestMode mode) {
+		HttpEntity<ZoneResource> zone = this.getZone(infraId, zoneId, mode);
 		ModelAndView view = new ModelAndView("zone");
 		view.addObject("id", zoneId);
 		view.addObject("object", zone.getBody());
@@ -94,8 +100,8 @@ public class ZoneController {
 	}
 
 	@RequestMapping(value = "/{zoneId}", method=RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-	public HttpEntity<ZoneResource> getZone(@PathVariable Integer infraId, @PathVariable Long zoneId) {
-		Zone zone = repository.findByInfraIdAndId(infraId, zoneId);
+	public HttpEntity<ZoneResource> getZone(@PathVariable Integer infraId, @PathVariable Long zoneId, @RequestParam(required=false) RequestMode mode) {
+		Zone zone = this.service.findByInfraIdAndId(infraId, zoneId, mode);
 		if (zone == null) {
 			throw new ApiException(ApiError.ZONE_NOT_FOUND);
 		}

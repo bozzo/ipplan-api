@@ -46,14 +46,10 @@ public class RangeResourceAssembler extends ResourceAssemblerSupport<Range, Rang
 		super(RangeController.class, RangeResource.class);
 	}
 
-	public RangeResourceAssembler(Class<?> controllerClass, Class<RangeResource> resourceType) {
-		super(controllerClass, resourceType);
-	}
-
 	@Override
 	public RangeResource toResource(Range entity) {
 		RangeResource range = new RangeResource(entity);
-		range.add(linkTo(methodOn(ZoneController.class).getZone(range.getInfraId(), range.getZoneId())).withRel("zone"));
+		range.add(linkTo(methodOn(ZoneController.class).getZone(range.getInfraId(), range.getZoneId(), null)).withRel("zone"));
 		range.add(linkTo(methodOn(InfrastructureController.class).getInfrastructure(range.getInfraId())).withRel("infra"));
 		range.add(linkTo(methodOn(SubnetController.class).getSubnets(IpAddress.toString(range.getIp()), range.getSize(), range.getInfraId(), null, null)).withRel("subnets"));
 		range.add(linkTo(methodOn(RangeController.class).getRange(range.getInfraId(), range.getZoneId(),range.getRangeId())).withSelfRel());

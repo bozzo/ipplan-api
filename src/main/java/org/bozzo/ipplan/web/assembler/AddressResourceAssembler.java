@@ -44,10 +44,6 @@ public class AddressResourceAssembler extends ResourceAssemblerSupport<Address, 
 		super(AddressController.class, AddressResource.class);
 	}
 
-	public AddressResourceAssembler(Class<?> controllerClass, Class<AddressResource> resourceType) {
-		super(controllerClass, resourceType);
-	}
-
 	@Override
 	public AddressResource toResource(Address entity) {
 		AddressResource address = new AddressResource(entity);

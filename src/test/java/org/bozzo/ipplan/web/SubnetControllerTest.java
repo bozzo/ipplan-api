@@ -329,6 +329,7 @@ public class SubnetControllerTest {
 		Assert.assertEquals(subnet.getIp(), subnetReturned.getIp());
 		Assert.assertEquals(subnet.getGroup(), subnetReturned.getGroup());
 		Assert.assertEquals(subnet.getSize(), subnetReturned.getSize());
+		Assert.assertEquals(new Integer(25), subnetReturned.getNetmask());
 		Assert.assertEquals(subnet.getLastModifed(), subnetReturned.getLastModifed());
 		Assert.assertEquals(subnet.getOptionId(), subnetReturned.getOptionId());
 		Assert.assertEquals(subnet.getSwipMod(), subnetReturned.getSwipMod());

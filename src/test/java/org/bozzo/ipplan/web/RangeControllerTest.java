@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.commons.collections4.IterableUtils;
 import org.bozzo.ipplan.IpplanApiApplication;
 import org.bozzo.ipplan.domain.ApiError;
+import org.bozzo.ipplan.domain.RequestMode;
 import org.bozzo.ipplan.domain.exception.ApiException;
 import org.bozzo.ipplan.domain.model.Infrastructure;
 import org.bozzo.ipplan.domain.model.Range;
@@ -13,6 +14,7 @@ import org.bozzo.ipplan.domain.model.ui.InfrastructureResource;
 import org.bozzo.ipplan.domain.model.ui.RangeResource;
 import org.bozzo.ipplan.domain.model.ui.ZoneResource;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,8 +25,16 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.web.HateoasPageableHandlerMethodArgumentResolver;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.ModelAndView;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -47,6 +57,20 @@ public class RangeControllerTest {
 	
 	@Autowired
 	private RangeController controller;
+	
+	@Autowired 
+	private WebApplicationContext wac; 
+    @Autowired 
+    private MockHttpSession session;
+    @Autowired 
+    private MockHttpServletRequest request;
+
+    private MockMvc mockMvc;
+
+    @Before
+    public void setup() {
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
+    }
 
 	@Test
 	public void a_add_infra_should_create_a_new_infra() {
@@ -431,6 +455,19 @@ public class RangeControllerTest {
 	}
 
 	@Test
+	public void n_get_full_zone_should_return_second_zone() {
+		HttpEntity<ZoneResource> resp = this.zoneController.getZone(infraId, zoneId, RequestMode.FULL);
+		Assert.assertNotNull(resp);
+		Assert.assertNotNull(resp.getBody());
+		ZoneResource zone = resp.getBody();
+		Assert.assertNotNull(zone);
+		Assert.assertEquals("Test description", zone.getDescription());
+		Assert.assertEquals(0xC0A80001L, (long) zone.getIp());
+		Assert.assertEquals(3, zone.getLinks().size());
+		Assert.assertEquals(2, zone.getRanges().count());
+	}
+
+	@Test
 	public void o_delete_range_should_work() {
 		this.controller.deleteRange(infraId, zoneId, id2);
 	}
@@ -444,6 +481,14 @@ public class RangeControllerTest {
 			Assert.assertNotNull(e.getError());
 			Assert.assertEquals(ApiError.RANGE_NOT_FOUND, e.getError());
 		}
+	}
+	
+	@Test
+	public void q_get_range_shouldnt_return_range() throws Exception {
+		this.mockMvc.perform(MockMvcRequestBuilders.get("/api/infras/"+infraId+"/zones/"+zoneId+"/ranges").session(session)
+		        .accept(MediaType.TEXT_HTML_VALUE))
+		        .andExpect(MockMvcResultMatchers.status().isOk())
+		        .andExpect(MockMvcResultMatchers.view().name("ranges"));
 	}
 
 	@Test

@@ -167,7 +167,7 @@ public class ZoneControllerTest {
 
 	@Test
 	public void l_get_zone_should_return_second_zone() {
-		HttpEntity<ZoneResource> resp = this.controller.getZone(infraId, id2);
+		HttpEntity<ZoneResource> resp = this.controller.getZone(infraId, id2, null);
 		Assert.assertNotNull(resp);
 		Assert.assertNotNull(resp.getBody());
 		ZoneResource zone = resp.getBody();
@@ -186,7 +186,7 @@ public class ZoneControllerTest {
 	public void n_get_zone_shouldnt_return_zone() {
 		HttpEntity<ZoneResource> resp;
 		try {
-			resp = this.controller.getZone(infraId, id2);
+			resp = this.controller.getZone(infraId, id2, null);
 			Assert.assertNull(resp);
 			Assert.fail();
 		} catch (ApiException e) {
@@ -204,7 +204,7 @@ public class ZoneControllerTest {
 
 	@Test
 	public void view_get_view_by_id_should_return_a_model_view() {
-		ModelAndView view = this.controller.getZoneView(infraId, id);
+		ModelAndView view = this.controller.getZoneView(infraId, id, null);
 		Assert.assertNotNull(view);
 		Assert.assertEquals("zone", view.getViewName());
 	}

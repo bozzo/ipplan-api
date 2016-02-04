@@ -31,8 +31,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.google.common.collect.Lists;
-
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = IpplanApiApplication.class)
 @WebAppConfiguration
@@ -494,6 +492,17 @@ public class AddessControllerTest {
 	}
 
 	@Test
+	public void n_get_full_subnet_should_return_second_subnet() {
+		HttpEntity<SubnetResource> resp = this.subnetController.getSubnet(infraId, subnetId, RequestMode.FULL);
+		Assert.assertNotNull(resp);
+		Assert.assertNotNull(resp.getBody());
+		SubnetResource subnet = resp.getBody();
+		Assert.assertNotNull(subnet);
+		Assert.assertNotNull(subnet.getAddresses());
+		Assert.assertEquals(2, subnet.getAddresses().count());
+	}
+
+	@Test
 	public void o_delete_address_should_work() {
 		this.controller.deleteAddress(infraId, subnetId, id2);
 	}
@@ -507,17 +516,6 @@ public class AddessControllerTest {
 			Assert.assertNotNull(e.getError());
 			Assert.assertEquals(ApiError.IP_NOT_FOUND, e.getError());
 		}
-	}
-
-	@Test
-	public void l_get_subnet_should_return_second_subnet() {
-		HttpEntity<SubnetResource> resp = this.subnetController.getSubnet(infraId, subnetId, RequestMode.FULL);
-		Assert.assertNotNull(resp);
-		Assert.assertNotNull(resp.getBody());
-		SubnetResource subnet = resp.getBody();
-		Assert.assertNotNull(subnet);
-		Assert.assertNotNull(subnet.getAddresses());
-		Assert.assertEquals(2, Lists.newArrayList(subnet.getAddresses()).size());
 	}
 
 	@Test

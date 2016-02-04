@@ -45,10 +45,6 @@ public class SubnetResourceAssembler extends ResourceAssemblerSupport<Subnet, Su
 		super(SubnetController.class, SubnetResource.class);
 	}
 
-	public SubnetResourceAssembler(Class<?> controllerClass, Class<SubnetResource> resourceType) {
-		super(controllerClass, resourceType);
-	}
-
 	@Override
 	public SubnetResource toResource(Subnet entity) {
 		SubnetResource subnet = new SubnetResource(entity);
