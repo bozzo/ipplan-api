@@ -25,10 +25,12 @@ import java.util.stream.StreamSupport;
 import org.bozzo.ipplan.domain.functions.ToRangeResourceFunction;
 import org.bozzo.ipplan.domain.model.Range;
 import org.bozzo.ipplan.domain.model.Zone;
+import org.bozzo.ipplan.web.json.StreamSerializer;
 import org.springframework.hateoas.ResourceSupport;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * @author boris
@@ -40,6 +42,8 @@ public class ZoneResource extends ResourceSupport {
 	private final Integer infraId;
 	private final Long ip;
 	private final String description;
+	
+	@JsonSerialize(using=StreamSerializer.class)
 	private Stream<RangeResource> ranges;
 	
 	/**

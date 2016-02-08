@@ -484,11 +484,19 @@ public class RangeControllerTest {
 	}
 	
 	@Test
-	public void q_get_range_shouldnt_return_range() throws Exception {
+	public void q_get_range_shouldnt_return_range_view() throws Exception {
 		this.mockMvc.perform(MockMvcRequestBuilders.get("/api/infras/"+infraId+"/zones/"+zoneId+"/ranges").session(session)
 		        .accept(MediaType.TEXT_HTML_VALUE))
 		        .andExpect(MockMvcResultMatchers.status().isOk())
 		        .andExpect(MockMvcResultMatchers.view().name("ranges"));
+	}
+	
+	@Test
+	public void q_get_range_shouldnt_return_range() throws Exception {
+		this.mockMvc.perform(MockMvcRequestBuilders.get("/api/infras/"+infraId+"/zones/"+zoneId).param("mode", "FULL").session(session)
+		        .accept(MediaType.APPLICATION_JSON_VALUE))
+		        .andExpect(MockMvcResultMatchers.status().isOk())
+		        .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE));
 	}
 
 	@Test

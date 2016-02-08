@@ -27,10 +27,12 @@ import org.bozzo.ipplan.domain.functions.ToAddressResourceFunction;
 import org.bozzo.ipplan.domain.model.Address;
 import org.bozzo.ipplan.domain.model.Subnet;
 import org.bozzo.ipplan.tools.Netmask;
+import org.bozzo.ipplan.web.json.StreamSerializer;
 import org.springframework.hateoas.ResourceSupport;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * @author boris
@@ -49,6 +51,8 @@ public class SubnetResource extends ResourceSupport {
 	private final String userId;
 	private final Long optionId;
 	private final Date swipMod;
+	
+	@JsonSerialize(using=StreamSerializer.class)
 	private Stream<AddressResource> addresses;
 	
 	/**
