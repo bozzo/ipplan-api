@@ -19,11 +19,20 @@
  */
 package org.bozzo.ipplan.domain.model.ui;
 
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+
+import org.bozzo.ipplan.domain.functions.ToSubnetResourceFunction;
+import org.bozzo.ipplan.domain.functions.ToZoneResourceFunction;
 import org.bozzo.ipplan.domain.model.Infrastructure;
+import org.bozzo.ipplan.domain.model.Subnet;
+import org.bozzo.ipplan.domain.model.Zone;
+import org.bozzo.ipplan.web.json.StreamSerializer;
 import org.springframework.hateoas.ResourceSupport;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * @author boris
@@ -36,6 +45,12 @@ public class InfrastructureResource extends ResourceSupport {
 	private final String crm;
 	private final String group;
 	
+	@JsonSerialize(using=StreamSerializer.class)
+	private Stream<ZoneResource> zones;
+	
+	@JsonSerialize(using=StreamSerializer.class)
+	private Stream<SubnetResource> subnets;
+	
 	/**
 	 * @param id
 	 * @param description
@@ -43,15 +58,21 @@ public class InfrastructureResource extends ResourceSupport {
 	 * @param group
 	 */
 	@JsonCreator
-	public InfrastructureResource(@JsonProperty("id") Integer id, @JsonProperty String description, @JsonProperty String crm, @JsonProperty String group) {
+	public InfrastructureResource(@JsonProperty("id") Integer id, @JsonProperty String description, @JsonProperty String crm, @JsonProperty String group, @JsonProperty Iterable<Zone> zones, @JsonProperty Iterable<Subnet> subnets) {
 		this.id = id;
 		this.description = description;
 		this.crm = crm;
 		this.group = group;
+		if (zones != null) {
+			this.setZones(StreamSupport.stream(zones.spliterator(), true).map(new ToZoneResourceFunction()));
+		}
+		if (subnets != null) {
+			this.setSubnets(StreamSupport.stream(subnets.spliterator(), true).map(new ToSubnetResourceFunction()));
+		}
 	}
 
 	public InfrastructureResource(Infrastructure infra) {
-		this(infra.getId(),infra.getDescription(),infra.getCrm(),infra.getGroup());
+		this(infra.getId(),infra.getDescription(),infra.getCrm(),infra.getGroup(), infra.getZones(), infra.getSubnets());
 	}
 
 	/**
@@ -81,5 +102,33 @@ public class InfrastructureResource extends ResourceSupport {
 	 */
 	public String getGroup() {
 		return group;
+	}
+
+	/**
+	 * @return the zones
+	 */
+	public Stream<ZoneResource> getZones() {
+		return zones;
+	}
+
+	/**
+	 * @param zones the zones to set
+	 */
+	public void setZones(Stream<ZoneResource> zones) {
+		this.zones = zones;
+	}
+
+	/**
+	 * @return the subnets
+	 */
+	public Stream<SubnetResource> getSubnets() {
+		return subnets;
+	}
+
+	/**
+	 * @param subnets the subnets to set
+	 */
+	public void setSubnets(Stream<SubnetResource> subnets) {
+		this.subnets = subnets;
 	}
 }

@@ -22,10 +22,12 @@ package org.bozzo.ipplan.web;
 import javax.validation.constraints.NotNull;
 
 import org.bozzo.ipplan.domain.ApiError;
+import org.bozzo.ipplan.domain.RequestMode;
 import org.bozzo.ipplan.domain.dao.InfrastructureRepository;
 import org.bozzo.ipplan.domain.exception.ApiException;
 import org.bozzo.ipplan.domain.model.Infrastructure;
 import org.bozzo.ipplan.domain.model.ui.InfrastructureResource;
+import org.bozzo.ipplan.domain.service.InfrastructureService;
 import org.bozzo.ipplan.web.assembler.InfrastructureResourceAssembler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,6 +51,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.google.common.base.Preconditions;
 
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import springfox.documentation.annotations.ApiIgnore;
 
 /**
@@ -59,6 +63,9 @@ import springfox.documentation.annotations.ApiIgnore;
 @RequestMapping("/api/infras")
 public class InfrastructureController {
 	private static Logger logger = LoggerFactory.getLogger(InfrastructureController.class);
+
+	@Autowired
+	private InfrastructureService service;
 
 	@Autowired
 	private InfrastructureRepository repository;
@@ -74,10 +81,13 @@ public class InfrastructureController {
 		view.addObject("pages", infras);
 		return view;
 	}
-
+	
+	@ApiResponses({
+		@ApiResponse(code = 200, message = "OK")
+	})
 	@RequestMapping(method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
 	public PagedResources<InfrastructureResource> getInfrastructures(@RequestParam(required=false) String group, Pageable pageable, PagedResourcesAssembler<Infrastructure> pagedAssembler) {
-		Page<Infrastructure> infras = null;
+		Page<Infrastructure> infras;
 		if (group != null) {
 			infras = repository.findAllByGroup(group, pageable);
 		} else {
@@ -88,17 +98,21 @@ public class InfrastructureController {
 
 	@RequestMapping(value = "/{infraId}", method = RequestMethod.GET, produces = {MediaType.TEXT_HTML_VALUE})
 	@ApiIgnore
-	public ModelAndView getInfrastructureView(@PathVariable Integer infraId) {
-		HttpEntity<InfrastructureResource> infra = this.getInfrastructure(infraId);
+	public ModelAndView getInfrastructureView(@PathVariable Integer infraId, @RequestParam(required=false) RequestMode mode) {
+		HttpEntity<InfrastructureResource> infra = this.getInfrastructure(infraId, mode);
 		ModelAndView view = new ModelAndView("infra");
 		view.addObject("id", infraId);
 		view.addObject("object", infra.getBody());
 		return view;
 	}
 
+	@ApiResponses({
+		@ApiResponse(code = 200, message = "OK"),
+		@ApiResponse(code = 404, message = "Not Found", response=ApiError.class)
+	})
 	@RequestMapping(value = "/{infraId}", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-	public HttpEntity<InfrastructureResource> getInfrastructure(@PathVariable Integer infraId) {
-		Infrastructure infra = repository.findOne(infraId);
+	public HttpEntity<InfrastructureResource> getInfrastructure(@PathVariable Integer infraId, @RequestParam(required=false) RequestMode mode) {
+		Infrastructure infra = service.findOne(infraId, mode);
 		if (infra == null) {
 			throw new ApiException(ApiError.INFRA_NOT_FOUND);
 		}
@@ -112,6 +126,9 @@ public class InfrastructureController {
 		return new ResponseEntity<>(assembler.toResource(infrastructure), HttpStatus.CREATED);
 	}
 
+	@ApiResponses({
+		@ApiResponse(code = 201, message = "Created")
+	})
 	@RequestMapping(value = "/{infraId}", method = RequestMethod.PUT, produces = {MediaType.APPLICATION_JSON_VALUE})
 	public HttpEntity<InfrastructureResource> updateInfrastructure(@PathVariable Integer infraId,
 			@RequestBody @NotNull Infrastructure infra) {
@@ -121,8 +138,12 @@ public class InfrastructureController {
 		return new ResponseEntity<>(assembler.toResource(infrastructure), HttpStatus.CREATED);
 	}
 
+	@ApiResponses({
+		@ApiResponse(code = 204, message = "No Content")
+	})
 	@RequestMapping(value = "/{infraId}", method = RequestMethod.DELETE)
-	public @ResponseStatus(HttpStatus.NO_CONTENT) void deleteInfrastructure(@PathVariable Integer infraId) {
+	@ResponseStatus(HttpStatus.NO_CONTENT) 
+	public void deleteInfrastructure(@PathVariable Integer infraId) {
 		logger.info("delete infrastruture with id: {}", infraId);
 		repository.delete(infraId);
 	}

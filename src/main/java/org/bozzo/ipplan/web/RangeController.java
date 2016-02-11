@@ -22,6 +22,7 @@ package org.bozzo.ipplan.web;
 import javax.validation.constraints.NotNull;
 
 import org.bozzo.ipplan.domain.ApiError;
+import org.bozzo.ipplan.domain.RequestMode;
 import org.bozzo.ipplan.domain.dao.RangeRepository;
 import org.bozzo.ipplan.domain.exception.ApiException;
 import org.bozzo.ipplan.domain.model.Range;
@@ -46,6 +47,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
@@ -91,8 +93,8 @@ public class RangeController {
 
 	@RequestMapping(value = "/{rangeId}", method = RequestMethod.GET, produces = {MediaType.TEXT_HTML_VALUE})
 	@ApiIgnore
-	public ModelAndView getRangeView(@PathVariable Integer infraId, @PathVariable Long zoneId, @PathVariable Long rangeId) {
-		HttpEntity<RangeResource> range = this.getRange(infraId, zoneId, rangeId);
+	public ModelAndView getRangeView(@PathVariable Integer infraId, @PathVariable Long zoneId, @PathVariable Long rangeId, @RequestParam(required=false) RequestMode mode) {
+		HttpEntity<RangeResource> range = this.getRange(infraId, zoneId, rangeId, mode);
 		ModelAndView view = new ModelAndView("range");
 		view.addObject("id", rangeId);
 		view.addObject("object", range.getBody());
@@ -100,8 +102,8 @@ public class RangeController {
 	}
 
 	@RequestMapping(value = "/{rangeId}", method=RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-	public HttpEntity<RangeResource> getRange(@PathVariable Integer infraId, @PathVariable Long zoneId, @PathVariable Long rangeId) {
-		Range range = this.repository.findByInfraIdAndZoneIdAndId(infraId, zoneId, rangeId);
+	public HttpEntity<RangeResource> getRange(@PathVariable Integer infraId, @PathVariable Long zoneId, @PathVariable Long rangeId, @RequestParam(required=false) RequestMode mode) {
+		Range range = this.service.findByInfraIdAndZoneIdAndId(infraId, zoneId, rangeId, mode);
 		if (range == null) {
 			throw new ApiException(ApiError.RANGE_NOT_FOUND);
 		}

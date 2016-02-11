@@ -49,7 +49,7 @@ public class SubnetResourceAssembler extends ResourceAssemblerSupport<Subnet, Su
 	public SubnetResource toResource(Subnet entity) {
 		SubnetResource subnet = new SubnetResource(entity);
 		subnet.add(linkTo(methodOn(SubnetController.class).getSubnet(subnet.getInfraId(), subnet.getSubnetId(), null)).withSelfRel());
-		subnet.add(linkTo(methodOn(InfrastructureController.class).getInfrastructure(subnet.getInfraId())).withRel("infra"));
+		subnet.add(linkTo(methodOn(InfrastructureController.class).getInfrastructure(subnet.getInfraId(), null)).withRel("infra"));
 		subnet.add(linkTo(methodOn(AddressController.class).getAddresses(null,subnet.getInfraId(), subnet.getSubnetId(), null, null)).withRel("addresses"));
 		return subnet;
 	}

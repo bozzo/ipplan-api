@@ -48,7 +48,7 @@ public class InfrastructureResourceAssembler extends ResourceAssemblerSupport<In
 	@Override
 	public InfrastructureResource toResource(Infrastructure entity) {
 		InfrastructureResource infra = new InfrastructureResource(entity);
-		infra.add(linkTo(methodOn(InfrastructureController.class).getInfrastructure(infra.getInfraId())).withSelfRel());
+		infra.add(linkTo(methodOn(InfrastructureController.class).getInfrastructure(infra.getInfraId(), null)).withSelfRel());
 		infra.add(linkTo(methodOn(ZoneController.class).getZones(infra.getInfraId(), null, null)).withRel("zones"));
 		infra.add(linkTo(methodOn(SubnetController.class).getSubnets(null, null, infra.getInfraId(), null, null)).withRel("subnets"));
 		return infra;
@@ -67,7 +67,7 @@ public class InfrastructureResourceAssembler extends ResourceAssemblerSupport<In
 	}
 
 	public static Link link(Integer infraId) {
-		return linkTo(methodOn(InfrastructureController.class).getInfrastructure(infraId)).withRel("infra");
+		return linkTo(methodOn(InfrastructureController.class).getInfrastructure(infraId, null)).withRel("infra");
 	}
 	
 }

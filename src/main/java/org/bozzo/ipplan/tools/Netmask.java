@@ -19,6 +19,9 @@
  */
 package org.bozzo.ipplan.tools;
 
+import java.util.Map;
+import java.util.TreeMap;
+
 import com.google.common.base.Preconditions;
 
 /**
@@ -71,5 +74,19 @@ public class Netmask {
 		Preconditions.checkArgument(size != null, "Network size shouldn't be null");
 		
 		return size > 0 && size <= (1L << 32) && Long.bitCount(size) == 1;
+	}
+
+	/**
+	 * Check the validity of the network address
+	 * @param ip the IP address as {@link Long} value
+	 * @param size the network size
+	 * @return true if it's a valid network address, false otherwise
+	 */
+	public static Map<Long, String> getOptionNetmask() {
+		Map<Long, String> options = new TreeMap<>();
+		for (Integer mask = 0; mask <= 32; mask++) {
+			options.put(1L << 32 - mask, Netmask.toString(mask) + " / " + mask);
+		}
+		return options;
 	}
 }

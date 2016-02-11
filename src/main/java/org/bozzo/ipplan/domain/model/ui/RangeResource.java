@@ -19,12 +19,19 @@
  */
 package org.bozzo.ipplan.domain.model.ui;
 
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+
+import org.bozzo.ipplan.domain.functions.ToSubnetResourceFunction;
 import org.bozzo.ipplan.domain.model.Range;
+import org.bozzo.ipplan.domain.model.Subnet;
 import org.bozzo.ipplan.tools.Netmask;
+import org.bozzo.ipplan.web.json.StreamSerializer;
 import org.springframework.hateoas.ResourceSupport;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * @author boris
@@ -40,6 +47,9 @@ public class RangeResource extends ResourceSupport {
 	private final Integer infraId;
 	private final Integer netmask;
 	
+	@JsonSerialize(using=StreamSerializer.class)
+	private Stream<SubnetResource> subnets;
+	
 	/**
 	 * @param id
 	 * @param ip
@@ -49,7 +59,7 @@ public class RangeResource extends ResourceSupport {
 	 * @param infraId
 	 */
 	@JsonCreator
-	public RangeResource(@JsonProperty("id") Long id, @JsonProperty Long ip, @JsonProperty Long size, @JsonProperty Integer netmask, @JsonProperty String description, @JsonProperty Long zoneId, @JsonProperty Integer infraId) {
+	public RangeResource(@JsonProperty("id") Long id, @JsonProperty Long ip, @JsonProperty Long size, @JsonProperty Integer netmask, @JsonProperty String description, @JsonProperty Long zoneId, @JsonProperty Integer infraId, @JsonProperty Iterable<Subnet> subnets) {
 		super();
 		this.id = id;
 		this.ip = ip;
@@ -58,10 +68,13 @@ public class RangeResource extends ResourceSupport {
 		this.description = description;
 		this.zoneId = zoneId;
 		this.infraId = infraId;
+		if (subnets != null) {
+			this.setSubnets(StreamSupport.stream(subnets.spliterator(), true).map(new ToSubnetResourceFunction()));
+		}
 	}
 	
 	public RangeResource(Range range) {
-		this(range.getId(),range.getIp(),range.getSize(),Netmask.fromNumberHosts(range.getSize()),range.getDescription(),range.getZoneId(),range.getInfraId());
+		this(range.getId(),range.getIp(),range.getSize(),Netmask.fromNumberHosts(range.getSize()),range.getDescription(),range.getZoneId(),range.getInfraId(), range.getSubnets());
 	}
 
 	/**
@@ -112,6 +125,20 @@ public class RangeResource extends ResourceSupport {
 	 */
 	public Integer getNetmask() {
 		return netmask;
+	}
+
+	/**
+	 * @return the subnets
+	 */
+	public Stream<SubnetResource> getSubnets() {
+		return subnets;
+	}
+
+	/**
+	 * @param subnets the subnets to set
+	 */
+	public void setSubnets(Stream<SubnetResource> subnets) {
+		this.subnets = subnets;
 	}
 	
 }

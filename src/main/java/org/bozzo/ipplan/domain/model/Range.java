@@ -26,6 +26,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.springframework.hateoas.Identifiable;
 
@@ -61,6 +62,9 @@ public class Range implements Serializable, Identifiable<Long> {
 
 	@Column(name="customer", nullable=false)
 	private Integer infraId;
+	
+	@Transient
+	private Iterable<Subnet> subnets;
 
 	/**
 	 * @return the id
@@ -145,6 +149,20 @@ public class Range implements Serializable, Identifiable<Long> {
 	 */
 	public void setIp(Long ip) {
 		this.ip = ip;
+	}
+
+	/**
+	 * @return the subnet
+	 */
+	public Iterable<Subnet> getSubnets() {
+		return subnets;
+	}
+
+	/**
+	 * @param subnet the subnet to set
+	 */
+	public void setSubnet(Iterable<Subnet> subnets) {
+		this.subnets = subnets;
 	}
 
 	/* (non-Javadoc)

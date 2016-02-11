@@ -49,7 +49,7 @@ public class ZoneResourceAssembler extends ResourceAssemblerSupport<Zone, ZoneRe
 	public ZoneResource toResource(Zone entity) {
 		ZoneResource zone = new ZoneResource(entity);
 		zone.add(linkTo(methodOn(ZoneController.class).getZone(zone.getInfraId(), zone.getZoneId(), null)).withSelfRel());
-		zone.add(linkTo(methodOn(InfrastructureController.class).getInfrastructure(zone.getInfraId())).withRel("infra"));
+		zone.add(linkTo(methodOn(InfrastructureController.class).getInfrastructure(zone.getInfraId(), null)).withRel("infra"));
 		zone.add(linkTo(methodOn(RangeController.class).getRanges(zone.getInfraId(), zone.getZoneId(), null, null)).withRel("ranges"));
 		return zone;
 	}

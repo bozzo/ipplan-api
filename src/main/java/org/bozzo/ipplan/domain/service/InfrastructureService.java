@@ -19,13 +19,11 @@
  */
 package org.bozzo.ipplan.domain.service;
 
-import org.bozzo.ipplan.domain.ApiError;
 import org.bozzo.ipplan.domain.RequestMode;
-import org.bozzo.ipplan.domain.dao.RangeRepository;
+import org.bozzo.ipplan.domain.dao.InfrastructureRepository;
 import org.bozzo.ipplan.domain.dao.SubnetRepository;
 import org.bozzo.ipplan.domain.dao.ZoneRepository;
-import org.bozzo.ipplan.domain.exception.ApiException;
-import org.bozzo.ipplan.domain.model.Range;
+import org.bozzo.ipplan.domain.model.Infrastructure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,33 +32,23 @@ import org.springframework.stereotype.Service;
  *
  */
 @Service
-public class RangeService {
+public class InfrastructureService {
 
 	@Autowired
 	private ZoneRepository zoneRepository;
 
 	@Autowired
-	private RangeRepository rangeRepository;
-
-	@Autowired
 	private SubnetRepository subnetRepository;
 
-	public Range save(Range range) {
-		if (! this.zoneRepository.exists(range.getZoneId())) {
-			throw new ApiException(ApiError.ZONE_NOT_FOUND);
-		} else if (range.getId() != null && this.rangeRepository.existsRangeConflict(range.getId(), range.getIp(), range.getSize())) {
-			throw new ApiException(ApiError.RANGE_CONFLICT);
-		} else if (range.getId() == null && this.rangeRepository.existsRangeConflict(range.getIp(), range.getSize())) {
-			throw new ApiException(ApiError.RANGE_CONFLICT);
-		}
-		return this.rangeRepository.save(range);
-	}
+	@Autowired
+	private InfrastructureRepository infraRepository;
 	
-	public Range findByInfraIdAndZoneIdAndId(Integer infraId, Long zoneId, Long id, RequestMode mode) {
-		Range range = this.rangeRepository.findByInfraIdAndZoneIdAndId(infraId, zoneId, id);
+	public Infrastructure findOne(Integer infraId, RequestMode mode) {
+		Infrastructure infra = this.infraRepository.findOne(infraId);
 		if (RequestMode.FULL.equals(mode)) {
-			range.setSubnet(this.subnetRepository.findAllByInfraIdAndIpAndSize(infraId, range.getIp(), range.getSize(), null));
+			infra.setSubnets(this.subnetRepository.findAllByInfraId(infraId, null));
+			infra.setZones(this.zoneRepository.findByInfraId(infraId, null));
 		}
-		return range;
+		return infra;
 	}
 }

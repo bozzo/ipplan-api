@@ -6,12 +6,14 @@ import java.util.List;
 import org.apache.commons.collections4.IterableUtils;
 import org.bozzo.ipplan.IpplanApiApplication;
 import org.bozzo.ipplan.domain.ApiError;
+import org.bozzo.ipplan.domain.RequestMode;
 import org.bozzo.ipplan.domain.exception.ApiException;
 import org.bozzo.ipplan.domain.model.Infrastructure;
 import org.bozzo.ipplan.domain.model.Subnet;
 import org.bozzo.ipplan.domain.model.ui.InfrastructureResource;
 import org.bozzo.ipplan.domain.model.ui.SubnetResource;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,8 +25,16 @@ import org.springframework.data.web.HateoasPageableHandlerMethodArgumentResolver
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.ModelAndView;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -43,6 +53,22 @@ public class SubnetControllerTest {
 	
 	@Autowired
 	private SubnetController controller;
+	
+	@Autowired 
+	private WebApplicationContext wac; 
+	
+    @Autowired 
+    private MockHttpSession session;
+    
+    @Autowired 
+    private MockHttpServletRequest request;
+
+    private MockMvc mockMvc;
+
+    @Before
+    public void setup() {
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
+    }
 
 	@Test
 	public void a_add_infra_should_create_a_new_infra() {
@@ -490,6 +516,17 @@ public class SubnetControllerTest {
 	}
 
 	@Test
+	public void l_get_full_infra_should_return_infra() {
+		HttpEntity<InfrastructureResource> resp = this.infrastructureController.getInfrastructure(infraId, RequestMode.FULL);
+		Assert.assertNotNull(resp);
+		Assert.assertNotNull(resp.getBody());
+		InfrastructureResource subnet = resp.getBody();
+		Assert.assertNotNull(subnet);
+		Assert.assertNotNull(subnet.getSubnets());
+		Assert.assertEquals(4, subnet.getSubnets().count());
+	}
+
+	@Test
 	public void m_delete_subnet_should_work() {
 		this.controller.deleteSubnet(infraId, id2, null);
 	}
@@ -503,6 +540,22 @@ public class SubnetControllerTest {
 			Assert.assertNotNull(e.getError());
 			Assert.assertEquals(ApiError.SUBNET_NOT_FOUND, e.getError());
 		}
+	}
+	
+	@Test
+	public void o_get_subnet_shouldnt_return_subnet_view() throws Exception {
+		this.mockMvc.perform(MockMvcRequestBuilders.get("/api/infras/"+infraId+"/subnets").session(session)
+		        .accept(MediaType.TEXT_HTML_VALUE))
+		        .andExpect(MockMvcResultMatchers.status().isOk())
+		        .andExpect(MockMvcResultMatchers.view().name("subnets"));
+	}
+	
+	@Test
+	public void o_get_subnet_shouldnt_return_subnet() throws Exception {
+		this.mockMvc.perform(MockMvcRequestBuilders.get("/api/infras/"+infraId+"/subnets/"+id).param("mode", "FULL").session(session)
+		        .accept(MediaType.APPLICATION_JSON_VALUE))
+		        .andExpect(MockMvcResultMatchers.status().isOk())
+		        .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE));
 	}
 
 	@Test

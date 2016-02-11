@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.commons.collections4.IterableUtils;
 import org.bozzo.ipplan.IpplanApiApplication;
 import org.bozzo.ipplan.domain.ApiError;
+import org.bozzo.ipplan.domain.RequestMode;
 import org.bozzo.ipplan.domain.exception.ApiException;
 import org.bozzo.ipplan.domain.model.Infrastructure;
 import org.bozzo.ipplan.domain.model.Zone;
@@ -175,6 +176,17 @@ public class ZoneControllerTest {
 		Assert.assertEquals("Test description 3", zone.getDescription());
 		Assert.assertEquals(0xC0A80002L, (long) zone.getIp());
 		Assert.assertEquals(3, zone.getLinks().size());
+	}
+
+	@Test
+	public void l_get_full_infra_should_return_infra() {
+		HttpEntity<InfrastructureResource> resp = this.infrastructureController.getInfrastructure(infraId, RequestMode.FULL);
+		Assert.assertNotNull(resp);
+		Assert.assertNotNull(resp.getBody());
+		InfrastructureResource subnet = resp.getBody();
+		Assert.assertNotNull(subnet);
+		Assert.assertNotNull(subnet.getZones());
+		Assert.assertEquals(2, subnet.getZones().count());
 	}
 
 	@Test

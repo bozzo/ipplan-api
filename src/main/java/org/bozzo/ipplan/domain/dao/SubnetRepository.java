@@ -64,7 +64,7 @@ public interface SubnetRepository extends PagingAndSortingRepository<Subnet, Lon
 	@Query("SELECT s FROM Subnet s WHERE s.infraId = :infraId AND s.ip <= :ip AND (s.ip + s.size) > :ip")
 	public Page<Subnet> findAllByInfraIdAndIp(@Param("infraId") Integer infraId, @Param("ip") Long ip, Pageable pageable);
 	
-	@Query("SELECT s FROM Subnet s WHERE s.infraId = :infraId AND s.ip >= :ip AND (s.ip + s.size) < (:ip + :size)")
+	@Query("SELECT s FROM Subnet s WHERE s.infraId = :infraId AND s.ip >= :ip AND (s.ip + s.size) <= (:ip + :size)")
 	public Page<Subnet> findAllByInfraIdAndIpAndSize(@Param("infraId") Integer infraId, @Param("ip") Long ip, @Param("size") Long size, Pageable pageable);
 
 	public Subnet findByInfraIdAndId(Integer infraId, Long id);

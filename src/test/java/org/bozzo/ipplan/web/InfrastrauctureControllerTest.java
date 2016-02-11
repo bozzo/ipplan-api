@@ -134,7 +134,7 @@ public class InfrastrauctureControllerTest {
 
 	@Test
 	public void j_get_infra_should_return_second_infra() {
-		HttpEntity<InfrastructureResource> response = this.controller.getInfrastructure(id2);
+		HttpEntity<InfrastructureResource> response = this.controller.getInfrastructure(id2, null);
 		Assert.assertNotNull(response);
 		Assert.assertNotNull(response.getBody());
 		InfrastructureResource infra = response.getBody();
@@ -163,7 +163,7 @@ public class InfrastrauctureControllerTest {
 	public void m_get_infra_shouldnt_return_infra() {
 		HttpEntity<InfrastructureResource> response;
 		try {
-			response = this.controller.getInfrastructure(id2);
+			response = this.controller.getInfrastructure(id2, null);
 			Assert.assertNull(response);
 			Assert.fail();
 		} catch (ApiException e) {
@@ -181,7 +181,7 @@ public class InfrastrauctureControllerTest {
 
 	@Test
 	public void view_get_view_by_id_should_return_a_model_view() {
-		ModelAndView view = this.controller.getInfrastructureView(id);
+		ModelAndView view = this.controller.getInfrastructureView(id, null);
 		Assert.assertNotNull(view);
 		Assert.assertEquals("infra", view.getViewName());
 	}

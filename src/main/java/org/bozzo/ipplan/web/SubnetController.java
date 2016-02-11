@@ -54,6 +54,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -92,7 +93,7 @@ public class SubnetController {
 			@RequestParam(required = false) Long size, @PathVariable @NotNull Integer infraId, Pageable pageable,
 			PagedResourcesAssembler<Subnet> pagedAssembler) {
 		Page<Subnet> subnets;
-		if (ip != null) {
+		if (! Strings.isNullOrEmpty(ip)) {
 			long ip4 = IpAddress.toLong(ip);
 			if (size == null) {
 				subnets = this.repository.findAllByInfraIdAndIp(infraId, ip4, pageable);

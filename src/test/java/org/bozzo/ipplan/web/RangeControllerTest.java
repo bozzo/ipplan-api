@@ -1,5 +1,6 @@
 package org.bozzo.ipplan.web;
 
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.collections4.IterableUtils;
@@ -9,9 +10,11 @@ import org.bozzo.ipplan.domain.RequestMode;
 import org.bozzo.ipplan.domain.exception.ApiException;
 import org.bozzo.ipplan.domain.model.Infrastructure;
 import org.bozzo.ipplan.domain.model.Range;
+import org.bozzo.ipplan.domain.model.Subnet;
 import org.bozzo.ipplan.domain.model.Zone;
 import org.bozzo.ipplan.domain.model.ui.InfrastructureResource;
 import org.bozzo.ipplan.domain.model.ui.RangeResource;
+import org.bozzo.ipplan.domain.model.ui.SubnetResource;
 import org.bozzo.ipplan.domain.model.ui.ZoneResource;
 import org.junit.Assert;
 import org.junit.Before;
@@ -58,14 +61,20 @@ public class RangeControllerTest {
 	@Autowired
 	private RangeController controller;
 	
+	@Autowired
+	private SubnetController subnetController;
+	
 	@Autowired 
 	private WebApplicationContext wac; 
+	
     @Autowired 
     private MockHttpSession session;
+    
     @Autowired 
     private MockHttpServletRequest request;
 
     private MockMvc mockMvc;
+	private Long subnetId;
 
     @Before
     public void setup() {
@@ -445,7 +454,7 @@ public class RangeControllerTest {
 
 	@Test
 	public void n_get_range_should_return_second_range() {
-		HttpEntity<RangeResource> resp = this.controller.getRange(infraId, zoneId, id2);
+		HttpEntity<RangeResource> resp = this.controller.getRange(infraId, zoneId, id2, RequestMode.RESERVED);
 		Assert.assertNotNull(resp);
 		Assert.assertNotNull(resp.getBody());
 		RangeResource range = resp.getBody();
@@ -475,7 +484,7 @@ public class RangeControllerTest {
 	@Test
 	public void p_get_range_shouldnt_return_range() {
 		try {
-			this.controller.getRange(infraId, zoneId, id2);
+			this.controller.getRange(infraId, zoneId, id2, RequestMode.RESERVED);
 			Assert.fail();
 		} catch (ApiException e) {
 			Assert.assertNotNull(e.getError());
@@ -500,6 +509,53 @@ public class RangeControllerTest {
 	}
 
 	@Test
+	public void r_add_subnet_should_create_a_new_subnet() {
+		Subnet subnet = new Subnet();
+		subnet.setDescription("Test description");
+		subnet.setInfraId(infraId);
+		subnet.setGroup("group");
+		subnet.setIp(0xC0A80100L);
+		subnet.setSize(256L);
+		subnet.setLastModifed(new Date());
+		subnet.setOptionId(1L);
+		subnet.setSwipMod(new Date());
+		subnet.setUserId("user");
+		HttpEntity<SubnetResource> resp = this.subnetController.addSubnet(infraId, subnet);
+		Assert.assertNotNull(resp);
+		Assert.assertNotNull(resp.getBody());
+		SubnetResource subnetReturned = resp.getBody();
+		Assert.assertNotNull(subnetReturned);
+		Assert.assertNotNull(subnetReturned.getId());
+		Assert.assertEquals(subnet.getDescription(), subnetReturned.getDescription());
+		Assert.assertEquals(subnet.getInfraId(), subnetReturned.getInfraId());
+		Assert.assertEquals(subnet.getIp(), subnetReturned.getIp());
+		Assert.assertEquals(subnet.getGroup(), subnetReturned.getGroup());
+		Assert.assertEquals(subnet.getSize(), subnetReturned.getSize());
+		Assert.assertEquals(subnet.getLastModifed(), subnetReturned.getLastModifed());
+		Assert.assertEquals(subnet.getOptionId(), subnetReturned.getOptionId());
+		Assert.assertEquals(subnet.getSwipMod(), subnetReturned.getSwipMod());
+		Assert.assertEquals(subnet.getUserId(), subnetReturned.getUserId());
+		Assert.assertEquals(3, subnetReturned.getLinks().size());
+		subnetId=subnetReturned.getSubnetId();
+	}
+
+	@Test
+	public void s_get_full_range_should_return_range() {
+		HttpEntity<RangeResource> resp = this.controller.getRange(infraId, zoneId, id, RequestMode.FULL);
+		Assert.assertNotNull(resp);
+		Assert.assertNotNull(resp.getBody());
+		RangeResource range = resp.getBody();
+		Assert.assertNotNull(range);
+		Assert.assertNotNull(range.getSubnets());
+		Assert.assertEquals(1, range.getSubnets().count());
+	}
+
+	@Test
+	public void t_delete_subnet_should_work() {
+		this.subnetController.deleteSubnet(infraId, subnetId, null);
+	}
+
+	@Test
 	public void view_get_view_all_should_return_a_model_view() {
 		ModelAndView view = this.controller.getRangesView(infraId, zoneId, null, new PagedResourcesAssembler<Range>(resolver, null));
 		Assert.assertNotNull(view);
@@ -508,7 +564,7 @@ public class RangeControllerTest {
 
 	@Test
 	public void view_get_view_by_id_should_return_a_model_view() {
-		ModelAndView view = this.controller.getRangeView(infraId, zoneId, id);
+		ModelAndView view = this.controller.getRangeView(infraId, zoneId, id, RequestMode.RESERVED);
 		Assert.assertNotNull(view);
 		Assert.assertEquals("range", view.getViewName());
 	}

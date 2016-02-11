@@ -20,7 +20,6 @@
 package org.bozzo.ipplan.domain.model.ui;
 
 import java.util.Date;
-import java.util.function.Function;
 
 import org.bozzo.ipplan.domain.model.Address;
 import org.springframework.hateoas.ResourceSupport;
@@ -94,15 +93,6 @@ public class AddressResource extends ResourceSupport {
 				address.getLocation(),
 				address.isFree()
 		);
-	}
-	
-	public class ToAddressRessource implements Function<Address, AddressResource> {
-
-		@Override
-		public AddressResource apply(Address t) {
-			return new AddressResource(t);
-		}
-		
 	}
 
 	/**
