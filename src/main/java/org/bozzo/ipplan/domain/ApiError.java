@@ -38,6 +38,7 @@ public class ApiError {
 	public static final ApiError BAD_REQUEST = new ApiError(HttpStatus.BAD_REQUEST, 400, "Bad request, check request parameters.");
 	public static final ApiError BAD_NETWORK = new ApiError(HttpStatus.BAD_REQUEST, 401, "Bad network, IP and size does not belong to a valid network. Check request parameters.");
 	public static final ApiError BAD_NETMASK = new ApiError(HttpStatus.BAD_REQUEST, 402, "Bad netmask, netmask or size does not belong to a netmask. Check request parameters.");
+	public static final ApiError BAD_JSON = new ApiError(HttpStatus.BAD_REQUEST, 403, "Bad json. We can't parse the provided json, check request parameters.");
 
 	public static final ApiError DATA_INTEGRITY_VIOLATION = new ApiError(HttpStatus.BAD_REQUEST, 409, "Integrity violation.");
 	
@@ -58,6 +59,8 @@ public class ApiError {
 	public static final ApiError IP_NOT_IN_SUBNET = new ApiError(HttpStatus.BAD_REQUEST, 5400, "The IP address does not belong to the given subnet or subnet does exists.");
 	public static final ApiError IP_NOT_FOUND = new ApiError(HttpStatus.NOT_FOUND, 5404, "IP address not found.");
 	public static final ApiError IP_CONFLICT = new ApiError(HttpStatus.CONFLICT, 5409, "The IP address already exists, use update if you want to modify it or change IP address.");
+
+	public static final ApiError PLAN_NOT_FOUND = new ApiError(HttpStatus.NOT_FOUND, 6404, "Address plan not found.");
 	
 	
 	private final HttpStatus status;
