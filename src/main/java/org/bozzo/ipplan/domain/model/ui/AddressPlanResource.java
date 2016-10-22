@@ -26,10 +26,13 @@ import org.springframework.hateoas.ResourceSupport;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 
+import lombok.Getter;
+
 /**
  * @author boris
  *
  */
+@Getter
 public class AddressPlanResource extends ResourceSupport {
 	
 	private final Integer infraId;
@@ -66,40 +69,5 @@ public class AddressPlanResource extends ResourceSupport {
 				plan.getDescription(),
 				plan.getName()
 		);
-	}
-
-	/**
-	 * @return the infraId
-	 */
-	public Integer getInfraId() {
-		return infraId;
-	}
-
-	/**
-	 * @return the planId
-	 */
-	public Long getPlanId() {
-		return planId;
-	}
-
-	/**
-	 * @return the lastModifed
-	 */
-	public Date getLastModifed() {
-		return lastModifed;
-	}
-
-	/**
-	 * @return the description
-	 */
-	public String getDescription() {
-		return description;
-	}
-
-	/**
-	 * @return the name
-	 */
-	public String getName() {
-		return name;
 	}
 }

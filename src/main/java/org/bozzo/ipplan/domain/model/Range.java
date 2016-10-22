@@ -30,12 +30,23 @@ import javax.persistence.Transient;
 
 import org.springframework.hateoas.Identifiable;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
 /**
  * @author boris
  *
  */
 @Entity
 @Table(name="netrange")
+@Getter @Setter @Builder @ToString
+@AllArgsConstructor @NoArgsConstructor
+@EqualsAndHashCode(of={"ip","infraId","size","zoneId"})
 public class Range implements Serializable, Identifiable<Long> {
 
 	/**
@@ -65,165 +76,4 @@ public class Range implements Serializable, Identifiable<Long> {
 	
 	@Transient
 	private Iterable<Subnet> subnets;
-
-	/**
-	 * @return the id
-	 */
-	@Override
-	public Long getId() {
-		return id;
-	}
-
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	/**
-	 * @return the size
-	 */
-	public Long getSize() {
-		return size;
-	}
-
-	/**
-	 * @param size the size to set
-	 */
-	public void setSize(Long size) {
-		this.size = size;
-	}
-
-	/**
-	 * @return the description
-	 */
-	public String getDescription() {
-		return description;
-	}
-
-	/**
-	 * @param description the description to set
-	 */
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	/**
-	 * @return the zoneId
-	 */
-	public Long getZoneId() {
-		return zoneId;
-	}
-
-	/**
-	 * @param zoneId the zoneId to set
-	 */
-	public void setZoneId(Long zoneId) {
-		this.zoneId = zoneId;
-	}
-
-	/**
-	 * @return the infraId
-	 */
-	public Integer getInfraId() {
-		return infraId;
-	}
-
-	/**
-	 * @param infraId the infraId to set
-	 */
-	public void setInfraId(Integer infraId) {
-		this.infraId = infraId;
-	}
-
-	/**
-	 * @return the ip
-	 */
-	public Long getIp() {
-		return ip;
-	}
-
-	/**
-	 * @param ip the ip to set
-	 */
-	public void setIp(Long ip) {
-		this.ip = ip;
-	}
-
-	/**
-	 * @return the subnet
-	 */
-	public Iterable<Subnet> getSubnets() {
-		return subnets;
-	}
-
-	/**
-	 * @param subnet the subnet to set
-	 */
-	public void setSubnet(Iterable<Subnet> subnets) {
-		this.subnets = subnets;
-	}
-
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("Range [id=").append(id).append(", ip=").append(ip).append(", size=").append(size)
-				.append(", description=").append(description).append(", zoneId=").append(zoneId).append(", infraId=")
-				.append(infraId).append("]");
-		return builder.toString();
-	}
-
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((infraId == null) ? 0 : infraId.hashCode());
-		result = prime * result + ((ip == null) ? 0 : ip.hashCode());
-		result = prime * result + ((size == null) ? 0 : size.hashCode());
-		result = prime * result + ((zoneId == null) ? 0 : zoneId.hashCode());
-		return result;
-	}
-
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (!(obj instanceof Range))
-			return false;
-		Range other = (Range) obj;
-		if (infraId == null) {
-			if (other.infraId != null)
-				return false;
-		} else if (!infraId.equals(other.infraId))
-			return false;
-		if (ip == null) {
-			if (other.ip != null)
-				return false;
-		} else if (!ip.equals(other.ip))
-			return false;
-		if (size == null) {
-			if (other.size != null)
-				return false;
-		} else if (!size.equals(other.size))
-			return false;
-		if (zoneId == null) {
-			if (other.zoneId != null)
-				return false;
-		} else if (!zoneId.equals(other.zoneId))
-			return false;
-		return true;
-	}
-
 }

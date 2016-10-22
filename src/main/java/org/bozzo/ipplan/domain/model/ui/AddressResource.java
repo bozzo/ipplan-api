@@ -26,10 +26,13 @@ import org.springframework.hateoas.ResourceSupport;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 
+import lombok.Getter;
+
 /**
  * @author boris
  *
  */
+@Getter
 public class AddressResource extends ResourceSupport {
 	
 	private final Long ip;
@@ -94,86 +97,4 @@ public class AddressResource extends ResourceSupport {
 				address.isFree()
 		);
 	}
-
-	/**
-	 * @return the ip
-	 */
-	public Long getIp() {
-		return ip;
-	}
-	/**
-	 * @return the infraId
-	 */
-	public Integer getInfraId() {
-		return infraId;
-	}
-
-	/**
-	 * @return the subnetId
-	 */
-	public Long getSubnetId() {
-		return subnetId;
-	}
-	/**
-	 * @return the lastModifed
-	 */
-	public Date getLastModifed() {
-		return lastModifed;
-	}
-	/**
-	 * @return the lastPol
-	 */
-	public Date getLastPol() {
-		return lastPol;
-	}
-	/**
-	 * @return the mac
-	 */
-	public String getMac() {
-		return mac;
-	}
-	/**
-	 * @return the description
-	 */
-	public String getDescription() {
-		return description;
-	}
-	/**
-	 * @return the name
-	 */
-	public String getName() {
-		return name;
-	}
-	/**
-	 * @return the phone
-	 */
-	public String getPhone() {
-		return phone;
-	}
-	/**
-	 * @return the userInfo
-	 */
-	public String getUserInfo() {
-		return userInfo;
-	}
-	/**
-	 * @return the userId
-	 */
-	public String getUserId() {
-		return userId;
-	}
-	/**
-	 * @return the location
-	 */
-	public String getLocation() {
-		return location;
-	}
-
-	/**
-	 * @return the free
-	 */
-	public boolean isFree() {
-		return free;
-	}
-	
 }

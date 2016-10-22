@@ -30,12 +30,23 @@ import javax.persistence.Transient;
 
 import org.springframework.hateoas.Identifiable;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
 /**
  * @author boris
  *
  */
 @Entity
 @Table(name="customer")
+@Getter @Setter @Builder @ToString
+@AllArgsConstructor @NoArgsConstructor
+@EqualsAndHashCode(of={"id"})
 public class Infrastructure implements Serializable, Identifiable<Integer> {
 
 	/**
@@ -70,133 +81,4 @@ public class Infrastructure implements Serializable, Identifiable<Integer> {
 	public Integer getId() {
 		return id;
 	}
-
-	/**
-	 * @param id
-	 *            the id to set
-	 */
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	/**
-	 * @return the description
-	 */
-	public String getDescription() {
-		return description;
-	}
-
-	/**
-	 * @param description
-	 *            the description to set
-	 */
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	/**
-	 * @return the group
-	 */
-	public String getGroup() {
-		return group;
-	}
-
-	/**
-	 * @param group
-	 *            the group to set
-	 */
-	public void setGroup(String group) {
-		this.group = group;
-	}
-
-	/**
-	 * @return the crm
-	 */
-	public String getCrm() {
-		return crm;
-	}
-
-	/**
-	 * @param crm the crm to set
-	 */
-	public void setCrm(String crm) {
-		this.crm = crm;
-	}
-
-	/**
-	 * @return the zones
-	 */
-	public Iterable<Zone> getZones() {
-		return zones;
-	}
-
-	/**
-	 * @param zones the zones to set
-	 */
-	public void setZones(Iterable<Zone> zones) {
-		this.zones = zones;
-	}
-
-	/**
-	 * @return the subnets
-	 */
-	public Iterable<Subnet> getSubnets() {
-		return subnets;
-	}
-
-	/**
-	 * @param subnets the subnets to set
-	 */
-	public void setSubnets(Iterable<Subnet> subnets) {
-		this.subnets = subnets;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("Infrastructure [id=").append(id).append(", description=").append(description).append(", group=")
-				.append(group).append(", crm=").append(crm).append("]");
-		return builder.toString();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		return result;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (!(obj instanceof Infrastructure))
-			return false;
-		Infrastructure other = (Infrastructure) obj;
-		if (id == null) {
-			if (other.id != null)
-				return false;
-		} else if (!id.equals(other.id))
-			return false;
-		return true;
-	}
-
 }

@@ -34,13 +34,17 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * @author boris
  *
  */
+@Getter @Setter
 public class InfrastructureResource extends ResourceSupport {
 
-	private final Integer id;
+	private final Integer infraId;
 	private final String description;
 	private final String crm;
 	private final String group;
@@ -59,7 +63,7 @@ public class InfrastructureResource extends ResourceSupport {
 	 */
 	@JsonCreator
 	public InfrastructureResource(@JsonProperty("id") Integer id, @JsonProperty String description, @JsonProperty String crm, @JsonProperty String group, @JsonProperty Iterable<Zone> zones, @JsonProperty Iterable<Subnet> subnets) {
-		this.id = id;
+		this.infraId = id;
 		this.description = description;
 		this.crm = crm;
 		this.group = group;
@@ -80,55 +84,6 @@ public class InfrastructureResource extends ResourceSupport {
 	 */
 	@JsonProperty("id")
 	public Integer getInfraId() {
-		return this.id;
-	}
-
-	/**
-	 * @return the description
-	 */
-	public String getDescription() {
-		return description;
-	}
-
-	/**
-	 * @return the crm
-	 */
-	public String getCrm() {
-		return crm;
-	}
-
-	/**
-	 * @return the group
-	 */
-	public String getGroup() {
-		return group;
-	}
-
-	/**
-	 * @return the zones
-	 */
-	public Stream<ZoneResource> getZones() {
-		return zones;
-	}
-
-	/**
-	 * @param zones the zones to set
-	 */
-	public void setZones(Stream<ZoneResource> zones) {
-		this.zones = zones;
-	}
-
-	/**
-	 * @return the subnets
-	 */
-	public Stream<SubnetResource> getSubnets() {
-		return subnets;
-	}
-
-	/**
-	 * @param subnets the subnets to set
-	 */
-	public void setSubnets(Stream<SubnetResource> subnets) {
-		this.subnets = subnets;
+		return this.infraId;
 	}
 }

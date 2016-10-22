@@ -31,12 +31,23 @@ import javax.persistence.Transient;
 
 import org.springframework.hateoas.Identifiable;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
 /**
  * @author boris
  *
  */
 @Entity
 @Table(name="base")
+@Getter @Setter @Builder @ToString
+@AllArgsConstructor @NoArgsConstructor
+@EqualsAndHashCode(of={"ip","infraId","size"})
 public class Subnet implements Serializable, Identifiable<Long> {
 
 	/**
@@ -78,215 +89,4 @@ public class Subnet implements Serializable, Identifiable<Long> {
 	
 	@Transient
 	private Iterable<Address> addresses;
-
-	/**
-	 * @return the id
-	 */
-	@Override
-	public Long getId() {
-		return id;
-	}
-
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	/**
-	 * @return the infraId
-	 */
-	public Integer getInfraId() {
-		return infraId;
-	}
-
-	/**
-	 * @param infraId the infraId to set
-	 */
-	public void setInfraId(Integer infraId) {
-		this.infraId = infraId;
-	}
-
-	/**
-	 * @return the ip
-	 */
-	public Long getIp() {
-		return ip;
-	}
-
-	/**
-	 * @param ip the ip to set
-	 */
-	public void setIp(Long ip) {
-		this.ip = ip;
-	}
-
-	/**
-	 * @return the size
-	 */
-	public Long getSize() {
-		return size;
-	}
-
-	/**
-	 * @param size the size to set
-	 */
-	public void setSize(Long size) {
-		this.size = size;
-	}
-
-	/**
-	 * @return the description
-	 */
-	public String getDescription() {
-		return description;
-	}
-
-	/**
-	 * @param description the description to set
-	 */
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	/**
-	 * @return the group
-	 */
-	public String getGroup() {
-		return group;
-	}
-
-	/**
-	 * @param group the group to set
-	 */
-	public void setGroup(String group) {
-		this.group = group;
-	}
-
-	/**
-	 * @return the lastModifed
-	 */
-	public Date getLastModifed() {
-		return lastModifed;
-	}
-
-	/**
-	 * @param lastModifed the lastModifed to set
-	 */
-	public void setLastModifed(Date lastModifed) {
-		this.lastModifed = lastModifed;
-	}
-
-	/**
-	 * @return the userId
-	 */
-	public String getUserId() {
-		return userId;
-	}
-
-	/**
-	 * @param userId the userId to set
-	 */
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
-
-	/**
-	 * @return the optionId
-	 */
-	public Long getOptionId() {
-		return optionId;
-	}
-
-	/**
-	 * @param optionId the optionId to set
-	 */
-	public void setOptionId(Long optionId) {
-		this.optionId = optionId;
-	}
-
-	/**
-	 * @return the swipMod
-	 */
-	public Date getSwipMod() {
-		return swipMod;
-	}
-
-	/**
-	 * @param swipMod the swipMod to set
-	 */
-	public void setSwipMod(Date swipMod) {
-		this.swipMod = swipMod;
-	}
-
-	/**
-	 * @return the addresses
-	 */
-	public Iterable<Address> getAddresses() {
-		return addresses;
-	}
-
-	/**
-	 * @param addresses the addresses to set
-	 */
-	public void setAddresses(Iterable<Address> addresses) {
-		this.addresses = addresses;
-	}
-
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("Subnet [id=").append(id).append(", infraId=").append(infraId).append(", ip=").append(ip)
-				.append(", size=").append(size).append(", description=").append(description).append(", group=")
-				.append(group).append(", lastModifed=").append(lastModifed).append(", userId=").append(userId)
-				.append(", optionId=").append(optionId).append(", swipMod=").append(swipMod).append("]");
-		return builder.toString();
-	}
-
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((infraId == null) ? 0 : infraId.hashCode());
-		result = prime * result + ((ip == null) ? 0 : ip.hashCode());
-		result = prime * result + ((size == null) ? 0 : size.hashCode());
-		return result;
-	}
-
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (!(obj instanceof Subnet))
-			return false;
-		Subnet other = (Subnet) obj;
-		if (infraId == null) {
-			if (other.infraId != null)
-				return false;
-		} else if (!infraId.equals(other.infraId))
-			return false;
-		if (ip == null) {
-			if (other.ip != null)
-				return false;
-		} else if (!ip.equals(other.ip))
-			return false;
-		if (size == null) {
-			if (other.size != null)
-				return false;
-		} else if (!size.equals(other.size))
-			return false;
-		return true;
-	}
 }

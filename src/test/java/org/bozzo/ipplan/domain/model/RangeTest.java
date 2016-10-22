@@ -19,21 +19,18 @@
  */
 package org.bozzo.ipplan.domain.model;
 
-import org.bozzo.ipplan.IpplanApiApplication;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 
 /**
  * @author boris
  *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = IpplanApiApplication.class)
-@WebAppConfiguration
+@SpringBootTest
 public class RangeTest {
 	
 	@Test

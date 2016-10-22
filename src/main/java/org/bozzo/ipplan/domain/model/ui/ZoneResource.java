@@ -19,6 +19,7 @@
  */
 package org.bozzo.ipplan.domain.model.ui;
 
+import java.util.Date;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -32,13 +33,17 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * @author boris
  *
  */
+@Getter @Setter
 public class ZoneResource extends ResourceSupport {
 
-	private final Long id;
+	private final Long zoneId;
 	private final Integer infraId;
 	private final Long ip;
 	private final String description;
@@ -55,7 +60,7 @@ public class ZoneResource extends ResourceSupport {
 	@JsonCreator
 	public ZoneResource(@JsonProperty("id") Long id, @JsonProperty Integer infraId, @JsonProperty Long ip, @JsonProperty String description, @JsonProperty Iterable<Range> ranges) {
 		super();
-		this.id = id;
+		this.zoneId = id;
 		this.infraId = infraId;
 		this.ip = ip;
 		this.description = description;
@@ -73,41 +78,6 @@ public class ZoneResource extends ResourceSupport {
 	 */
 	@JsonProperty("id") 
 	public Long getZoneId() {
-		return id;
-	}
-
-	/**
-	 * @return the infraId
-	 */
-	public Integer getInfraId() {
-		return infraId;
-	}
-
-	/**
-	 * @return the ip
-	 */
-	public Long getIp() {
-		return ip;
-	}
-
-	/**
-	 * @return the description
-	 */
-	public String getDescription() {
-		return description;
-	}
-
-	/**
-	 * @return the ranges
-	 */
-	public Stream<RangeResource> getRanges() {
-		return ranges;
-	}
-
-	/**
-	 * @param ranges the ranges to set
-	 */
-	public void setRanges(Stream<RangeResource> ranges) {
-		this.ranges = ranges;
+		return zoneId;
 	}
 }

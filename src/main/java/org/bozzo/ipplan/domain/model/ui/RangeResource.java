@@ -33,13 +33,17 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * @author boris
  *
  */
+@Getter @Setter
 public class RangeResource extends ResourceSupport {
 
-	private final Long id;
+	private final Long rangeId;
 	private final Long ip;
 	private final Long size;
 	private final String description;
@@ -61,7 +65,7 @@ public class RangeResource extends ResourceSupport {
 	@JsonCreator
 	public RangeResource(@JsonProperty("id") Long id, @JsonProperty Long ip, @JsonProperty Long size, @JsonProperty Integer netmask, @JsonProperty String description, @JsonProperty Long zoneId, @JsonProperty Integer infraId, @JsonProperty Iterable<Subnet> subnets) {
 		super();
-		this.id = id;
+		this.rangeId = id;
 		this.ip = ip;
 		this.size = size;
 		this.netmask = netmask;
@@ -82,63 +86,6 @@ public class RangeResource extends ResourceSupport {
 	 */
 	@JsonProperty("id")
 	public Long getRangeId() {
-		return id;
+		return rangeId;
 	}
-
-	/**
-	 * @return the ip
-	 */
-	public Long getIp() {
-		return ip;
-	}
-
-	/**
-	 * @return the size
-	 */
-	public Long getSize() {
-		return size;
-	}
-
-	/**
-	 * @return the description
-	 */
-	public String getDescription() {
-		return description;
-	}
-
-	/**
-	 * @return the zoneId
-	 */
-	public Long getZoneId() {
-		return zoneId;
-	}
-
-	/**
-	 * @return the infraId
-	 */
-	public Integer getInfraId() {
-		return infraId;
-	}
-
-	/**
-	 * @return the netmask
-	 */
-	public Integer getNetmask() {
-		return netmask;
-	}
-
-	/**
-	 * @return the subnets
-	 */
-	public Stream<SubnetResource> getSubnets() {
-		return subnets;
-	}
-
-	/**
-	 * @param subnets the subnets to set
-	 */
-	public void setSubnets(Stream<SubnetResource> subnets) {
-		this.subnets = subnets;
-	}
-	
 }

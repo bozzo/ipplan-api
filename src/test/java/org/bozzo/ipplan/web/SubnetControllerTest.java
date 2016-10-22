@@ -4,32 +4,29 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.collections4.IterableUtils;
-import org.bozzo.ipplan.IpplanApiApplication;
 import org.bozzo.ipplan.domain.ApiError;
 import org.bozzo.ipplan.domain.RequestMode;
+import org.bozzo.ipplan.domain.dao.SubnetRepository;
 import org.bozzo.ipplan.domain.exception.ApiException;
 import org.bozzo.ipplan.domain.model.Infrastructure;
 import org.bozzo.ipplan.domain.model.Subnet;
 import org.bozzo.ipplan.domain.model.ui.InfrastructureResource;
 import org.bozzo.ipplan.domain.model.ui.SubnetResource;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.MethodSorters;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.web.HateoasPageableHandlerMethodArgumentResolver;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpSession;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -37,10 +34,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.ModelAndView;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = IpplanApiApplication.class)
-@WebAppConfiguration
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+@RunWith(SpringRunner.class)
+@SpringBootTest
 public class SubnetControllerTest {
 
 	private static long id, id2;
@@ -53,15 +48,15 @@ public class SubnetControllerTest {
 	
 	@Autowired
 	private SubnetController controller;
+    
+    @Autowired
+    private SubnetRepository repository;
 	
 	@Autowired 
 	private WebApplicationContext wac; 
 	
     @Autowired 
     private MockHttpSession session;
-    
-    @Autowired 
-    private MockHttpServletRequest request;
 
     private MockMvc mockMvc;
 
@@ -70,8 +65,8 @@ public class SubnetControllerTest {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
     }
 
-	@Test
-	public void a_add_infra_should_create_a_new_infra() {
+	@Before
+	public void add_infra_should_create_a_new_infra() {
 		Infrastructure infra = new Infrastructure();
 		infra.setDescription("Test description");
 		infra.setGroup("group");
@@ -85,17 +80,14 @@ public class SubnetControllerTest {
 		Assert.assertEquals(infra.getCrm(), infraReturned.getCrm());
 		Assert.assertEquals(infra.getGroup(), infraReturned.getGroup());
 		infraId = infraReturned.getInfraId();
-	}
-
-	@Test
-	public void b_get_all_should_return_an_infra_array_with_one_elem() {
+		
 		List<InfrastructureResource> infras = IterableUtils.toList(this.infrastructureController.getInfrastructures(null, null, new PagedResourcesAssembler<Infrastructure>(resolver, null)));
 		Assert.assertNotNull(infras);
 		Assert.assertEquals(1, infras.size());
 	}
 
 	@Test
-	public void c_get_all_should_return_empty_array() {
+	public void get_all_should_return_empty_array() {
 		HttpEntity<PagedResources<SubnetResource>> resp = this.controller.getSubnets(null, null, infraId, null, new PagedResourcesAssembler<Subnet>(resolver, null));
 		Assert.assertNotNull(resp);
 		Assert.assertNotNull(resp.getBody());
@@ -105,7 +97,7 @@ public class SubnetControllerTest {
 	}
 
 	@Test
-	public void d_add_subnet_should_create_a_new_subnet() {
+	public void add_subnet_should_create_a_new_subnet() {
 		Subnet subnet = new Subnet();
 		subnet.setDescription("Test description");
 		subnet.setInfraId(infraId);
@@ -133,20 +125,20 @@ public class SubnetControllerTest {
 		Assert.assertEquals(subnet.getUserId(), subnetReturned.getUserId());
 		Assert.assertEquals(3, subnetReturned.getLinks().size());
 		id = subnetReturned.getSubnetId();
-	}
 
-	@Test
-	public void e_get_all_should_return_an_array_with_one_elem() {
-		HttpEntity<PagedResources<SubnetResource>> resp = this.controller.getSubnets(null, null, infraId, null, new PagedResourcesAssembler<Subnet>(resolver, null));
-		Assert.assertNotNull(resp);
-		Assert.assertNotNull(resp.getBody());
-		List<SubnetResource> subnets = IterableUtils.toList(resp.getBody());
+		// Get
+		HttpEntity<PagedResources<SubnetResource>> respList = this.controller.getSubnets(null, null, infraId, null, new PagedResourcesAssembler<Subnet>(resolver, null));
+		Assert.assertNotNull(respList);
+		Assert.assertNotNull(respList.getBody());
+		List<SubnetResource> subnets = IterableUtils.toList(respList.getBody());
 		Assert.assertNotNull(subnets);
 		Assert.assertEquals(1, subnets.size());
 	}
 
 	@Test
-	public void f_update_subnet_shouldnt_create_a_new_subnet() {
+	public void update_subnet_shouldnt_create_a_new_subnet() {
+	    add_subnet_should_create_a_new_subnet();
+	    
 		Subnet subnet = new Subnet();
 		subnet.setDescription("Test description 2");
 		subnet.setInfraId(infraId);
@@ -174,20 +166,20 @@ public class SubnetControllerTest {
 		Assert.assertEquals(subnet.getSwipMod(), subnetReturned.getSwipMod());
 		Assert.assertEquals(subnet.getUserId(), subnetReturned.getUserId());
 		Assert.assertEquals(3, subnetReturned.getLinks().size());
-	}
 
-	@Test
-	public void g_get_all_should_return_an_array_with_one_elem() {
-		HttpEntity<PagedResources<SubnetResource>> resp = this.controller.getSubnets(null, null, infraId, null, new PagedResourcesAssembler<Subnet>(resolver, null));
-		Assert.assertNotNull(resp);
-		Assert.assertNotNull(resp.getBody());
-		List<SubnetResource> subnets = IterableUtils.toList(resp.getBody());
+		// Get
+		HttpEntity<PagedResources<SubnetResource>> respList = this.controller.getSubnets(null, null, infraId, null, new PagedResourcesAssembler<Subnet>(resolver, null));
+		Assert.assertNotNull(respList);
+		Assert.assertNotNull(respList.getBody());
+		List<SubnetResource> subnets = IterableUtils.toList(respList.getBody());
 		Assert.assertNotNull(subnets);
 		Assert.assertEquals(1, subnets.size());
 	}
 
 	@Test
-	public void h1_add_subnet_shouldnt_create_a_new_subnet() {
+	public void add_subnet_shouldnt_create_a_new_subnet() {
+	    update_subnet_shouldnt_create_a_new_subnet();
+	    
 		Subnet subnet = new Subnet();
 		subnet.setDescription("Test description 3");
 		subnet.setInfraId(infraId);
@@ -218,7 +210,9 @@ public class SubnetControllerTest {
 	}
 
 	@Test
-	public void h2_add_subnet_shouldnt_return_a_subnet_conflict_inside() {
+	public void add_subnet_shouldnt_return_a_subnet_conflict_inside() {
+	    add_subnet_shouldnt_create_a_new_subnet();
+	    
 		Subnet subnet = new Subnet();
 		subnet.setId(120L);
 		subnet.setDescription("Test description 3");
@@ -240,7 +234,9 @@ public class SubnetControllerTest {
 	}
 
 	@Test
-	public void h2_add_subnet_shouldnt_return_a_subnet_conflict_before() {
+	public void add_subnet_shouldnt_return_a_subnet_conflict_before() {
+	    add_subnet_shouldnt_create_a_new_subnet();
+        
 		Subnet subnet = new Subnet();
 		subnet.setDescription("Test description 3");
 		subnet.setInfraId(infraId);
@@ -261,7 +257,9 @@ public class SubnetControllerTest {
 	}
 
 	@Test
-	public void h2_add_subnet_shouldnt_return_a_subnet_conflict_outside() {
+	public void add_subnet_shouldnt_return_a_subnet_conflict_outside() {
+	    add_subnet_shouldnt_create_a_new_subnet();
+        
 		Subnet subnet = new Subnet();
 		subnet.setDescription("Test description 3");
 		subnet.setInfraId(infraId);
@@ -282,7 +280,7 @@ public class SubnetControllerTest {
 	}
 
 	@Test
-	public void h2_add_subnet_shouldnt_return_a_infra_not_found() {
+	public void add_subnet_shouldnt_return_a_infra_not_found() {
 		Subnet subnet = new Subnet();
 		subnet.setDescription("Test description 3");
 		subnet.setInfraId(12);
@@ -303,7 +301,9 @@ public class SubnetControllerTest {
 	}
 
 	@Test
-	public void h3_add_subnet_should_create_a_new_subnet_before() {
+	public void add_subnet_should_create_a_new_subnet_before() {
+	    add_subnet_shouldnt_create_a_new_subnet();
+        
 		Subnet subnet = new Subnet();
 		subnet.setDescription("Test description 3");
 		subnet.setInfraId(infraId);
@@ -333,7 +333,9 @@ public class SubnetControllerTest {
 	}
 
 	@Test
-	public void h3_add_subnet_should_create_a_new_subnet_after() {
+	public void add_subnet_should_create_a_new_subnet_after() {
+	    add_subnet_should_create_a_new_subnet_before();
+        
 		Subnet subnet = new Subnet();
 		subnet.setDescription("Test description 3");
 		subnet.setInfraId(infraId);
@@ -364,7 +366,7 @@ public class SubnetControllerTest {
 	}
 
 	@Test
-	public void h4_update_subnet_should_return_bad_network() {
+	public void update_subnet_should_return_bad_network() {
 		Subnet subnet = new Subnet();
 		subnet.setDescription("Test description 3");
 		subnet.setInfraId(infraId);
@@ -386,7 +388,7 @@ public class SubnetControllerTest {
 	}
 
 	@Test
-	public void h5_update_subnet_should_return_bad_netmask() {
+	public void update_subnet_should_return_bad_netmask() {
 		Subnet subnet = new Subnet();
 		subnet.setDescription("Test description 3");
 		subnet.setInfraId(infraId);
@@ -406,7 +408,7 @@ public class SubnetControllerTest {
 	}
 
 	@Test
-	public void h6_add_subnet_should_return_bad_network() {
+	public void add_subnet_should_return_bad_network() {
 		Subnet subnet = new Subnet();
 		subnet.setDescription("Test description 3");
 		subnet.setInfraId(infraId);
@@ -425,7 +427,7 @@ public class SubnetControllerTest {
 	}
 
 	@Test
-	public void h7_add_subnet_should_return_bad_netmask() {
+	public void add_subnet_should_return_bad_netmask() {
 		Subnet subnet = new Subnet();
 		subnet.setDescription("Test description 3");
 		subnet.setInfraId(infraId);
@@ -444,17 +446,21 @@ public class SubnetControllerTest {
 	}
 
 	@Test
-	public void i_get_all_should_return_an_array_with_two_elem() {
+	public void get_all_should_return_an_array_with_two_elem() {
+        add_subnet_shouldnt_create_a_new_subnet();
+        
 		HttpEntity<PagedResources<SubnetResource>> resp = this.controller.getSubnets(null, null, infraId, null, new PagedResourcesAssembler<Subnet>(resolver, null));
 		Assert.assertNotNull(resp);
 		Assert.assertNotNull(resp.getBody());
 		List<SubnetResource> subnets = IterableUtils.toList(resp.getBody());
 		Assert.assertNotNull(subnets);
-		Assert.assertEquals(4, subnets.size());
+		Assert.assertEquals(2, subnets.size());
 	}
 
 	@Test
-	public void j_get_all_should_return_an_array_with_two_elem_with_page() {
+	public void get_all_should_return_an_array_with_two_elem_with_page() {
+        add_subnet_shouldnt_create_a_new_subnet();
+        
 		HttpEntity<PagedResources<SubnetResource>> resp = this.controller.getSubnets(null, null, infraId, new PageRequest(0, 1), new PagedResourcesAssembler<Subnet>(resolver, null));
 		Assert.assertNotNull(resp);
 		Assert.assertNotNull(resp.getBody());
@@ -464,7 +470,9 @@ public class SubnetControllerTest {
 	}
 
 	@Test
-	public void j_get_all_with_search_ip_and_size_should_return_an_array_with_one_elem_with_page() {
+	public void get_all_with_search_ip_and_size_should_return_an_array_with_one_elem_with_page() {
+        add_subnet_should_create_a_new_subnet_after();
+        
 		HttpEntity<PagedResources<SubnetResource>> resp = this.controller.getSubnets("192.168.1.0", 255L, infraId, null, new PagedResourcesAssembler<Subnet>(resolver, null));
 		Assert.assertNotNull(resp);
 		Assert.assertNotNull(resp.getBody());
@@ -474,7 +482,9 @@ public class SubnetControllerTest {
 	}
 
 	@Test
-	public void j_get_all_with_search_ip_and_short_size_should_return_an_empty_array() {
+	public void get_all_with_search_ip_and_short_size_should_return_an_empty_array() {
+        add_subnet_shouldnt_create_a_new_subnet();
+        
 		HttpEntity<PagedResources<SubnetResource>> resp = this.controller.getSubnets("192.168.1.0", 16L, infraId, null, new PagedResourcesAssembler<Subnet>(resolver, null));
 		Assert.assertNotNull(resp);
 		Assert.assertNotNull(resp.getBody());
@@ -484,7 +494,9 @@ public class SubnetControllerTest {
 	}
 
 	@Test
-	public void j_get_all_with_search_ip_should_return_an_array_with_one_elem_with_page() {
+	public void get_all_with_search_ip_should_return_an_array_with_one_elem_with_page() {
+        add_subnet_shouldnt_create_a_new_subnet();
+        
 		HttpEntity<PagedResources<SubnetResource>> resp = this.controller.getSubnets("192.168.1.0", null, infraId, null, new PagedResourcesAssembler<Subnet>(resolver, null));
 		Assert.assertNotNull(resp);
 		Assert.assertNotNull(resp.getBody());
@@ -494,17 +506,21 @@ public class SubnetControllerTest {
 	}
 
 	@Test
-	public void k_get_all_should_return_an_array_with_two_elem_with_null_page() {
+	public void get_all_should_return_an_array_with_two_elem_with_null_page() {
+        add_subnet_shouldnt_create_a_new_subnet();
+        
 		HttpEntity<PagedResources<SubnetResource>> resp = this.controller.getSubnets(null, null, infraId, null, new PagedResourcesAssembler<Subnet>(resolver, null));
 		Assert.assertNotNull(resp);
 		Assert.assertNotNull(resp.getBody());
 		List<SubnetResource> subnets = IterableUtils.toList(resp.getBody());
 		Assert.assertNotNull(subnets);
-		Assert.assertEquals(4, subnets.size());
+		Assert.assertEquals(2, subnets.size());
 	}
 
 	@Test
-	public void l_get_subnet_should_return_second_subnet() {
+	public void get_subnet_should_return_second_subnet() {
+        add_subnet_shouldnt_create_a_new_subnet();
+        
 		HttpEntity<SubnetResource> resp = this.controller.getSubnet(infraId, id2, null);
 		Assert.assertNotNull(resp);
 		Assert.assertNotNull(resp.getBody());
@@ -516,23 +532,24 @@ public class SubnetControllerTest {
 	}
 
 	@Test
-	public void l_get_full_infra_should_return_infra() {
+	public void get_full_infra_should_return_infra() {
+        add_subnet_shouldnt_create_a_new_subnet();
+        
 		HttpEntity<InfrastructureResource> resp = this.infrastructureController.getInfrastructure(infraId, RequestMode.FULL);
 		Assert.assertNotNull(resp);
 		Assert.assertNotNull(resp.getBody());
 		InfrastructureResource subnet = resp.getBody();
 		Assert.assertNotNull(subnet);
 		Assert.assertNotNull(subnet.getSubnets());
-		Assert.assertEquals(4, subnet.getSubnets().count());
+		Assert.assertEquals(2, subnet.getSubnets().count());
 	}
 
 	@Test
-	public void m_delete_subnet_should_work() {
+	public void delete_subnet_should_be_absent() {
+        add_subnet_shouldnt_create_a_new_subnet();
+        
 		this.controller.deleteSubnet(infraId, id2, null);
-	}
-
-	@Test
-	public void n_get_subnet_shouldnt_return_subnet() {
+		
 		try {
 			this.controller.getSubnet(infraId, id2, null);
 			Assert.fail();
@@ -543,7 +560,7 @@ public class SubnetControllerTest {
 	}
 	
 	@Test
-	public void o_get_subnet_shouldnt_return_subnet_view() throws Exception {
+	public void get_subnet_shouldnt_return_subnet_view() throws Exception {
 		this.mockMvc.perform(MockMvcRequestBuilders.get("/api/infras/"+infraId+"/subnets").session(session)
 		        .accept(MediaType.TEXT_HTML_VALUE))
 		        .andExpect(MockMvcResultMatchers.status().isOk())
@@ -551,11 +568,13 @@ public class SubnetControllerTest {
 	}
 	
 	@Test
-	public void o_get_subnet_shouldnt_return_subnet() throws Exception {
+	public void get_subnet_shouldnt_return_subnet() throws Exception {
+        add_subnet_shouldnt_create_a_new_subnet();
+        
 		this.mockMvc.perform(MockMvcRequestBuilders.get("/api/infras/"+infraId+"/subnets/"+id).param("mode", "FULL").session(session)
 		        .accept(MediaType.APPLICATION_JSON_VALUE))
 		        .andExpect(MockMvcResultMatchers.status().isOk())
-		        .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE));
+		        .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE));
 	}
 
 	@Test
@@ -567,33 +586,33 @@ public class SubnetControllerTest {
 
 	@Test
 	public void view_get_view_by_id_should_return_a_model_view() {
+	    add_subnet_should_create_a_new_subnet();
+	    
 		ModelAndView view = this.controller.getSubnetView(infraId, id, null);
 		Assert.assertNotNull(view);
 		Assert.assertEquals("subnet", view.getViewName());
 	}
 
 	@Test
-	public void z1_delete_subnet_should_work() {
+	public void delete_subnet_should_work() {
+        add_subnet_should_create_a_new_subnet();
+        
 		this.controller.deleteSubnet(infraId, id, null);
-	}
-
-	@Test
-	public void z2_get_all_should_return_an_array_with_no_elem() {
+		
 		HttpEntity<PagedResources<SubnetResource>> resp = this.controller.getSubnets(null, null, infraId, null, new PagedResourcesAssembler<Subnet>(resolver, null));
 		Assert.assertNotNull(resp);
 		Assert.assertNotNull(resp.getBody());
 		List<SubnetResource> subnets = IterableUtils.toList(resp.getBody());
 		Assert.assertNotNull(subnets);
-		Assert.assertEquals(2, subnets.size());
+		Assert.assertEquals(0, subnets.size());
 	}
 
-	@Test
-	public void z3_delete_infra_should_work() {
+	@After
+	public void delete_infra_should_work() {
+	    this.repository.deleteAll();
+	    
 		this.infrastructureController.deleteInfrastructure(infraId);
-	}
 
-	@Test
-	public void z4_get_all_should_return_an_array_with_two_elem() {
 		List<InfrastructureResource> infras = IterableUtils.toList(this.infrastructureController.getInfrastructures(null, null, new PagedResourcesAssembler<Infrastructure>(resolver, null)));
 		Assert.assertNotNull(infras);
 		Assert.assertEquals(0, infras.size());

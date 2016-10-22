@@ -2,9 +2,15 @@ language: java
 script: mvn clean verify
 jdk:
   - oraclejdk8
-  
+
 before_install:
   - pip install --user codecov
   
+install:
+  - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+
+script:
+  - mvn test
+
 after_success:
   - codecov

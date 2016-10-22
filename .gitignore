@@ -6,3 +6,4 @@ target/
 .README.md.html
 src/main/resources/static/swagger/
 generated/
+!maven-wrapper.jar

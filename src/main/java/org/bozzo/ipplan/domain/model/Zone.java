@@ -30,12 +30,23 @@ import javax.persistence.Transient;
 
 import org.springframework.hateoas.Identifiable;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
 /**
  * @author boris
  *
  */
 @Entity
 @Table(name="area")
+@Getter @Setter @Builder @ToString
+@AllArgsConstructor @NoArgsConstructor
+@EqualsAndHashCode(of={"ip","infraId"})
 public class Zone implements Serializable, Identifiable<Long> {
 
 	/**
@@ -59,126 +70,4 @@ public class Zone implements Serializable, Identifiable<Long> {
 	
 	@Transient
 	private Iterable<Range> ranges;
-
-	/**
-	 * @return the id
-	 */
-	@Override
-	public Long getId() {
-		return id;
-	}
-
-	/**
-	 * @param id
-	 *            the id to set
-	 */
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	/**
-	 * @return the infraId
-	 */
-	public Integer getInfraId() {
-		return infraId;
-	}
-
-	/**
-	 * @param infraId the infraId to set
-	 */
-	public void setInfraId(Integer infraId) {
-		this.infraId = infraId;
-	}
-
-	/**
-	 * @return the ip
-	 */
-	public Long getIp() {
-		return ip;
-	}
-
-	/**
-	 * @param ip
-	 *            the ip to set
-	 */
-	public void setIp(Long ip) {
-		this.ip = ip;
-	}
-
-	/**
-	 * @return the description
-	 */
-	public String getDescription() {
-		return description;
-	}
-
-	/**
-	 * @param description
-	 *            the description to set
-	 */
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	/**
-	 * @return the ranges
-	 */
-	public Iterable<Range> getRanges() {
-		return ranges;
-	}
-
-	/**
-	 * @param ranges the ranges to set
-	 */
-	public void setRanges(Iterable<Range> ranges) {
-		this.ranges = ranges;
-	}
-
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("Zone [id=").append(id).append(", infraId=").append(infraId).append(", ip=").append(ip)
-				.append(", description=").append(description).append("]");
-		return builder.toString();
-	}
-
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((infraId == null) ? 0 : infraId.hashCode());
-		result = prime * result + ((ip == null) ? 0 : ip.hashCode());
-		return result;
-	}
-
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (!(obj instanceof Zone))
-			return false;
-		Zone other = (Zone) obj;
-		if (infraId == null) {
-			if (other.infraId != null)
-				return false;
-		} else if (!infraId.equals(other.infraId))
-			return false;
-		if (ip == null) {
-			if (other.ip != null)
-				return false;
-		} else if (!ip.equals(other.ip))
-			return false;
-		return true;
-	}
 }

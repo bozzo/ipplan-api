@@ -34,13 +34,17 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * @author boris
  *
  */
+@Getter @Setter
 public class SubnetResource extends ResourceSupport {
 
-	private final Long id;
+	private final Long subnetId;
 	private final Integer infraId;
 	private final Long ip;
 	private final Long size;
@@ -70,7 +74,7 @@ public class SubnetResource extends ResourceSupport {
 	@JsonCreator
 	public SubnetResource( @JsonProperty("id") Long id, @JsonProperty Integer infraId, @JsonProperty Long ip, @JsonProperty Integer netmask, @JsonProperty Long size, @JsonProperty String description, @JsonProperty String group,
 			@JsonProperty Date lastModifed, @JsonProperty String userId, @JsonProperty Long optionId, @JsonProperty Date swipMod, @JsonProperty Iterable<Address> addresses) {
-		this.id = id;
+		this.subnetId = id;
 		this.infraId = infraId;
 		this.ip = ip;
 		this.size = size;
@@ -108,90 +112,6 @@ public class SubnetResource extends ResourceSupport {
 	 */
 	@JsonProperty("id")
 	public Long getSubnetId() {
-		return id;
-	}
-
-	/**
-	 * @return the infraId
-	 */
-	public Integer getInfraId() {
-		return infraId;
-	}
-
-	/**
-	 * @return the ip
-	 */
-	public Long getIp() {
-		return ip;
-	}
-
-	/**
-	 * @return the size
-	 */
-	public Long getSize() {
-		return size;
-	}
-
-	/**
-	 * @return the netmask
-	 */
-	public Integer getNetmask() {
-		return netmask;
-	}
-
-	/**
-	 * @return the description
-	 */
-	public String getDescription() {
-		return description;
-	}
-
-	/**
-	 * @return the group
-	 */
-	public String getGroup() {
-		return group;
-	}
-
-	/**
-	 * @return the lastModifed
-	 */
-	public Date getLastModifed() {
-		return lastModifed;
-	}
-
-	/**
-	 * @return the userId
-	 */
-	public String getUserId() {
-		return userId;
-	}
-
-	/**
-	 * @return the optionId
-	 */
-	public Long getOptionId() {
-		return optionId;
-	}
-
-	/**
-	 * @return the swipMod
-	 */
-	public Date getSwipMod() {
-		return swipMod;
-	}
-
-	/**
-	 * @return the addresses
-	 */
-	public Stream<AddressResource> getAddresses() {
-		return addresses;
-	}
-
-	/**
-	 * @param addresses the addresses to set
-	 */
-	public void setAddresses(Stream<AddressResource> addresses) {
-		this.addresses = addresses;
+		return subnetId;
 	}
 }

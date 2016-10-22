@@ -59,7 +59,7 @@ public class RangeService {
 	public Range findByInfraIdAndZoneIdAndId(Integer infraId, Long zoneId, Long id, RequestMode mode) {
 		Range range = this.rangeRepository.findByInfraIdAndZoneIdAndId(infraId, zoneId, id);
 		if (RequestMode.FULL.equals(mode)) {
-			range.setSubnet(this.subnetRepository.findAllByInfraIdAndIpAndSize(infraId, range.getIp(), range.getSize(), null));
+			range.setSubnets(this.subnetRepository.findAllByInfraIdAndIpAndSize(infraId, range.getIp(), range.getSize(), null));
 		}
 		return range;
 	}
