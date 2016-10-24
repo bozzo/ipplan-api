@@ -19,7 +19,6 @@
  */
 package org.bozzo.ipplan.domain.model.ui;
 
-import java.util.Date;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
