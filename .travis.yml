@@ -13,7 +13,7 @@ deploy:
   provider: releases
   api_key:
     secure: 0uF6fLrBuqjbFmm7wXmQLMztqCKPNwtaBBcb0ieoF6sONUxlAB6y5jB4orO83ymzlaSbXFGbswRscK21wiK21QjB/0gqhAt/oyRUONgDmWMxI0YCm8A1YnJ9qLemcrWvELhuV+4n99UavCpaWMFBTZVhe6/oMYqZUHLM0WmPj9fO2GjTIRetjBSGXaVpBcMdjmaDDWEqko/6aZ7Tl129xpKZRdxPNw2/FenRNeJT2isKzKmGy4r9+Y8QlqIUXok30tPYFxM6luhVvvEMvhVN6r6LAej510iJdsPrzkuiUJACUFM7hE47Tgg1ZQAw26nuPmVqGEJwzTaxblheMV61p+duPimK/DYCS4v0jONt49+l7F6kiU5sFmDiON4NwK84yeSt5nj3bKNJh+EJyth1UuHzI73F/PejJJXgHZRG3tflKcKsO6iGLnqxDYNm0LWgho1QrvXwfVr9jPKLW6OjeFtAN9/XL2MCBuubc6kl+b3t1mLF0x/qjJkS3xIDhMVjk7uJxn+Gh/uv8Hy8oKL2+cpCbAm6swVNM8b4zD/Yx5BFTSbm4bMSdrXpar7NdkwGP9CBxzK42hvzWdZSJWWAzkbOuA3DEkRAXs0wPsbKX8646nvffjjcHi2sDQJHO+Ly4n2j2/NcqDdryjXre3C+36impnr4OFrjCF06ILPzCTA=
-  file: ipplan-api-0.0.1.jar
+  file: ${TRAVIS_BUILD_DIR}/target/ipplan-api-0.0.1.jar
   on:
     tags: true
-    repo: bozzo/ipplan-api
+    all_branches: true
