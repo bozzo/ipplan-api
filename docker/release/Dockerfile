@@ -5,15 +5,15 @@ MAINTAINER bozzo
 ENV DB_HOST db
 ENV DB_PORT 3306
 
-ENV IPPLAN_VERSION 0.0.2-SNAPSHOT
+ENV IPPLAN_VERSION 0.0.2
 
 VOLUME /tmp
 
 WORKDIR /usr/share/ipplan-api
 
-ADD ipplan-api-${IPPLAN_VERSION}.jar app.jar
-
-RUN sh -c 'touch /app.jar'
+RUN apk add --no-cache openssl \
+		&& wget -q -O app.jar "https://github.com/bozzo/ipplan-api/releases/download/${IPPLAN_VERSION}/ipplan-api-${IPPLAN_VERSION}.jar" \
+		&& apk del openssl
 
 EXPOSE 8080
 
